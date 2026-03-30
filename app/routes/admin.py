@@ -1,0 +1,127 @@
+from flask import Blueprint, render_template, request, redirect, flash
+from app.decorators import role_required
+from app.models import get_db
+from flask_bcrypt import Bcrypt
+
+admin_bp = Blueprint('admin', __name__)
+
+# ── INDEX ─────────────────────────────────────────────
+@admin_bp.route('/')
+@role_required('admin')
+def index():
+    return render_template('admin/index.html')
+
+# ── CLASSES ───────────────────────────────────────────
+@admin_bp.route('/classes')
+@role_required('admin')
+def classes():
+    db = get_db()
+    cur = db.cursor(dictionary=True)
+    cur.execute("SELECT * FROM classes")
+    return render_template('admin/classes.html', classes=cur.fetchall())
+
+@admin_bp.route('/classes/add', methods=['POST'])
+@role_required('admin')
+def add_class():
+    nom = request.form['nom']
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("INSERT INTO classes (nom) VALUES (%s)", (nom,))
+    db.commit()
+    flash('Classe ajoutée', 'success')
+    return redirect('/admin/classes')
+
+@admin_bp.route('/classes/delete/<int:id>')
+@role_required('admin')
+def delete_class(id):
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("DELETE FROM classes WHERE id = %s", (id,))
+    db.commit()
+    flash('Classe supprimée', 'warning')
+    return redirect('/admin/classes')
+
+# ── USERS ─────────────────────────────────────────────
+@admin_bp.route('/users')
+@role_required('admin')
+def users():
+    db = get_db()
+    cur = db.cursor(dictionary=True)
+    cur.execute("SELECT id, username, role FROM users")
+    return render_template('admin/users.html', users=cur.fetchall())
+
+@admin_bp.route('/users/add', methods=['POST'])
+@role_required('admin')
+def add_user():
+    bcrypt = Bcrypt()
+    username = request.form['username']
+    password = request.form['password']
+    role = request.form['role']
+    hashed = bcrypt.generate_password_hash(password).decode('utf-8')
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("INSERT INTO users (username, password_hash, role) VALUES (%s, %s, %s)",
+                (username, hashed, role))
+    db.commit()
+    flash('Utilisateur créé', 'success')
+    return redirect('/admin/users')
+
+@admin_bp.route('/users/delete/<int:id>')
+@role_required('admin')
+def delete_user(id):
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("DELETE FROM users WHERE id = %s", (id,))
+    db.commit()
+    flash('Utilisateur supprimé', 'warning')
+    return redirect('/admin/users')
+
+# ── EMPLOIS DU TEMPS ──────────────────────────────────
+@admin_bp.route('/emplois')
+@role_required('admin')
+def emplois():
+    db = get_db()
+    cur = db.cursor(dictionary=True)
+    cur.execute("""
+        SELECT e.*, c.nom as classe_nom, u.username as prof_nom
+        FROM emplois_du_temps e
+        JOIN classes c ON e.classe_id = c.id
+        LEFT JOIN users u ON e.professeur_id = u.id
+        ORDER BY e.jour, e.heure_debut
+    """)
+    emplois = cur.fetchall()
+    cur.execute("SELECT * FROM classes")
+    classes = cur.fetchall()
+    cur.execute("SELECT id, username FROM users WHERE role = 'professeur'")
+    profs = cur.fetchall()
+    return render_template('admin/emplois.html', emplois=emplois, classes=classes, profs=profs)
+
+@admin_bp.route('/emplois/add', methods=['POST'])
+@role_required('admin')
+def add_emploi():
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("""
+        INSERT INTO emplois_du_temps (classe_id, jour, heure_debut, heure_fin, matiere, professeur_id)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """, (
+        request.form['classe_id'],
+        request.form['jour'],
+        request.form['heure_debut'],
+        request.form['heure_fin'],
+        request.form['matiere'],
+        request.form['professeur_id']
+    ))
+    db.commit()
+    flash('Créneau ajouté', 'success')
+    return redirect('/admin/emplois')
+
+@admin_bp.route('/emplois/delete/<int:id>')
+@role_required('admin')
+def delete_emploi(id):
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("DELETE FROM emplois_du_temps WHERE id = %s", (id,))
+    db.commit()
+    flash('Créneau supprimé', 'warning')
+    return redirect('/admin/emplois')

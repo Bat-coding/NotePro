@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Bienvenue, {{ session.username }} !</h2>
+<p>Rôle : <strong>{{ session.role }}</strong></p>
+{% if session.role == 'admin' %}
+    <a href="/admin/" class="btn btn-danger">Panel Admin</a>
+{% elif session.role == 'professeur' %}
+    <a href="/professeur/" class="btn btn-warning">Panel Professeur</a>
+{% else %}
+    <a href="/etudiant/notes" class="btn btn-success">Mes Notes</a>
+{% endif %}
+{% endblock %}

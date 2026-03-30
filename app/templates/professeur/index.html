@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Panel Professeur</h2>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card p-3">
+            <h5>Mes évaluations</h5>
+            <a href="/professeur/evaluations" class="btn btn-warning btn-sm">Voir</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3">
+            <h5>Saisir des notes</h5>
+            <a href="/professeur/notes" class="btn btn-warning btn-sm">Saisir</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3">
+            <h5>Mon emploi du temps</h5>
+            <a href="/professeur/emploi" class="btn btn-warning btn-sm">Consulter</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

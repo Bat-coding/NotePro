@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Saisir des Notes</h2>
+<p>Choisissez une évaluation :</p>
+<ul class="list-group">
+{% for e in evaluations %}
+    >
+        {{ e.titre }}
+        <a href="/professeur/notes/{{ e.id }}" class="btn btn-sm btn-warning">Saisir</a>
+    </li>
+{% else %}
+    >Aucune évaluation disponible</li>
+{% endfor %}
+</ul>
+{% endblock %}

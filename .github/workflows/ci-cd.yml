@@ -1,0 +1,77 @@
+name: DevSecOps Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: notepro
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -prootpassword"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # ── 01 FLAKE8 ─────────────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install flake8 pip-audit
+
+      - name: Flake8 - Lint
+        run: flake8 app/ --max-line-length=120 --exclude=app/templates
+        continue-on-error: true
+
+      # ── 02 PIP-AUDIT ──────────────────────────────────
+      - name: pip-audit - Scan dépendances
+        run: pip-audit -r requirements.txt
+        continue-on-error: true
+
+      # ── 03 BUILD DOCKER ───────────────────────────────
+      - name: Build Docker image
+        run: docker compose build
+
+      # ── 04 DÉMARRAGE APP ──────────────────────────────
+      - name: Start application
+        run: |
+          docker compose up -d
+          sleep 15
+        env:
+          DB_HOST: db
+          DB_USER: root
+          DB_PASSWORD: rootpassword
+          DB_NAME: notepro
+
+      # ── 05 OWASP ZAP DAST ─────────────────────────────
+      - name: OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: 'http://localhost:5000'
+          fail_action: false
+          allow_issue_writing: false
+        continue-on-error: true
+
+      # ── 06 ARRÊT ──────────────────────────────────────
+      - name: Stop containers
+        run: docker compose down

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Mon Emploi du Temps</h2>
+<table class="table table-bordered table-striped">
+    <thead><tr><th>Jour</th><th>Début</th><th>Fin</th><th>Matière</th><th>Professeur</th></tr></thead>
+    <tbody>
+    {% for e in emplois %}
+        <tr>
+            <td>{{ e.jour }}</td>
+            <td>{{ e.heure_debut }}</td>
+            <td>{{ e.heure_fin }}</td>
+            <td>{{ e.matiere }}</td>
+            <td>{{ e.prof }}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="5">Aucun créneau disponible</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Mes Évaluations</h2>
+<form method="POST" action="/professeur/evaluations/add" class="mb-4">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="row g-2">
+        <div class="col"><input type="text" name="titre" class="form-control" placeholder="Titre de l'évaluation" required></div>
+        <div class="col">
+            <select name="classe_id" class="form-select">
+                {% for c in classes %}
+                    <option value="{{ c.id }}">{{ c.nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-auto"><button type="submit" class="btn btn-warning">Créer</button></div>
+    </div>
+</form>
+<table class="table table-bordered">
+    <thead><tr><th>Titre</th><th>Classe</th><th>Action</th></tr></thead>
+    <tbody>
+    {% for e in evaluations %}
+        <tr>
+            <td>{{ e.titre }}</td>
+            <td>{{ e.classe }}</td>
+            <td><a href="/professeur/notes/{{ e.id }}" class="btn btn-sm btn-warning">Saisir notes</a></td>
+        </tr>
+    {% else %}
+        <tr><td colspan="3">Aucune évaluation</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Gestion des Utilisateurs</h2>
+<form method="POST" action="/admin/users/add" class="mb-4">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="row g-2">
+        <div class="col"><input type="text" name="username" class="form-control" placeholder="Username" required></div>
+        <div class="col"><input type="password" name="password" class="form-control" placeholder="Mot de passe" required></div>
+        <div class="col">
+            <select name="role" class="form-select">
+                <option value="etudiant">Étudiant</option>
+                <option value="professeur">Professeur</option>
+                <option value="admin">Admin</option>
+            </select>
+        </div>
+        <div class="col-auto"><button type="submit" class="btn btn-success">Ajouter</button></div>
+    </div>
+</form>
+<table class="table table-bordered">
+    <thead><tr><th>ID</th><th>Username</th><th>Rôle</th><th>Action</th></tr></thead>
+    <tbody>
+    {% for u in users %}
+        <tr>
+            <td>{{ u.id }}</td>
+            <td>{{ u.username }}</td>
+            <td><span class="badge bg-secondary">{{ u.role }}</span></td>
+            <td><a href="/admin/users/delete/{{ u.id }}" class="btn btn-danger btn-sm">Supprimer</a></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

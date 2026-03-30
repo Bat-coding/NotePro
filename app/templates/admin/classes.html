@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Gestion des Classes</h2>
+<form method="POST" action="/admin/classes/add" class="mb-4 d-flex gap-2">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="text" name="nom" class="form-control" placeholder="Nom de la classe" required>
+    <button type="submit" class="btn btn-success">Ajouter</button>
+</form>
+<table class="table table-bordered">
+    <thead><tr><th>ID</th><th>Nom</th><th>Action</th></tr></thead>
+    <tbody>
+    {% for c in classes %}
+        <tr>
+            <td>{{ c.id }}</td>
+            <td>{{ c.nom }}</td>
+            <td><a href="/admin/classes/delete/{{ c.id }}" class="btn btn-danger btn-sm">Supprimer</a></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
