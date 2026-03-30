@@ -1,0 +1,7 @@
+flask                # Framework web 
+flask-sqlalchemy      # Lien avec MySQL [cite: 34]
+mysql-connector-python # Driver MySQL [cite: 34]
+flask-wtf            # Protection CSRF [cite: 65]
+flask-bcrypt         # Hachage sécurisé (bcrypt) [cite: 63]
+python-dotenv        # Gestion du fichier .env
+email-validator      # Validation des entrées [cite: 67]
