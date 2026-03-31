@@ -1,6 +1,13 @@
 #!/bin/bash
 echo "Waiting for MySQL..."
-while ! python -c "import mysql.connector; mysql.connector.connect(host='db', user='root', password='rootpassword', database='notepro')" 2>/dev/null; do
+while ! python -c "
+import mysql.connector
+mysql.connector.connect(
+    host='db',
+    user='notepro',
+    password='notepro',
+    database='notepro'
+)" 2>/dev/null; do
   sleep 2
 done
 echo "MySQL ready!"

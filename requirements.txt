@@ -1,6 +1,9 @@
-flask
-flask-bcrypt
-flask-wtf
-flask-talisman
+Flask
+Flask-SQLAlchemy
+Flask-Login
+Flask-WTF
+Flask-Bcrypt
+Flask-Talisman
 mysql-connector-python
 gunicorn
+WTForms

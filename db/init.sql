@@ -42,6 +42,16 @@ CREATE TABLE emplois_du_temps (
     matiere VARCHAR(100), professeur_id INT,
     FOREIGN KEY (classe_id) REFERENCES classes(id)
 );
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(80) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'teacher', 'student') DEFAULT 'student',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT IGNORE INTO users (username, password_hash, role)
+VALUES ('admin', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/RVmkNe6Gy', 'admin');
 
 -- Seed data (mots de passe = bcrypt hash de "Password123!")
 INSERT INTO users (username, password_hash, role) VALUES

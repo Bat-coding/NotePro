@@ -1,63 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Emplois du Temps</h2>
-<form method="POST" action="/admin/emplois/add" class="mb-4">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <div class="row g-2">
-        <div class="col">
-            <select name="classe_id" class="form-select" required>
-                <option value="">-- Classe --</option>
-                {% for c in classes %}
-                    <option value="{{ c.id }}">{{ c.nom }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col">
-            <select name="jour" class="form-select" required>
-                {% for j in ['Lundi','Mardi','Mercredi','Jeudi','Vendredi'] %}
-                    <option value="{{ j }}">{{ j }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col">
-            <input type="time" name="heure_debut" class="form-control" required>
-        </div>
-        <div class="col">
-            <input type="time" name="heure_fin" class="form-control" required>
-        </div>
-        <div class="col">
-            <input type="text" name="matiere" class="form-control" placeholder="Matière" required>
-        </div>
-        <div class="col">
-            <select name="professeur_id" class="form-select" required>
-                <option value="">-- Professeur --</option>
-                {% for p in profs %}
-                    <option value="{{ p.id }}">{{ p.username }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col-auto">
-            <button type="submit" class="btn btn-primary">Ajouter</button>
-        </div>
-    </div>
-</form>
-
-<table class="table table-bordered table-striped">
-    <thead><tr><th>Jour</th><th>Début</th><th>Fin</th><th>Matière</th><th>Classe</th><th>Professeur</th><th>Action</th></tr></thead>
-    <tbody>
-    {% for e in emplois %}
-        <tr>
-            <td>{{ e.jour }}</td>
-            <td>{{ e.heure_debut }}</td>
-            <td>{{ e.heure_fin }}</td>
-            <td>{{ e.matiere }}</td>
-            <td>{{ e.classe_nom }}</td>
-            <td>{{ e.prof_nom }}</td>
-            <td><a href="/admin/emplois/delete/{{ e.id }}" class="btn btn-danger btn-sm">Supprimer</a></td>
-        </tr>
-    {% else %}
-        <tr><td colspan="7">Aucun créneau</td></tr>
-    {% endfor %}
-    </tbody>
-</table>
-{% endblock %}
+<div class="page-title"><i class="bi bi-calendar3-week-fill"></i> Emplois du Temps</div>
+<div class="card p-4 mb-4" style="border-radius:14px">
+    <h6 style="font-weight:700;color:#1a2b4a;margin-bottom:16px"><i class="bi bi-plus-circle-fill text-warning"></i> Ajouter un créneau</h6>
+    <form method="POST" action="/admin/emplois/add">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="row g-3">
+            <div class="col-md-2">
+                <select name="classe_id" class="form-select" style="border-radius:10px;border-color:#e2e8f0" required>
+                    <option value="">Classe</option>
+                    {% for c in classes %}<option value="{{ c.id }}">{{ c.nom }}</option>{% endfor %}

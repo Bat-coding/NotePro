@@ -1,31 +1,27 @@
-import mysql.connector, os
+# app/models.py
+from flask_login import UserMixin
+from . import db, bcrypt
 
-def get_db():
-    return mysql.connector.connect(
-        host=os.getenv("DB_HOST", "db"),
-        user=os.getenv("DB_USER", "root"),
-        password=os.getenv("DB_PASSWORD"),
-        database=os.getenv("DB_NAME", "notepro")
-    )
+class User(UserMixin, db.Model):
+    __tablename__ = 'users'
 
-def get_user_by_username(username):
-    db = get_db()
-    cur = db.cursor(dictionary=True)
-    cur.execute("SELECT * FROM users WHERE username = %s", (username,))
-    return cur.fetchone()
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    role = db.Column(db.Enum('admin', 'teacher', 'student'), default='student', nullable=False)
 
-def get_notes_etudiant(etudiant_id):
-    db = get_db()
-    cur = db.cursor(dictionary=True)
-    cur.execute("""
-        SELECT e.titre, n.valeur FROM notes n
-        JOIN evaluations e ON n.evaluation_id = e.id
-        WHERE n.etudiant_id = %s
-    """, (etudiant_id,))
-    return cur.fetchall()
+    def set_password(self, password):
+        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
 
-def get_classes():
-    db = get_db()
-    cur = db.cursor(dictionary=True)
-    cur.execute("SELECT * FROM classes")
-    return cur.fetchall()
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password_hash, password)
+
+    def __repr__(self):
+        return f'<User {self.username} ({self.role})>'
+
+
+from . import login_manager
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))

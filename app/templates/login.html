@@ -1,20 +1,116 @@
-{% extends "base.html" %}
-{% block content %}
-<div class="row justify-content-center">
-<div class="col-md-4">
-    <h2 class="mb-4">Connexion</h2>
-    <form method="POST">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <div class="mb-3">
-            <label class="form-label">Nom d'utilisateur</label>
-            <input type="text" name="username" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Mot de passe</label>
-            <input type="password" name="password" class="form-control" required>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NotePro – Connexion</title>
+  //cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  //cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      min-height: 100vh;
+      background: #1a2744;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-card {
+      background: #fff;
+      border-radius: 1.5rem;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      text-align: center;
+    }
+    .app-icon {
+      width: 64px;
+      height: 64px;
+      background: #1a2744;
+      border-radius: 1rem;
+      margin: 0 auto 1rem;
+    }
+    .app-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #1a2744;
+    }
+    .app-subtitle {
+      font-size: .85rem;
+      color: #8896aa;
+      margin-bottom: 1.8rem;
+    }
+    .form-label {
+      font-size: .78rem;
+      font-weight: 700;
+      color: #8896aa;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      text-align: left;
+      display: block;
+      margin-bottom: .3rem;
+    }
+    .form-control {
+      border-radius: .5rem;
+      border: 1.5px solid #e0e6ef;
+      font-size: .97rem;
+      padding: .55rem .9rem;
+      margin-bottom: 1.1rem;
+    }
+    .form-control:focus {
+      border-color: #1a2744;
+      box-shadow: none;
+    }
+    .btn-connect {
+      background: #1a2744;
+      color: #fff;
+      border: none;
+      border-radius: .5rem;
+      font-weight: 700;
+      font-size: .97rem;
+      padding: .6rem 2rem;
+      width: 100%;
+      margin-top: .5rem;
+    }
+    .btn-connect:hover {
+      background: #243460;
+    }
+    .footer-text {
+      font-size: .78rem;
+      color: #b0bec5;
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="app-icon"></div>
+    <div class="app-title">NotePro</div>
+    <div class="app-subtitle">Plateforme de Gestion Académique</div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} py-2 text-start" role="alert">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="/login">
+      {{ form.hidden_tag() }}
+      <div class="text-start">
+        abel class="form-label" for="username">Identifiant</label>
+        {{ form.username(class="form-control", placeholder="Votre identifiant", id="username") }}
+
+        abel class="form-label" for="password">Mot de passe</label>
+        {{ form.password(class="form-control", placeholder="Votre mot de passe", id="password") }}
+      </div>
+      <button type="submit" class="btn-connect">Se connecter</button>
     </form>
-</div>
-</div>
-{% endblock %}
+
+    <div class="footer-text">NotePro · Guardia Cybersecurity School 2026</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

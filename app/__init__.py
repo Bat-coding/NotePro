@@ -1,28 +1,42 @@
-from flask import Flask
+# app/__init__.py
+from flask import Flask, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
-from flask_talisman import Talisman
-from datetime import timedelta
+from flask_bcrypt import Bcrypt
+import os
 
+db = SQLAlchemy()
+login_manager = LoginManager()
 csrf = CSRFProtect()
+bcrypt = Bcrypt()
 
 def create_app():
     app = Flask(__name__)
-    app.secret_key = 'changeme_secret'
-    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
-    app.config['SESSION_COOKIE_HTTPONLY'] = True
-    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'changeme-in-production')
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+        'DATABASE_URL',
+        'mysql+mysqlconnector://notepro:notepro@db/notepro'
+    )
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    db.init_app(app)
+    bcrypt.init_app(app)
     csrf.init_app(app)
-    Talisman(app, content_security_policy=False)
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'
+    login_manager.login_message = 'Veuillez vous connecter.'
+    login_manager.login_message_category = 'warning'
 
-    from app.auth import auth_bp
-    from app.routes.admin import admin_bp
-    from app.routes.professeur import prof_bp
-    from app.routes.etudiant import etu_bp
+    from .auth import auth_bp
+    from .routes import main_bp
 
     app.register_blueprint(auth_bp)
-    app.register_blueprint(admin_bp, url_prefix='/admin')
-    app.register_blueprint(prof_bp, url_prefix='/professeur')
-    app.register_blueprint(etu_bp, url_prefix='/etudiant')
+    app.register_blueprint(main_bp)
+
+    @app.route('/')
+    def index():
+        return redirect(url_for('auth.login'))
 
     return app
