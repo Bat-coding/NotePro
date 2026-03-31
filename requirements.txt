@@ -7,3 +7,4 @@ Flask-Talisman
 mysql-connector-python
 gunicorn
 WTForms
+python-dotenv

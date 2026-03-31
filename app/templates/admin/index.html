@@ -1,54 +1,67 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="page-title"><i class="bi bi-speedometer2"></i> Tableau de bord</div>
+<header class="page-header">
+    <h1 class="page-title">Tableau de bord</h1>
+    <span class="text-muted small">{{ now }}</span>
+</header>
+
 <div class="row g-4">
     <div class="col-md-4">
         <a href="/admin/classes" class="text-decoration-none">
-            <div class="card p-4" style="border-radius:14px;border-left:4px solid #3b82f6;transition:transform .2s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
-                <div style="display:flex;align-items:center;gap:16px">
-                    <div style="width:48px;height:48px;background:#eff6ff;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                        <i class="bi bi-building-fill" style="font-size:1.4rem;color:#3b82f6"></i>
+            <div class="stat-card">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="icon-box" style="background: #eff6ff; color: #2563eb;">
+                        <i class="bi bi-building-fill h4 mb-0"></i>
                     </div>
                     <div>
-                        <div style="font-weight:700;color:#1a2b4a;font-size:1rem">Classes</div>
-                        <div style="color:#94a3b8;font-size:.82rem">Créer et gérer</div>
+                        <div class="h5 mb-0 font-weight-bold">Classes</div>
+                        <div class="small text-muted">Gérer les promotions</div>
                     </div>
-                    <i class="bi bi-chevron-right ms-auto" style="color:#cbd5e1"></i>
                 </div>
             </div>
         </a>
     </div>
+    
     <div class="col-md-4">
         <a href="/admin/users" class="text-decoration-none">
-            <div class="card p-4" style="border-radius:14px;border-left:4px solid #22c55e;transition:transform .2s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
-                <div style="display:flex;align-items:center;gap:16px">
-                    <div style="width:48px;height:48px;background:#f0fdf4;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                        <i class="bi bi-people-fill" style="font-size:1.4rem;color:#22c55e"></i>
+            <div class="stat-card">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="icon-box" style="background: #f0fdf4; color: #16a34a;">
+                        <i class="bi bi-people-fill h4 mb-0"></i>
                     </div>
                     <div>
-                        <div style="font-weight:700;color:#1a2b4a;font-size:1rem">Utilisateurs</div>
-                        <div style="color:#94a3b8;font-size:.82rem">Gérer les comptes</div>
+                        <div class="h5 mb-0 font-weight-bold">Utilisateurs</div>
+                        <div class="small text-muted">Comptes et accès</div>
                     </div>
-                    <i class="bi bi-chevron-right ms-auto" style="color:#cbd5e1"></i>
                 </div>
             </div>
         </a>
     </div>
+
     <div class="col-md-4">
         <a href="/admin/emplois" class="text-decoration-none">
-            <div class="card p-4" style="border-radius:14px;border-left:4px solid #f59e0b;transition:transform .2s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
-                <div style="display:flex;align-items:center;gap:16px">
-                    <div style="width:48px;height:48px;background:#fffbeb;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                        <i class="bi bi-calendar3-week-fill" style="font-size:1.4rem;color:#f59e0b"></i>
+            <div class="stat-card">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="icon-box" style="background: #fffbeb; color: #d97706;">
+                        <i class="bi bi-calendar3-week-fill h4 mb-0"></i>
                     </div>
                     <div>
-                        <div style="font-weight:700;color:#1a2b4a;font-size:1rem">Emplois du temps</div>
-                        <div style="color:#94a3b8;font-size:.82rem">Créer les créneaux</div>
+                        <div class="h5 mb-0 font-weight-bold">Planning</div>
+                        <div class="small text-muted">Emplois du temps</div>
                     </div>
-                    <i class="bi bi-chevron-right ms-auto" style="color:#cbd5e1"></i>
                 </div>
             </div>
         </a>
+    </div>
+</div>
+
+<div class="mt-5">
+    <div class="table-container p-4">
+        <h5 class="mb-4 font-weight-bold">Actions rapides</h5>
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary" style="border-radius: 0.75rem;"><i class="bi bi-plus-lg"></i> Nouveau message</button>
+            <button class="btn btn-outline-secondary" style="border-radius: 0.75rem;"><i class="bi bi-download"></i> Exporter données</button>
+        </div>
     </div>
 </div>
 {% endblock %}

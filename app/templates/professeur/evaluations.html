@@ -1,32 +1,51 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Mes Évaluations</h2>
-<form method="POST" action="/professeur/evaluations/add" class="mb-4">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <div class="row g-2">
-        <div class="col"><input type="text" name="titre" class="form-control" placeholder="Titre de l'évaluation" required></div>
-        <div class="col">
-            <select name="classe_id" class="form-select">
-                {% for c in classes %}
-                    <option value="{{ c.id }}">{{ c.nom }}</option>
-                {% endfor %}
-            </select>
+<header class="page-header">
+    <h1 class="page-title">Mes Évaluations</h1>
+</header>
+
+<div class="table-container p-4 mb-4">
+    <h6 class="mb-4 font-weight-bold text-primary"><i class="bi bi-plus-circle-fill"></i> Créer une évaluation</h6>
+    <form method="POST" action="/professeur/evaluations/add">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="row g-3">
+            <div class="col-md-6"><input type="text" name="titre" class="form-control" placeholder="Titre (ex: Examen Final)" required></div>
+            <div class="col-md-4">
+                <select name="classe_id" class="form-select">
+                    {% for c in classes %}
+                        <option value="{{ c.id }}">{{ c.nom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2"><button type="submit" class="btn btn-primary w-100 font-weight-bold">Créer</button></div>
         </div>
-        <div class="col-auto"><button type="submit" class="btn btn-warning">Créer</button></div>
-    </div>
-</form>
-<table class="table table-bordered">
-    <thead><tr><th>Titre</th><th>Classe</th><th>Action</th></tr></thead>
-    <tbody>
-    {% for e in evaluations %}
-        <tr>
-            <td>{{ e.titre }}</td>
-            <td>{{ e.classe }}</td>
-            <td><a href="/professeur/notes/{{ e.id }}" class="btn btn-sm btn-warning">Saisir notes</a></td>
-        </tr>
-    {% else %}
-        <tr><td colspan="3">Aucune évaluation</td></tr>
-    {% endfor %}
-    </tbody>
-</table>
+    </form>
+</div>
+
+<div class="table-container">
+    <table class="modern-table">
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Classe</th>
+                <th style="text-align:right">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for e in evaluations %}
+            <tr>
+                <td class="font-weight-600">{{ e.titre }}</td>
+                <td><span class="badge bg-light text-dark border">{{ e.classe }}</span></td>
+                <td style="text-align:right">
+                    <a href="/professeur/notes/{{ e.id }}" class="btn btn-sm btn-link text-primary text-decoration-none font-weight-600">
+                        <i class="bi bi-pencil-square"></i> Saisir notes
+                    </a>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="3" class="text-center py-5 text-muted">Aucune évaluation programmée</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

@@ -1,24 +1,56 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Panel Professeur</h2>
-<div class="row">
+<header class="page-header">
+    <h1 class="page-title">Tableau de bord Professeur</h1>
+</header>
+
+<div class="row g-4">
     <div class="col-md-4">
-        <div class="card p-3">
-            <h5>Mes évaluations</h5>
-            <a href="/professeur/evaluations" class="btn btn-warning btn-sm">Voir</a>
-        </div>
+        <a href="/professeur/evaluations" class="text-decoration-none">
+            <div class="stat-card">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="icon-box" style="background: #eff6ff; color: #2563eb;">
+                        <i class="bi bi-clipboard-check-fill h4 mb-0"></i>
+                    </div>
+                    <div>
+                        <div class="h5 mb-0 font-weight-bold">Évaluations</div>
+                        <div class="small text-muted">Gérer les examens</div>
+                    </div>
+                </div>
+            </div>
+        </a>
     </div>
+
     <div class="col-md-4">
-        <div class="card p-3">
-            <h5>Saisir des notes</h5>
-            <a href="/professeur/notes" class="btn btn-warning btn-sm">Saisir</a>
-        </div>
+        <a href="/professeur/notes" class="text-decoration-none">
+            <div class="stat-card">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="icon-box" style="background: #f0fdf4; color: #16a34a;">
+                        <i class="bi bi-pencil-fill h4 mb-0"></i>
+                    </div>
+                    <div>
+                        <div class="h5 mb-0 font-weight-bold">Notes</div>
+                        <div class="small text-muted">Saisie des résultats</div>
+                    </div>
+                </div>
+            </div>
+        </a>
     </div>
+
     <div class="col-md-4">
-        <div class="card p-3">
-            <h5>Mon emploi du temps</h5>
-            <a href="/professeur/emploi" class="btn btn-warning btn-sm">Consulter</a>
-        </div>
+        <a href="/professeur/emploi" class="text-decoration-none">
+            <div class="stat-card">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="icon-box" style="background: #fffbeb; color: #d97706;">
+                        <i class="bi bi-calendar3-week-fill h4 mb-0"></i>
+                    </div>
+                    <div>
+                        <div class="h5 mb-0 font-weight-bold">Mon Planning</div>
+                        <div class="small text-muted">Emploi du temps</div>
+                    </div>
+                </div>
+            </div>
+        </a>
     </div>
 </div>
 {% endblock %}

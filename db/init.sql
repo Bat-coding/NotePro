@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(100) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    role ENUM('admin', 'professeur', 'etudiant') NOT NULL,
+    role ENUM('admin', 'professeur', 'etudiant') NOT NULL DEFAULT 'etudiant',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -50,6 +50,6 @@ CREATE TABLE IF NOT EXISTS emplois_du_temps (
     FOREIGN KEY (classe_id) REFERENCES classes(id) ON DELETE CASCADE
 );
 
--- Mot de passe admin = "admin123" (hash bcrypt valide)
+-- admin / Password123!
 INSERT IGNORE INTO users (username, password_hash, role)
 VALUES ('admin', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/RVmkNe6Gy', 'admin');

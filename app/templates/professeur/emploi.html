@@ -1,22 +1,31 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Mon Emploi du Temps</h2>
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr><th>Jour</th><th>Début</th><th>Fin</th><th>Matière</th><th>Classe</th></tr>
-    </thead>
-    <tbody>
-    {% for e in emplois %}
-        <tr>
-            <td>{{ e.jour }}</td>
-            <td>{{ e.heure_debut }}</td>
-            <td>{{ e.heure_fin }}</td>
-            <td>{{ e.matiere }}</td>
-            <td>{{ e.classe }}</td>
-        </tr>
-    {% else %}
-        <tr><td colspan="5">Aucun créneau disponible</td></tr>
-    {% endfor %}
-    </tbody>
-</table>
+<header class="page-header">
+    <h1 class="page-title">Mon Emploi du Temps</h1>
+</header>
+
+<div class="table-container">
+    <table class="modern-table">
+        <thead>
+            <tr>
+                <th>Jour</th>
+                <th>Horaire</th>
+                <th>Matière</th>
+                <th>Classe</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for e in emplois %}
+            <tr>
+                <td class="font-weight-600">{{ e.jour }}</td>
+                <td><small class="text-muted">{{ e.heure_debut }} - {{ e.heure_fin }}</small></td>
+                <td><span class="font-weight-500">{{ e.matiere }}</span></td>
+                <td><span class="badge bg-light text-dark border">{{ e.classe }}</span></td>
+            </tr>
+        {% else %}
+            <tr><td colspan="4" class="text-center py-5 text-muted">Aucun créneau disponible</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

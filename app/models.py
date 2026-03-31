@@ -43,3 +43,14 @@ def get_db():
             database=os.environ.get('DB_NAME', 'notepro')
         )
     return g.db_conn
+
+def get_notes_etudiant(etudiant_id):
+    conn = get_db()
+    cur = conn.cursor(dictionary=True)
+    cur.execute("""
+        SELECT e.titre, n.valeur
+        FROM notes n
+        JOIN evaluations e ON n.evaluation_id = e.id
+        WHERE n.etudiant_id = %s
+    """, (etudiant_id,))
+    return cur.fetchall()
