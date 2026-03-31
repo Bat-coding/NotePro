@@ -18,8 +18,8 @@ def index():
 @admin_bp.route('/classes')
 @role_required('admin')
 def classes():
-    db = get_db()
-    cur = db.cursor(dictionary=True)
+    conn = get_db()
+    cur = conn.cursor(dictionary=True)
     cur.execute("SELECT * FROM classes ORDER BY nom")
     return render_template('admin/classes.html', classes=cur.fetchall())
 
@@ -31,10 +31,10 @@ def add_class():
     if not nom:
         flash('Le nom de la classe est requis.', 'danger')
         return redirect('/admin/classes')
-    db = get_db()
-    cur = db.cursor()
+    conn = get_db()
+    cur = conn.cursor()
     cur.execute("INSERT INTO classes (nom) VALUES (%s)", (nom,))
-    db.commit()
+    conn.commit()
     flash('Classe ajoutée.', 'success')
     return redirect('/admin/classes')
 
@@ -42,10 +42,10 @@ def add_class():
 @admin_bp.route('/classes/delete/<int:id>')
 @role_required('admin')
 def delete_class(id):
-    db = get_db()
-    cur = db.cursor()
+    conn = get_db()
+    cur = conn.cursor()
     cur.execute("DELETE FROM classes WHERE id = %s", (id,))
-    db.commit()
+    conn.commit()
     flash('Classe supprimée.', 'warning')
     return redirect('/admin/classes')
 
@@ -54,8 +54,8 @@ def delete_class(id):
 @admin_bp.route('/users')
 @role_required('admin')
 def users():
-    db = get_db()
-    cur = db.cursor(dictionary=True)
+    conn = get_db()
+    cur = conn.cursor(dictionary=True)
     cur.execute("SELECT id, username, role FROM users ORDER BY role, username")
     return render_template('admin/users.html', users=cur.fetchall())
 
@@ -76,13 +76,13 @@ def add_user():
         return redirect('/admin/users')
 
     hashed = bcrypt.generate_password_hash(password).decode('utf-8')
-    db = get_db()
-    cur = db.cursor()
+    conn = get_db()
+    cur = conn.cursor()
     cur.execute(
         "INSERT INTO users (username, password_hash, role) VALUES (%s, %s, %s)",
         (username, hashed, role)
     )
-    db.commit()
+    conn.commit()
     flash('Utilisateur créé.', 'success')
     return redirect('/admin/users')
 
@@ -90,10 +90,10 @@ def add_user():
 @admin_bp.route('/users/delete/<int:id>')
 @role_required('admin')
 def delete_user(id):
-    db = get_db()
-    cur = db.cursor()
+    conn = get_db()
+    cur = conn.cursor()
     cur.execute("DELETE FROM users WHERE id = %s", (id,))
-    db.commit()
+    conn.commit()
     flash('Utilisateur supprimé.', 'warning')
     return redirect('/admin/users')
 
@@ -102,8 +102,8 @@ def delete_user(id):
 @admin_bp.route('/emplois')
 @role_required('admin')
 def emplois():
-    db = get_db()
-    cur = db.cursor(dictionary=True)
+    conn = get_db()
+    cur = conn.cursor(dictionary=True)
     cur.execute("""
         SELECT e.*, c.nom AS classe_nom, u.username AS prof_nom
         FROM emplois_du_temps e
@@ -111,21 +111,25 @@ def emplois():
         LEFT JOIN users u ON e.professeur_id = u.id
         ORDER BY e.jour, e.heure_debut
     """)
-    emplois = cur.fetchall()
+    liste_emplois = cur.fetchall()
     cur.execute("SELECT * FROM classes ORDER BY nom")
     classes = cur.fetchall()
     cur.execute("SELECT id, username FROM users WHERE role = 'professeur' ORDER BY username")
     profs = cur.fetchall()
-    return render_template('admin/emplois.html', emplois=emplois, classes=classes, profs=profs)
+    return render_template('admin/emplois.html',
+                           emplois=liste_emplois,
+                           classes=classes,
+                           profs=profs)
 
 
 @admin_bp.route('/emplois/add', methods=['POST'])
 @role_required('admin')
 def add_emploi():
-    db = get_db()
-    cur = db.cursor()
+    conn = get_db()
+    cur = conn.cursor()
     cur.execute("""
-        INSERT INTO emplois_du_temps (classe_id, jour, heure_debut, heure_fin, matiere, professeur_id)
+        INSERT INTO emplois_du_temps
+            (classe_id, jour, heure_debut, heure_fin, matiere, professeur_id)
         VALUES (%s, %s, %s, %s, %s, %s)
     """, (
         request.form['classe_id'],
@@ -135,10 +139,17 @@ def add_emploi():
         request.form['matiere'],
         request.form['professeur_id']
     ))
-    db.commit()
+    conn.commit()
     flash('Créneau ajouté.', 'success')
     return redirect('/admin/emplois')
 
 
 @admin_bp.route('/emplois/delete/<int:id>')
-@role_
+@role_required('admin')
+def delete_emploi(id):
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM emplois_du_temps WHERE id = %s", (id,))
+    conn.commit()
+    flash('Créneau supprimé.', 'warning')
+    return redirect('/admin/emplois')
