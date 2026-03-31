@@ -4,8 +4,8 @@ while ! python -c "
 import mysql.connector
 mysql.connector.connect(
     host='db',
-    user='notepro',
-    password='notepro',
+    user='root',
+    password='rootpassword',
     database='notepro'
 )" 2>/dev/null; do
   sleep 2

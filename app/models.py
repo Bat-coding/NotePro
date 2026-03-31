@@ -1,6 +1,10 @@
 # app/models.py
 from flask_login import UserMixin
-from . import db, bcrypt
+from flask import g
+import mysql.connector
+import os
+from . import db, bcrypt, login_manager
+
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -8,7 +12,11 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.Enum('admin', 'teacher', 'student'), default='student', nullable=False)
+    role = db.Column(
+        db.Enum('admin', 'professeur', 'etudiant'),  # rôles unifiés en français
+        default='etudiant',
+        nullable=False
+    )
 
     def set_password(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -20,8 +28,18 @@ class User(UserMixin, db.Model):
         return f'<User {self.username} ({self.role})>'
 
 
-from . import login_manager
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+
+def get_db():
+    """Retourne une connexion MySQL brute (utilisée dans les routes admin/prof/etudiant)."""
+    if 'db_conn' not in g:
+        g.db_conn = mysql.connector.connect(
+            host=os.environ.get('DB_HOST', 'db'),
+            user=os.environ.get('DB_USER', 'notepro'),
+            password=os.environ.get('DB_PASSWORD', 'notepro'),
+            database=os.environ.get('DB_NAME', 'notepro')
+        )
+    return g.db_conn
