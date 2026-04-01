@@ -1,18 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
+
 <header class="page-header">
     <h1 class="page-title">Emplois du Temps</h1>
 </header>
 
+<!-- FORMULAIRE AJOUT -->
 <div class="table-container p-4 mb-4">
-    <h6 class="mb-4 font-weight-bold text-primary"><i class="bi bi-calendar-plus-fill"></i> Ajouter un créneau</h6>
+    <h6 class="mb-4 font-weight-bold text-primary">
+        <i class="bi bi-calendar-plus-fill"></i> Ajouter un créneau
+    </h6>
     <form method="POST" action="/admin/emplois/add">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="row g-3">
             <div class="col-md-2">
                 <select name="classe_id" class="form-select" required>
                     <option value="">Classe</option>
-                    {% for c in classes %}<option value="{{ c.id }}">{{ c.nom }}</option>{% endfor %}
+                    {% for c in classes %}
+                        <option value="{{ c.id }}">{{ c.nom }}</option>
+                    {% endfor %}
                 </select>
             </div>
             <div class="col-md-2">
@@ -25,10 +31,10 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <input type="time" name="heure_debut" class="form-control" placeholder="Début" required>
+                <input type="time" name="heure_debut" class="form-control" required>
             </div>
             <div class="col-md-2">
-                <input type="time" name="heure_fin" class="form-control" placeholder="Fin" required>
+                <input type="time" name="heure_fin" class="form-control" required>
             </div>
             <div class="col-md-2">
                 <input type="text" name="matiere" class="form-control" placeholder="Matière" required>
@@ -36,17 +42,82 @@
             <div class="col-md-2">
                 <select name="professeur_id" class="form-select" required>
                     <option value="">Professeur</option>
-                    {% for p in profs %}<option value="{{ p.id }}">{{ p.username }}</option>{% endfor %}
+                    {% for p in profs %}
+                        <option value="{{ p.id }}">{{ p.username }}</option>
+                    {% endfor %}
                 </select>
             </div>
             <div class="col-12 text-end">
-                <button type="submit" class="btn btn-primary px-4 font-weight-bold">Ajouter au planning</button>
+                <button type="submit" class="btn btn-primary px-4 font-weight-bold">
+                    Ajouter au planning
+                </button>
             </div>
         </div>
     </form>
 </div>
 
-<div class="table-container">
+<!-- FILTRE PAR CLASSE -->
+<div class="table-container p-4 mb-4">
+    <form method="GET" action="" class="d-flex align-items-center gap-3">
+        abel class="fw-bold mb-0"><i class="bi bi-funnel"></i> Filtrer :</label>
+        <select name="classe_id" class="form-select w-auto" onchange="this.form.submit()">
+            <option value="">Toutes les classes</option>
+            {% for c in classes %}
+                <option value="{{ c.id }}" {% if c.id == selected_classe %}selected{% endif %}>
+                    {{ c.nom }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+
+<!-- GRILLE EMPLOI DU TEMPS -->
+<div class="table-container p-3 mb-4">
+    <h6 class="mb-3 font-weight-bold">
+        <i class="bi bi-grid-3x3-gap-fill"></i> Vue grille
+    </h6>
+    <div class="planning-wrapper">
+        <table class="planning-table">
+            <thead>
+                <tr>
+                    <th class="heure-col">Heure</th>
+                    {% for jour in jours %}
+                        <th>{{ jour }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for heure in heures %}
+                <tr>
+                    <td class="heure-col">{{ heure }}</td>
+                    {% for jour in jours %}
+                        <td class="planning-cell">
+                            {% set ns = namespace(idx=0) %}
+                            {% for e in emplois %}
+                                {% if e.jour == jour and e.heure_debut == heure %}
+                                <div class="cours-bloc couleur-{{ ns.idx % 6 }}">
+                                    <strong>{{ e.matiere }}</strong>
+                                    <span><i class="bi bi-person-fill"></i> {{ e.prof_nom or '—' }}</span>
+                                    <small>{{ e.heure_debut }} – {{ e.heure_fin }}</small>
+                                    <em>{{ e.classe_nom }}</em>
+                                </div>
+                                {% set ns.idx = ns.idx + 1 %}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- LISTE TABLEAU -->
+<div class="table-container mb-4">
+    <h6 class="p-4 pb-2 font-weight-bold">
+        <i class="bi bi-list-ul"></i> Liste des créneaux
+    </h6>
     <table class="modern-table">
         <thead>
             <tr>
@@ -62,20 +133,87 @@
         {% for e in emplois %}
             <tr>
                 <td class="font-weight-600">{{ e.jour }}</td>
-                <td><small class="text-muted">{{ e.heure_debut }} - {{ e.heure_fin }}</small></td>
+                <td><small class="text-muted">{{ e.heure_debut }} – {{ e.heure_fin }}</small></td>
                 <td><span class="font-weight-500">{{ e.matiere }}</span></td>
                 <td><span class="badge bg-light text-dark border">{{ e.classe_nom }}</span></td>
-                <td><i class="bi bi-person-circle text-muted"></i> {{ e.prof_nom }}</td>
+                <td><i class="bi bi-person-circle text-muted"></i> {{ e.prof_nom or '—' }}</td>
                 <td style="text-align:right">
-                    <a href="/admin/emplois/delete/{{ e.id }}" class="btn btn-sm btn-link text-danger text-decoration-none font-weight-600">
+                    <a href="/admin/emplois/delete/{{ e.id }}"
+                       class="btn btn-sm btn-link text-danger text-decoration-none font-weight-600"
+                       onclick="return confirm('Supprimer ce créneau ?')">
                         <i class="bi bi-trash3"></i>
                     </a>
                 </td>
             </tr>
         {% else %}
-            <tr><td colspan="6" class="text-center py-5 text-muted">Aucun créneau programmé</td></tr>
+            <tr>
+                <td colspan="6" class="text-center py-5 text-muted">
+                    Aucun créneau programmé
+                </td>
+            </tr>
         {% endfor %}
         </tbody>
     </table>
 </div>
+
+<style>
+.planning-wrapper {
+    overflow-x: auto;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+.planning-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    min-width: 750px;
+}
+.planning-table thead th {
+    background: #1e293b;
+    color: #fff;
+    padding: 12px 8px;
+    text-align: center;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+}
+.planning-table .heure-col {
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-align: center;
+    width: 65px;
+    border-right: 2px solid #e2e8f0;
+    white-space: nowrap;
+}
+.planning-table tbody tr { border-bottom: 1px solid #f1f5f9; }
+.planning-table tbody tr:hover { background: #f8fafc; }
+.planning-cell {
+    vertical-align: top;
+    padding: 4px;
+    min-height: 55px;
+    border-right: 1px solid #f1f5f9;
+}
+.cours-bloc {
+    border-radius: 7px;
+    padding: 6px 9px;
+    margin: 2px;
+    font-size: 0.78rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-left: 4px solid transparent;
+}
+.cours-bloc strong { font-size: 0.82rem; font-weight: 700; }
+.cours-bloc span   { color: #475569; font-size: 0.73rem; }
+.cours-bloc small  { color: #94a3b8; font-size: 0.68rem; }
+.cours-bloc em     { color: #64748b; font-size: 0.68rem; font-style: normal; font-weight: 500; }
+.couleur-0 { background: #dbeafe; border-left-color: #3b82f6; }
+.couleur-1 { background: #dcfce7; border-left-color: #22c55e; }
+.couleur-2 { background: #fef9c3; border-left-color: #eab308; }
+.couleur-3 { background: #fce7f3; border-left-color: #ec4899; }
+.couleur-4 { background: #ede9fe; border-left-color: #8b5cf6; }
+.couleur-5 { background: #ffedd5; border-left-color: #f97316; }
+</style>
 {% endblock %}

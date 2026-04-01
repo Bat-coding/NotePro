@@ -104,22 +104,54 @@ def delete_user(id):
 def emplois():
     conn = get_db()
     cur = conn.cursor(dictionary=True)
-    cur.execute("""
-        SELECT e.*, c.nom AS classe_nom, u.username AS prof_nom
-        FROM emplois_du_temps e
-        JOIN classes c ON e.classe_id = c.id
-        LEFT JOIN users u ON e.professeur_id = u.id
-        ORDER BY e.jour, e.heure_debut
-    """)
-    liste_emplois = cur.fetchall()
+
+    classe_id = request.args.get('classe_id', type=int)
+
     cur.execute("SELECT * FROM classes ORDER BY nom")
     classes = cur.fetchall()
+
     cur.execute("SELECT id, username FROM users WHERE role = 'professeur' ORDER BY username")
     profs = cur.fetchall()
+
+    if classe_id:
+        cur.execute("""
+            SELECT e.*, c.nom AS classe_nom, u.username AS prof_nom
+            FROM emplois_du_temps e
+            JOIN classes c ON e.classe_id = c.id
+            LEFT JOIN users u ON e.professeur_id = u.id
+            WHERE e.classe_id = %s
+            ORDER BY FIELD(e.jour,'Lundi','Mardi','Mercredi','Jeudi','Vendredi'), e.heure_debut
+        """, (classe_id,))
+    else:
+        cur.execute("""
+            SELECT e.*, c.nom AS classe_nom, u.username AS prof_nom
+            FROM emplois_du_temps e
+            JOIN classes c ON e.classe_id = c.id
+            LEFT JOIN users u ON e.professeur_id = u.id
+            ORDER BY FIELD(e.jour,'Lundi','Mardi','Mercredi','Jeudi','Vendredi'), e.heure_debut
+        """)
+    liste_emplois = cur.fetchall()
+
+    # Convertit timedelta → string HH:MM
+    for e in liste_emplois:
+        for champ in ('heure_debut', 'heure_fin'):
+            val = e.get(champ)
+            if val is not None and hasattr(val, 'total_seconds'):
+                total = int(val.total_seconds())
+                e[champ] = f"{total // 3600:02d}:{(total % 3600) // 60:02d}"
+            elif val is not None:
+                e[champ] = str(val)[:5]
+
+    jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi']
+    heures = [f"{h:02d}:00" for h in range(8, 18)]
+
     return render_template('admin/emplois.html',
                            emplois=liste_emplois,
                            classes=classes,
-                           profs=profs)
+                           profs=profs,
+                           jours=jours,
+                           heures=heures,
+                           selected_classe=classe_id)
 
 
 @admin_bp.route('/emplois/add', methods=['POST'])
