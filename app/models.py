@@ -17,6 +17,8 @@ class User(UserMixin, db.Model):
         default='etudiant',
         nullable=False
     )
+    totp_secret = db.Column(db.String(32), nullable=True)
+    totp_enabled = db.Column(db.Boolean, default=False, nullable=False)
 
     def set_password(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')

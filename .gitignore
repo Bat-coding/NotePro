@@ -3,7 +3,7 @@ venv/
 __pycache__/
 *.py[cod]
 
-# Secrets et Configuration (TRES IMPORTANT)
+# Secrets
 .env
 
 # Docker
@@ -12,3 +12,9 @@ __pycache__/
 # IDE
 .vscode/
 .idea/
+.DS_Store
+
+# Uploads
+app/static/uploads/
+*.sqlite3
+instance/

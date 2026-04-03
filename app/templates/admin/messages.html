@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.admin-card { background: white; border-radius: 1.25rem; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.form-inline-custom { display:flex; gap:1rem; flex-wrap:wrap; align-items:flex-end; padding:1.5rem; }
+.form-group-c { display:flex; flex-direction:column; gap:0.4rem; flex:1; min-width:200px; }
+.form-group-c label { font-size:0.75rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; }
+.form-group-c input { border:1.5px solid #e2e8f0; border-radius:0.5rem; padding:0.6rem 0.8rem; font-size:0.85rem; outline:none; transition:0.2s; }
+.form-group-c input:focus { border-color:#d97706; }
+.btn-primary-c { background:linear-gradient(135deg,#f59e0b,#d97706); color:white; border:none; border-radius:0.5rem; padding:0.6rem 1.25rem; font-weight:600; font-size:0.85rem; cursor:pointer; height:42px; display:inline-flex; align-items:center; gap:0.5rem; }
+.btn-primary-c:hover { background:#b45309; }
+
+.modern-table-c { width:100%; border-collapse:collapse; }
+.modern-table-c th { background:#f8fafc; padding:0.85rem 1.5rem; text-align:left; font-size:0.75rem; font-weight:700; color:#64748b; text-transform:uppercase; border-bottom:2px solid #e2e8f0; }
+.modern-table-c td { padding:1rem 1.5rem; border-bottom:1px solid #f1f5f9; vertical-align:middle; font-size:0.9rem; color:#334155; }
+.btn-del-c { color:#ef4444; background:#fef2f2; border:1px solid #fee2e2; padding:0.35rem 0.75rem; border-radius:0.4rem; font-size:0.8rem; text-decoration:none; font-weight:600; transition:0.2s; }
+.btn-del-c:hover { background:#ef4444; color:white; }
+.btn-toggle-on { background:#d1fae5; color:#065f46; border:1px solid #6ee7b7; padding:0.35rem 0.75rem; border-radius:0.4rem; font-size:0.8rem; text-decoration:none; font-weight:600;}
+.btn-toggle-off { background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; padding:0.35rem 0.75rem; border-radius:0.4rem; font-size:0.8rem; text-decoration:none; font-weight:600;}
+</style>
+
+<header class="page-header">
+    <div style="display:flex;align-items:center;gap:1rem;">
+        <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(245,158,11,0.3);">
+            <i class="bi bi-megaphone-fill" style="font-size:1.5rem;color:white;"></i>
+        </div>
+        <div>
+            <h1 class="page-title" style="margin:0;">Messages d'Administration</h1>
+            <p style="color:#64748b;font-size:0.875rem;margin:0.15rem 0 0;">Diffusez des informations importantes aux étudiants</p>
+        </div>
+    </div>
+</header>
+
+<div class="admin-card mb-4">
+    <form method="POST" action="/admin/messages/add" class="form-inline-custom">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-group-c">
+            <label>Contenu du Message</label>
+            <input type="text" name="contenu" placeholder="Ex: Rappel : l'établissement ferme à 16h demain" required>
+        </div>
+        <button type="submit" class="btn-primary-c"><i class="bi bi-send-fill"></i> Publier</button>
+    </form>
+</div>
+
+<div class="admin-card">
+    <table class="modern-table-c">
+        <thead>
+            <tr>
+                <th>Statut</th>
+                <th>Message</th>
+                <th>Date</th>
+                <th style="text-align:right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in messages %}
+            <tr>
+                <td>
+                    {% if m.actif %}
+                    <span style="display:inline-flex;align-items:center;gap:0.3rem;background:#dcfce7;color:#16a34a;padding:0.2rem 0.6rem;border-radius:2rem;font-size:0.7rem;font-weight:700;"><div style="width:6px;height:6px;background:#16a34a;border-radius:50%;"></div> Actif</span>
+                    {% else %}
+                    <span style="display:inline-flex;align-items:center;gap:0.3rem;background:#f1f5f9;color:#64748b;padding:0.2rem 0.6rem;border-radius:2rem;font-size:0.7rem;font-weight:700;"><div style="width:6px;height:6px;background:#94a3b8;border-radius:50%;"></div> Inactif</span>
+                    {% endif %}
+                </td>
+                <td style="max-width:300px;"><strong>{{ m.contenu }}</strong></td>
+                <td>{{ m.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td style="text-align:right;display:flex;gap:0.5rem;justify-content:flex-end;">
+                    {# FIXED [VULN-005]: toggle via POST + CSRF token (était GET) #}
+                    <form method="POST" action="/admin/messages/toggle/{{ m.id }}" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="{% if m.actif %}btn-toggle-on{% else %}btn-toggle-off{% endif %}" title="Activer/Désactiver">
+                            {% if m.actif %}Désactiver{% else %}Activer{% endif %}
+                        </button>
+                    </form>
+                    {# FIXED [VULN-005]: DELETE via POST + CSRF token (était GET) #}
+                    <form method="POST" action="/admin/messages/delete/{{ m.id }}" style="display:inline;" onsubmit="return confirm('Supprimer ce message ?')">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn-del-c"><i class="bi bi-trash3"></i></button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" style="text-align:center;padding:3rem;color:#94a3b8;">Aucun message publié.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

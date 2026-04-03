@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+/* Style Identique à l'Admin (DA Pronote) */
+.top-card {
+    display: flex;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    overflow: hidden;
+    height: 100px;
+}
+.top-card-left {
+    flex: 1;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.top-card-left .val {
+    font-size: 2rem;
+    font-weight: 300;
+    color: #475569;
+    line-height: 1;
+}
+.top-card-left .lbl {
+    font-size: 0.8rem;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-top: 0.4rem;
+    font-weight: 600;
+}
+.top-card-right {
+    width: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+.top-card-right i {
+    font-size: 3rem;
+}
+
+.block-header {
+    padding: 0.75rem 1rem;
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+.block-content {
+    background: #fff;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    border: 1px solid #e2e8f0;
+    border-top: none;
+}
+.list-row {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.85rem;
+}
+.list-row:last-child {
+    border-bottom: none;
+}
+
+.welcome-header {
+    margin-bottom: 2rem;
+}
+.welcome-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+.note-badge {
+    font-weight: 800;
+    font-size: 1.1rem;
+}
+</style>
+
+<div class="welcome-header">
+    <h1>Bonjour, {{ current_user.username }}</h1>
+    <p class="text-muted">Classe : <strong>{{ classe_nom }}</strong> • Voici tes informations pour aujourd'hui, {{ date.today().strftime('%d %B %Y') }}.</p>
+</div>
+
+<div class="row g-3 mb-4">
+    <!-- Ma Moyenne -->
+    <div class="col-md-3">
+        <div class="top-card">
+            <div class="top-card-left">
+                <span class="val">{{ '%.2f'|format(moyenne) }}</span>
+                <span class="lbl">Moyenne Générale</span>
+            </div>
+            <div class="top-card-right" style="background-color: #3b82f6;">
+                <i class="bi bi-graph-up-arrow"></i>
+            </div>
+        </div>
+    </div>
+    <!-- Mes Absences -->
+    <div class="col-md-3">
+        <div class="top-card">
+            <div class="top-card-left">
+                <span class="val">{{ total_absences }}</span>
+                <span class="lbl">Absences</span>
+            </div>
+            <div class="top-card-right" style="background-color: #ef4444;">
+                <i class="bi bi-person-x"></i>
+            </div>
+        </div>
+    </div>
+    <!-- Travail à faire -->
+    <div class="col-md-3">
+        <div class="top-card">
+            <div class="top-card-left">
+                <span class="val">{{ total_agenda }}</span>
+                <span class="lbl">À faire</span>
+            </div>
+            <div class="top-card-right" style="background-color: #10b981;">
+                <i class="bi bi-journal-check"></i>
+            </div>
+        </div>
+    </div>
+    <!-- Cantine/Menu -->
+    <div class="col-md-3">
+        <div class="top-card">
+            <div class="top-card-left">
+                <span class="val"><i class="bi bi-egg-fried opacity-25"></i></span>
+                <span class="lbl">Menu Cantine</span>
+            </div>
+            <div class="top-card-right" style="background-color: #f59e0b;">
+                <i class="bi bi-cup-hot"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <!-- Mon Emploi du Temps -->
+    <div class="col-md-7">
+        <div class="block-header" style="background-color: #3b82f6;">
+            <i class="bi bi-clock-history me-2"></i>Mon emploi du temps
+        </div>
+        <div class="block-content">
+            {% for c in cours_du_jour %}
+            <div class="list-row d-flex align-items-center">
+                <div class="fw-bold text-primary me-4" style="min-width: 60px;">{{ c.heure_debut }}</div>
+                <div class="flex-grow-1">
+                    <div class="fw-semibold text-dark">{{ c.matiere }}</div>
+                    <div class="text-muted small">Prof : {{ c.prof_nom or 'N/C' }} • Salle : {{ c.salle or 'N/C' }}</div>
+                </div>
+            </div>
+            {% else %}
+            <div class="p-5 text-center text-muted">
+                <i class="bi bi-calendar-check h1 opacity-25"></i>
+                <p class="mt-2">Pas de cours aujourd'hui !</p>
+            </div>
+            {% endfor %}
+            <div class="p-2 border-top bg-light text-center">
+                <a href="/etudiant/emploi" class="btn btn-sm btn-outline-primary fw-bold">Voir mon emploi du temps complet</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Côté Droit : Travail & Notes -->
+    <div class="col-md-5">
+        <!-- Travail à faire -->
+        <div class="mb-3">
+            <div class="block-header" style="background-color: #10b981;">
+                <i class="bi bi-journal-text me-2"></i>Travail à faire
+            </div>
+            <div class="block-content">
+                {% for a in agenda_events %}
+                <div class="list-row d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold text-dark">{{ a.titre }}</div>
+                        <div class="text-muted small">Pour le {{ a.date_event.strftime('%d/%m') }}</div>
+                    </div>
+                    <span class="badge bg-success-subtle text-success border border-success border-opacity-10">{{ a.type_event }}</span>
+                </div>
+                {% else %}
+                <div class="p-3 text-center text-muted small">Aucun devoir à faire.</div>
+                {% endfor %}
+                <div class="p-2 border-top bg-light text-center">
+                    <a href="/etudiant/agenda" class="text-decoration-none small fw-bold text-success">Consulter tout l'agenda →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dernières Notes -->
+        <div class="mb-3">
+            <div class="block-header" style="background-color: #f59e0b;">
+                <i class="bi bi-star me-2"></i>Dernières notes
+            </div>
+            <div class="block-content">
+                {% for n in recent_notes %}
+                <div class="list-row d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold text-dark">{{ n.titre_evaluation }}</div>
+                        <div class="text-muted small">{{ n.matiere }}</div>
+                    </div>
+                    <div class="note-badge {% if n.valeur < 10 %}text-danger{% else %}text-success{% endif %}">{{ n.valeur }}<small class="text-muted">/20</small></div>
+                </div>
+                {% else %}
+                <div class="p-3 text-center text-muted small">Pas de note récente.</div>
+                {% endfor %}
+                <div class="p-2 border-top bg-light text-center">
+                    <a href="/etudiant/notes" class="text-decoration-none small fw-bold text-warning" style="color: #b45309 !important;">Voir toutes mes notes →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alertes Vie Scolaire -->
+        <div class="mb-3">
+            <div class="block-header" style="background-color: #ef4444;">Note de la vie scolaire</div>
+            <div class="block-content">
+                {% for m in recent_messages %}
+                <div class="list-row">
+                    <div class="fw-bold text-dark">{{ m.contenu }}</div>
+                    <div class="text-muted small">Publié le {{ m.created_at.strftime('%d/%m') }}</div>
+                </div>
+                {% else %}
+                <div class="p-3 text-center text-muted small">Aucun message urgent.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

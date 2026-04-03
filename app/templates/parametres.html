@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.params-card { background: white; border-radius: 1.25rem; border: 1px solid #e2e8f0; padding: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); max-width: 600px; margin: 0 auto;}
+.form-group-c { margin-bottom: 1.25rem; }
+.form-group-c label { display: block; font-size:0.8rem; font-weight:700; color:#64748b; margin-bottom:0.4rem; text-transform:uppercase; letter-spacing:0.05em; }
+.form-group-c input { width:100%; border:1.5px solid #e2e8f0; border-radius:0.5rem; padding:0.6rem 0.8rem; font-size:0.9rem; outline:none; transition:0.2s; }
+.form-group-c input:focus { border-color:#2563eb; }
+.btn-primary-c { background:linear-gradient(135deg,#0ea5e9,#0284c7); color:white; border:none; border-radius:0.5rem; padding:0.75rem 1.5rem; font-weight:600; font-size:0.9rem; cursor:pointer; width:100%; display:flex; justify-content:center; align-items:center; gap:0.5rem; transition:0.2s;}
+.btn-primary-c:hover { background:#0369a1; }
+.avatar-preview { width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid #f1f5f9; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom:1rem;}
+</style>
+
+<header class="page-header" style="max-width: 600px; margin: 0 auto 2rem auto;">
+    <div style="display:flex;align-items:center;gap:1rem;">
+        <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#0ea5e9,#0284c7);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(14,165,233,0.3);">
+            <i class="bi bi-gear-fill" style="font-size:1.5rem;color:white;"></i>
+        </div>
+        <div>
+            <h1 class="page-title" style="margin:0;">Paramètres de Profil</h1>
+            <p style="color:#64748b;font-size:0.875rem;margin:0.15rem 0 0;">Modifiez vos informations personnelles</p>
+        </div>
+    </div>
+</header>
+
+<div class="params-card">
+    <div style="text-align:center;">
+        {% if user.avatar %}
+        <img src="{{ url_for('static', filename='uploads/avatars/' + user.avatar) }}" alt="Avatar" class="avatar-preview">
+        {% else %}
+        <div class="avatar-preview" style="display:inline-flex;align-items:center;justify-content:center;background:#e0f2fe;color:#0369a1;font-size:2rem;font-weight:700;">
+            {{ user.username[0] | upper }}
+        </div>
+        {% endif %}
+    </div>
+
+    <form method="POST" action="/user/parametres" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        <div class="form-group-c">
+            <label>Avatar (Image PNG/JPG)</label>
+            <input type="file" name="avatar" accept="image/*">
+        </div>
+        
+        <div class="form-group-c">
+            <label>Numéro de Téléphone</label>
+            <input type="tel" id="telephone" name="telephone" maxlength="14" title="10 chiffres obligatoires" placeholder="Ex: 06 12 34 56 78" value="{{ user.telephone if user.telephone else '' }}">
+        </div>
+
+        <script nonce="{{ csp_nonce() }}">
+        document.addEventListener('DOMContentLoaded', function() {
+            var telInput = document.getElementById('telephone');
+            
+            // Format initial (en base de données c'est "0612345678", on veut l'afficher "06 12 34 56 78")
+            if (telInput.value.length === 10 && !telInput.value.includes(' ')) {
+                telInput.value = telInput.value.replace(/(\d{2})(?=\d)/g, '$1 ');
+            }
+
+            telInput.addEventListener('input', function (e) {
+                var target = e.target;
+                // Supprimer tout ce qui n'est pas un chiffre
+                var val = target.value.replace(/\D/g, '');
+                
+                // Limiter à 10 chiffres en interne
+                val = val.substring(0, 10);
+                
+                // Ajouter des espaces tous les 2 chiffres
+                var formatted = val.replace(/(\d{2})(?=\d)/g, '$1 ');
+                
+                target.value = formatted;
+            });
+        });
+        </script>
+
+        <div class="form-group-c">
+            <label>Ancien Mot de Passe</label>
+            <input type="password" name="old_password" placeholder="Requis si vous changez de mot de passe">
+        </div>
+
+        <div class="form-group-c">
+            <label>Nouveau Mot de Passe</label>
+            <input type="password" name="new_password" minlength="15" title="15 caractères minimum et un caractère spécial" placeholder="Laissez vide pour ne pas modifier">
+        </div>
+        
+        <button type="submit" name="action" value="update_profile" class="btn-primary-c"><i class="bi bi-floppy-fill"></i> Sauvegarder les modifications</button>
+    </form>
+    
+    <hr style="margin: 2rem 0; border-color: #e2e8f0;">
+    
+    <div style="margin-top: 2rem;">
+        <h3 style="font-size: 1.1rem; color: #1e293b; margin-bottom: 1rem;"><i class="bi bi-shield-lock-fill"></i> Authentification à Deux Facteurs (A2F)</h3>
+        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem;">Sécurisez votre compte avec une application comme Google Authenticator ou Authy.</p>
+        
+        {% if user.totp_enabled %}
+            <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                <p style="color: #065f46; font-size: 0.9rem; margin: 0; font-weight: 600;"><i class="bi bi-check-circle-fill"></i> Le 2FA est actuellement activé sur votre compte.</p>
+            </div>
+            <form method="POST" action="/user/parametres">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" name="action" value="disable_2fa" class="btn-primary-c" style="background: linear-gradient(135deg, #ef4444, #b91c1c);"><i class="bi bi-shield-slash-fill"></i> Désactiver le 2FA</button>
+            </form>
+        {% elif user.totp_secret and not user.totp_enabled %}
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.5rem; border-radius: 0.5rem; text-align: center; margin-bottom: 1rem;">
+                <p style="font-size: 0.9rem; color: #334155; margin-bottom: 1rem;">1. Scannez ce QR Code avec votre application d'authentification :</p>
+                <div style="background: white; padding: 1rem; display: inline-block; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 1rem;">
+                    <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR Code 2FA">
+                </div>
+                <form method="POST" action="/user/parametres">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="form-group-c" style="text-align: left;">
+                        <label>2. Entrez le code généré à 6 chiffres</label>
+                        <input type="text" name="totp_code" required pattern="[0-9]{6}" placeholder="Ex: 123456" autocomplete="off">
+                    </div>
+                    <button type="submit" name="action" value="confirm_2fa" class="btn-primary-c" style="background: linear-gradient(135deg, #10b981, #047857);"><i class="bi bi-check2-circle"></i> Valider et Activer</button>
+                </form>
+            </div>
+        {% else %}
+            <form method="POST" action="/user/parametres">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" name="action" value="enable_2fa" class="btn-primary-c" style="background: linear-gradient(135deg, #10b981, #047857);"><i class="bi bi-shield-plus"></i> Activer le 2FA</button>
+            </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

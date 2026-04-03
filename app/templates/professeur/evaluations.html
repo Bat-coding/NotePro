@@ -1,51 +1,385 @@
 {% extends "base.html" %}
 {% block content %}
-<header class="page-header">
-    <h1 class="page-title">Mes Évaluations</h1>
-</header>
 
-<div class="table-container p-4 mb-4">
-    <h6 class="mb-4 font-weight-bold text-primary"><i class="bi bi-plus-circle-fill"></i> Créer une évaluation</h6>
+<style>
+/* ── PAGE ÉVALUATIONS ── */
+.eval-page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.eval-page-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.eval-icon-wrap {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+    flex-shrink: 0;
+}
+
+.eval-icon-wrap i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.eval-page-title h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.03em;
+    margin: 0;
+}
+
+.eval-page-title p {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin: 0.2rem 0 0;
+}
+
+/* ── CRÉER ÉVALUATION ── */
+.create-eval-card {
+    background: white;
+    border-radius: 1.25rem;
+    border: 1px solid #e2e8f0;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    position: relative;
+    overflow: hidden;
+}
+
+.create-eval-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #2563eb, #7c3aed);
+}
+
+.create-eval-card .section-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #2563eb;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-field-group {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1;
+    min-width: 180px;
+}
+
+.form-field label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+.form-field input,
+.form-field select {
+    border: 1.5px solid #e2e8f0;
+    border-radius: 0.625rem;
+    padding: 0.65rem 1rem;
+    font-size: 0.9rem;
+    color: #0f172a;
+    background: #f8fafc;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+    outline: none;
+    width: 100%;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+    border-color: #2563eb;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-field input::placeholder {
+    color: #94a3b8;
+}
+
+.btn-create {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    border: none;
+    border-radius: 0.625rem;
+    padding: 0.7rem 1.5rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-create:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
+    background: linear-gradient(135deg, #1d4ed8, #1a44c2);
+}
+
+/* ── LISTE ÉVALUATIONS ── */
+.evals-list-card {
+    background: white;
+    border-radius: 1.25rem;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.evals-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.75rem;
+    border-bottom: 1px solid #f1f5f9;
+    background: #f8fafc;
+}
+
+.evals-list-header .list-title {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.eval-count-badge {
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.2rem 0.7rem;
+    border-radius: 2rem;
+    border: 1px solid #bfdbfe;
+}
+
+.eval-row {
+    display: flex;
+    align-items: center;
+    padding: 1.2rem 1.75rem;
+    border-bottom: 1px solid #f8fafc;
+    transition: background 0.15s;
+    gap: 1rem;
+}
+
+.eval-row:last-child {
+    border-bottom: none;
+}
+
+.eval-row:hover {
+    background: #fafbff;
+}
+
+.eval-row-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #eff6ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.eval-row-icon i {
+    color: #2563eb;
+    font-size: 1.1rem;
+}
+
+.eval-row-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.eval-row-title {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.eval-row-subtitle {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-top: 0.1rem;
+}
+
+.eval-classe-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+    padding: 0.25rem 0.75rem;
+    border-radius: 2rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.btn-saisir {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    color: #15803d;
+    border: 1.5px solid #86efac;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.btn-saisir:hover {
+    background: #16a34a;
+    color: white;
+    border-color: #16a34a;
+    transform: translateX(2px);
+    box-shadow: 0 4px 10px rgba(22, 163, 74, 0.3);
+    text-decoration: none;
+}
+
+.eval-empty {
+    padding: 4rem 2rem;
+    text-align: center;
+    color: #94a3b8;
+}
+
+.eval-empty i {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 1rem;
+    opacity: 0.4;
+}
+
+.eval-empty p {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+</style>
+
+<div class="eval-page-header">
+    <div class="eval-page-title">
+        <div class="eval-icon-wrap">
+            <i class="bi bi-clipboard-check-fill"></i>
+        </div>
+        <div>
+            <h1>Mes Évaluations</h1>
+            <p>Gérez vos évaluations et saisissez les notes de vos élèves</p>
+        </div>
+    </div>
+</div>
+
+<!-- CRÉER UNE NOUVELLE ÉVALUATION -->
+<div class="create-eval-card">
+    <div class="section-label">
+        <i class="bi bi-plus-circle-fill"></i>
+        Nouvelle évaluation
+    </div>
     <form method="POST" action="/professeur/evaluations/add">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <div class="row g-3">
-            <div class="col-md-6"><input type="text" name="titre" class="form-control" placeholder="Titre (ex: Examen Final)" required></div>
-            <div class="col-md-4">
-                <select name="classe_id" class="form-select">
+        <div class="form-field-group">
+            <div class="form-field" style="flex: 2; min-width: 220px;">
+                <label for="eval-titre">Titre de l'évaluation</label>
+                <input type="text" id="eval-titre" name="titre" placeholder="Ex: Contrôle chapitre 3, Examen final…" required>
+            </div>
+            <div class="form-field" style="flex: 1; min-width: 180px;">
+                <label for="eval-classe">Classe concernée</label>
+                <select id="eval-classe" name="classe_id" required>
                     {% for c in classes %}
                         <option value="{{ c.id }}">{{ c.nom }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="col-md-2"><button type="submit" class="btn btn-primary w-100 font-weight-bold">Créer</button></div>
+            <div style="flex-shrink: 0;">
+                <button type="submit" class="btn-create">
+                    <i class="bi bi-plus-lg"></i>
+                    Créer l'évaluation
+                </button>
+            </div>
         </div>
     </form>
 </div>
 
-<div class="table-container">
-    <table class="modern-table">
-        <thead>
-            <tr>
-                <th>Titre</th>
-                <th>Classe</th>
-                <th style="text-align:right">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for e in evaluations %}
-            <tr>
-                <td class="font-weight-600">{{ e.titre }}</td>
-                <td><span class="badge bg-light text-dark border">{{ e.classe }}</span></td>
-                <td style="text-align:right">
-                    <a href="/professeur/notes/{{ e.id }}" class="btn btn-sm btn-link text-primary text-decoration-none font-weight-600">
-                        <i class="bi bi-pencil-square"></i> Saisir notes
-                    </a>
-                </td>
-            </tr>
-        {% else %}
-            <tr><td colspan="3" class="text-center py-5 text-muted">Aucune évaluation programmée</td></tr>
-        {% endfor %}
-        </tbody>
-    </table>
+<!-- LISTE DES ÉVALUATIONS -->
+<div class="evals-list-card">
+    <div class="evals-list-header">
+        <span class="list-title">
+            <i class="bi bi-list-ul"></i>
+            Évaluations existantes
+        </span>
+        <span class="eval-count-badge">{{ evaluations | length }} évaluation{{ 's' if evaluations | length != 1 }}</span>
+    </div>
+
+    {% for e in evaluations %}
+    <div class="eval-row">
+        <div class="eval-row-icon">
+            <i class="bi bi-file-earmark-text"></i>
+        </div>
+        <div class="eval-row-info">
+            <div class="eval-row-title">{{ e.titre }}</div>
+            <div class="eval-row-subtitle">Évaluation programmée</div>
+        </div>
+        <span class="eval-classe-chip">
+            <i class="bi bi-people-fill"></i>
+            {{ e.classe }}
+        </span>
+        <a href="/professeur/notes/{{ e.id }}" class="btn-saisir">
+            <i class="bi bi-pencil-square"></i>
+            Saisir les notes
+        </a>
+    </div>
+    {% else %}
+    <div class="eval-empty">
+        <i class="bi bi-clipboard-x"></i>
+        <p>Aucune évaluation créée pour l'instant.</p>
+        <small>Utilisez le formulaire ci-dessus pour en créer une.</small>
+    </div>
+    {% endfor %}
 </div>
+
 {% endblock %}

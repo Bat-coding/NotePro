@@ -1,56 +1,235 @@
 {% extends "base.html" %}
 {% block content %}
-<header class="page-header">
-    <h1 class="page-title">Tableau de bord Professeur</h1>
-</header>
 
-<div class="row g-4">
-    <div class="col-md-4">
-        <a href="/professeur/evaluations" class="text-decoration-none">
-            <div class="stat-card">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="icon-box" style="background: #eff6ff; color: #2563eb;">
-                        <i class="bi bi-clipboard-check-fill h4 mb-0"></i>
-                    </div>
-                    <div>
-                        <div class="h5 mb-0 font-weight-bold">Évaluations</div>
-                        <div class="small text-muted">Gérer les examens</div>
-                    </div>
-                </div>
+<style>
+/* Style Identique à l'Admin (DA Pronote) */
+.top-card {
+    display: flex;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    overflow: hidden;
+    height: 100px;
+}
+.top-card-left {
+    flex: 1;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.top-card-left .val {
+    font-size: 2rem;
+    font-weight: 300;
+    color: #475569;
+    line-height: 1;
+}
+.top-card-left .lbl {
+    font-size: 0.8rem;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-top: 0.4rem;
+    font-weight: 600;
+}
+.top-card-right {
+    width: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+.top-card-right i {
+    font-size: 3rem;
+}
+
+.block-header {
+    padding: 0.75rem 1rem;
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+.block-content {
+    background: #fff;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    border: 1px solid #e2e8f0;
+    border-top: none;
+}
+.list-row {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.85rem;
+}
+.list-row:last-child {
+    border-bottom: none;
+}
+
+.welcome-header {
+    margin-bottom: 2rem;
+}
+.welcome-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 1rem;
+    text-decoration: none;
+    color: #475569;
+    transition: all 0.2s;
+    border-bottom: 1px solid #f1f5f9;
+}
+.action-btn:hover {
+    background-color: #f8fafc;
+    color: #2563eb;
+}
+.action-btn i {
+    font-size: 1.25rem;
+    color: #3b82f6;
+}
+</style>
+
+<div class="welcome-header">
+    <h1>Bonjour, {{ current_user.username }}</h1>
+    <p class="text-muted">Ravi de vous revoir. Voici votre programme pour aujourd'hui, {{ date.today().strftime('%d %B %Y') }}.</p>
+</div>
+
+<div class="row g-3 mb-4">
+    <!-- Mes Classes -->
+    <div class="col-md-3">
+        <div class="top-card">
+            <div class="top-card-left">
+                <span class="val">{{ total_classes }}</span>
+                <span class="lbl">Mes Classes</span>
             </div>
-        </a>
+            <div class="top-card-right" style="background-color: #0ea5e9;">
+                <i class="bi bi-people"></i>
+            </div>
+        </div>
     </div>
-
-    <div class="col-md-4">
-        <a href="/professeur/notes" class="text-decoration-none">
-            <div class="stat-card">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="icon-box" style="background: #f0fdf4; color: #16a34a;">
-                        <i class="bi bi-pencil-fill h4 mb-0"></i>
-                    </div>
-                    <div>
-                        <div class="h5 mb-0 font-weight-bold">Notes</div>
-                        <div class="small text-muted">Saisie des résultats</div>
-                    </div>
-                </div>
+    <!-- Mes Élèves -->
+    <div class="col-md-3">
+        <div class="top-card">
+            <div class="top-card-left">
+                <span class="val">{{ total_eleves }}</span>
+                <span class="lbl">Mes Élèves</span>
             </div>
-        </a>
+            <div class="top-card-right" style="background-color: #f59e0b;">
+                <i class="bi bi-person-video3"></i>
+            </div>
+        </div>
     </div>
-
-    <div class="col-md-4">
-        <a href="/professeur/emploi" class="text-decoration-none">
-            <div class="stat-card">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="icon-box" style="background: #fffbeb; color: #d97706;">
-                        <i class="bi bi-calendar3-week-fill h4 mb-0"></i>
-                    </div>
-                    <div>
-                        <div class="h5 mb-0 font-weight-bold">Mon Planning</div>
-                        <div class="small text-muted">Emploi du temps</div>
-                    </div>
-                </div>
+    <!-- Heures Hebdo -->
+    <div class="col-md-3">
+        <div class="top-card">
+            <div class="top-card-left">
+                <span class="val">{{ '%.1f'|format(total_heures) }}h</span>
+                <span class="lbl">Heures Hebdo</span>
             </div>
-        </a>
+            <div class="top-card-right" style="background-color: #10b981;">
+                <i class="bi bi-clock"></i>
+            </div>
+        </div>
+    </div>
+    <!-- Signalements -->
+    <div class="col-md-3">
+        <div class="top-card">
+            <div class="top-card-left">
+                <span class="val">{{ total_absences }}</span>
+                <span class="lbl">Signalements</span>
+            </div>
+            <div class="top-card-right" style="background-color: #ef4444;">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+        </div>
     </div>
 </div>
+
+<div class="row g-3">
+    <!-- Planning Quotidien -->
+    <div class="col-md-8">
+        <div class="block-header" style="background-color: #10b981;">
+            <i class="bi bi-calendar-day me-2"></i>Cours du jour
+        </div>
+        <div class="block-content">
+            {% for c in cours_du_jour %}
+            <div class="list-row d-flex align-items-center">
+                <div class="fw-bold text-primary me-4" style="min-width: 60px;">{{ c.heure_debut }}</div>
+                <div class="flex-grow-1">
+                    <div class="fw-semibold text-dark">{{ c.matiere }}</div>
+                    <div class="text-muted small">Classe : {{ c.classe_nom }} • Salle : {{ c.salle or 'N/C' }}</div>
+                </div>
+                <div>
+                    <a href="/professeur/notes/{{ c.id }}" class="btn btn-sm btn-outline-success">Saisir appel</a>
+                </div>
+            </div>
+            {% else %}
+            <div class="p-5 text-center text-muted">
+                <i class="bi bi-calendar-check h1 opacity-25"></i>
+                <p class="mt-2">Aucun cours aujourd'hui. Profitez de votre temps libre !</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Blocs Latéraux -->
+    <div class="col-md-4">
+        <!-- Actions Rapides -->
+        <div class="mb-3">
+            <div class="block-header" style="background-color: #475569;">Actions rapides</div>
+            <div class="block-content">
+                <a href="/professeur/evaluations" class="action-btn">
+                    <i class="bi bi-plus-circle"></i> <span>Créer une évaluation</span>
+                </a>
+                <a href="/professeur/emploi" class="action-btn">
+                    <i class="bi bi-calendar3"></i> <span>Mon planning complet</span>
+                </a>
+                <a href="/professeur/notes" class="action-btn">
+                    <i class="bi bi-pencil-square"></i> <span>Saisir des notes</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Prochaines Échéances -->
+        <div class="mb-3">
+            <div class="block-header" style="background-color: #3b82f6;">Prochaines échéances</div>
+            <div class="block-content">
+                {% for ev in recent_evals %}
+                <div class="list-row d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold text-dark">{{ ev.titre }}</div>
+                        <div class="text-muted small">{{ ev.classe_nom }}</div>
+                    </div>
+                    <a href="/professeur/notes/{{ ev.id }}" class="text-primary small">Notes →</a>
+                </div>
+                {% else %}
+                <div class="p-3 text-center text-muted small">Aucune évaluation programmée.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Alertes établissement -->
+        <div class="mb-3">
+            <div class="block-header" style="background-color: #ef4444;">Alertes établissements</div>
+            <div class="block-content">
+                {% for m in recent_messages %}
+                <div class="list-row">
+                    <div class="fw-bold text-dark">{{ m.contenu }}</div>
+                    <div class="text-muted small">{{ m.created_at.strftime('%d/%m') }}</div>
+                </div>
+                {% else %}
+                <div class="p-3 text-center text-muted small">Aucune alerte.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

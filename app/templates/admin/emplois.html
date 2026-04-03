@@ -1,81 +1,388 @@
 {% extends "base.html" %}
 {% block content %}
-<header class="page-header">
-    <h1 class="page-title">Emplois du Temps</h1>
-</header>
 
-<div class="table-container p-4 mb-4">
-    <h6 class="mb-4 font-weight-bold text-primary"><i class="bi bi-calendar-plus-fill"></i> Ajouter un créneau</h6>
-    <form method="POST" action="/admin/emplois/add">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <div class="row g-3">
-            <div class="col-md-2">
-                <select name="classe_id" class="form-select" required>
-                    <option value="">Classe</option>
-                    {% for c in classes %}<option value="{{ c.id }}">{{ c.nom }}</option>{% endfor %}
-                </select>
-            </div>
-            <div class="col-md-2">
-                <select name="jour" class="form-select" required>
-                    <option value="Lundi">Lundi</option>
-                    <option value="Mardi">Mardi</option>
-                    <option value="Mercredi">Mercredi</option>
-                    <option value="Jeudi">Jeudi</option>
-                    <option value="Vendredi">Vendredi</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <input type="time" name="heure_debut" class="form-control" placeholder="Début" required>
-            </div>
-            <div class="col-md-2">
-                <input type="time" name="heure_fin" class="form-control" placeholder="Fin" required>
-            </div>
-            <div class="col-md-2">
-                <input type="text" name="matiere" class="form-control" placeholder="Matière" required>
-            </div>
-            <div class="col-md-2">
-                <select name="professeur_id" class="form-select" required>
-                    <option value="">Professeur</option>
-                    {% for p in profs %}<option value="{{ p.id }}">{{ p.username }}</option>{% endfor %}
-                </select>
-            </div>
-            <div class="col-12 text-end">
-                <button type="submit" class="btn btn-primary px-4 font-weight-bold">Ajouter au planning</button>
-            </div>
-        </div>
+<style>
+/* ── Calendar Layout ───────────────────────────────────────────── */
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.cal-title { font-size: 1.35rem; font-weight: 700; color: #1e293b; white-space: nowrap; }
+.cal-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.btn-nav {
+    display: flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border-radius: 8px;
+    border: 1.5px solid #e2e8f0; background: #fff;
+    color: #334155; font-size: 1rem; cursor: pointer;
+    transition: all .18s;
+}
+.btn-nav:hover { background: #f1f5f9; border-color: #94a3b8; }
+.week-title-pill {
+    font-size: .9rem; font-weight: 600; color: #334155;
+    padding: 6px 16px; border-radius: 20px;
+    background: #f8fafc; border: 1.5px solid #e2e8f0;
+    white-space: nowrap;
+}
+.date-picker-input {
+    padding: 6px 10px; border-radius: 8px;
+    border: 1.5px solid #e2e8f0; font-size: .85rem; color: #334155;
+    outline: none; cursor: pointer; height: 36px;
+}
+.date-picker-input:focus { border-color: #6366f1; }
+.vue-btn {
+    padding: 6px 14px; border-radius: 8px; height: 36px;
+    border: 1.5px solid #e2e8f0; background: #fff;
+    font-size: .84rem; font-weight: 600; color: #475569;
+    cursor: pointer; transition: all .18s; white-space: nowrap;
+}
+.vue-btn.active { background: #6366f1; color: #fff; border-color: #6366f1; }
+.vue-btn:hover:not(.active) { background: #f1f5f9; }
+
+/* Filtres */
+.filters-bar {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+.filter-select {
+    padding: 7px 12px; border-radius: 8px;
+    border: 1.5px solid #e2e8f0; font-size: .84rem; color: #334155;
+    outline: none; background: #fff; cursor: pointer; height: 36px;
+}
+.filter-select:focus { border-color: #6366f1; }
+
+/* ── Calendar Grid ──────────────────────────────────────────────── */
+.cal-wrapper { overflow-x: auto; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #fff; }
+.cal-grid { width: 100%; border-collapse: collapse; min-width: 700px; }
+
+.cal-grid thead th {
+    background: #1e293b; color: #fff;
+    padding: 12px 10px; font-size: .82rem; font-weight: 600;
+    letter-spacing: .03em; text-align: center; white-space: nowrap;
+}
+.cal-grid thead th.heure-th {
+    width: 62px; background: #0f172a;
+}
+.col-today { background: #3730a3 !important; }
+.date-label { font-size: .68rem; opacity: .75; font-weight: 400; }
+.day-name { font-size: .82rem; }
+
+.cal-grid tbody tr { border-bottom: 1px solid #f1f5f9; }
+.cal-grid tbody tr:hover { background: #fafafa; }
+.time-cell {
+    font-size: .75rem; color: #94a3b8; font-weight: 700;
+    text-align: right; padding: 0 10px; white-space: nowrap;
+    vertical-align: top; padding-top: 6px;
+    background: #f8fafc; border-right: 2px solid #e2e8f0;
+    width: 58px;
+}
+.cal-cell {
+    vertical-align: top; padding: 3px 4px; min-height: 52px;
+    border-right: 1px solid #f1f5f9; position: relative;
+}
+.cal-cell.today-col { background: #eff6ff; }
+
+/* Blocs de cours */
+.cours-bloc {
+    border-radius: 7px; padding: 5px 8px; margin: 2px 1px;
+    font-size: .75rem; display: flex; flex-direction: column; gap: 1px;
+    border-left: 4px solid transparent; position: relative;
+    cursor: default; transition: filter .15s;
+}
+.cours-bloc:hover { filter: brightness(.95); }
+.cours-bloc strong { font-size: .79rem; font-weight: 700; line-height: 1.2; }
+.cours-bloc .cb-meta { color: #475569; font-size: .71rem; }
+.cours-bloc .cb-time { color: #94a3b8; font-size: .68rem; }
+.cours-bloc .cb-class { font-size: .68rem; font-weight: 600; color: #64748b; }
+
+/* Palette de couleurs */
+.c0 { background:#dbeafe; border-left-color:#3b82f6; }
+.c1 { background:#dcfce7; border-left-color:#22c55e; }
+.c2 { background:#fef9c3; border-left-color:#eab308; }
+.c3 { background:#fce7f3; border-left-color:#ec4899; }
+.c4 { background:#ede9fe; border-left-color:#8b5cf6; }
+.c5 { background:#ffedd5; border-left-color:#f97316; }
+.c6 { background:#cffafe; border-left-color:#06b6d4; }
+.c7 { background:#f0fdf4; border-left-color:#84cc16; }
+
+/* Bouton delete sur bloc */
+.btn-del-slot {
+    position: absolute; top: 3px; right: 3px;
+    width: 18px; height: 18px; border-radius: 4px;
+    background: rgba(239,68,68,.15); color: #ef4444; border: none;
+    font-size: .65rem; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; opacity: 0;
+    transition: opacity .15s;
+}
+.cours-bloc:hover .btn-del-slot { opacity: 1; }
+
+/* Vide */
+.cal-empty {
+    text-align: center; color: #94a3b8; font-size: .85rem;
+    padding: 60px 0; grid-column: span 7;
+}
+
+/* Modal */
+.modal-header-custom { background: #1e293b; color: #fff; }
+.form-label-sm { font-size: .82rem; font-weight: 600; color: #475569; margin-bottom: 4px; }
+</style>
+
+<!-- ── PAGE HEADER ───────────────────────────────────────────────────── -->
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h1 class="page-title mb-0">Planning</h1>
+    <div class="d-flex gap-2">
+        <a href="/admin/emplois/ical" class="btn btn-sm"
+           style="background:#6366f1;color:#fff;border-radius:8px;font-weight:600;padding:7px 16px;">
+            <i class="bi bi-calendar-check-fill me-1"></i> Exporter iCal
+        </a>
+        <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addModal"
+                style="border-radius:8px;font-weight:600;padding:7px 16px;">
+            <i class="bi bi-plus-lg me-1"></i> Ajouter un cours
+        </button>
+    </div>
+</div>
+
+<!-- ── BARRE DE NAVIGATION SEMAINE ──────────────────────────────────── -->
+<div class="calendar-header">
+    <!-- Prev -->
+    <a href="?semaine={{ prev_semaine }}&vue={{ vue }}{% if selected_classe %}&classe_id={{ selected_classe }}{% endif %}"
+       class="btn-nav" title="Semaine précédente">
+        <i class="bi bi-chevron-left"></i>
+    </a>
+
+    <div class="cal-controls">
+        <span class="week-title-pill">{{ titre_semaine }}</span>
+
+        <!-- Sélecteur de date -->
+        <form method="GET" id="date-form" style="display:inline;">
+            {% if selected_classe %}<input type="hidden" name="classe_id" value="{{ selected_classe }}">{% endif %}
+            <input type="hidden" name="vue" value="{{ vue }}">
+            <input type="date" name="semaine" class="date-picker-input"
+                   value="{{ semaine_str }}"
+                   onchange="document.getElementById('date-form').submit()"
+                   title="Aller à la semaine du...">
+        </form>
+
+        <!-- Vue hébdo / jour -->
+        <a href="?semaine={{ semaine_str }}&vue=hebdo{% if selected_classe %}&classe_id={{ selected_classe }}{% endif %}"
+           class="vue-btn {{ 'active' if vue == 'hebdo' }}">Hebdomadaire</a>
+        <a href="?semaine={{ semaine_str }}&vue=jour&jour={{ jour_selectionne.isoformat() }}{% if selected_classe %}&classe_id={{ selected_classe }}{% endif %}"
+           class="vue-btn {{ 'active' if vue == 'jour' }}">Journalier</a>
+    </div>
+
+    <!-- Next -->
+    <a href="?semaine={{ next_semaine }}&vue={{ vue }}{% if selected_classe %}&classe_id={{ selected_classe }}{% endif %}"
+       class="btn-nav" title="Semaine suivante">
+        <i class="bi bi-chevron-right"></i>
+    </a>
+</div>
+
+<!-- ── FILTRES ────────────────────────────────────────────────────────── -->
+<div class="filters-bar">
+    <i class="bi bi-funnel text-muted"></i>
+    <form method="GET" id="filter-form" style="display:inline-flex; gap:8px; align-items:center;">
+        <input type="hidden" name="semaine" value="{{ semaine_str }}">
+        <input type="hidden" name="vue" value="{{ vue }}">
+        <select name="classe_id" class="filter-select" onchange="document.getElementById('filter-form').submit()">
+            <option value="">Toutes les classes</option>
+            {% for c in classes %}
+            <option value="{{ c.id }}" {% if c.id == selected_classe %}selected{% endif %}>{{ c.nom }}</option>
+            {% endfor %}
+        </select>
     </form>
+    {% if selected_classe %}
+    <a href="?semaine={{ semaine_str }}&vue={{ vue }}" class="btn btn-sm btn-outline-secondary" style="border-radius:7px;font-size:.8rem;">
+        <i class="bi bi-x"></i> Tous
+    </a>
+    {% endif %}
 </div>
 
-<div class="table-container">
-    <table class="modern-table">
-        <thead>
-            <tr>
-                <th>Jour</th>
-                <th>Horaire</th>
-                <th>Matière</th>
-                <th>Classe</th>
-                <th>Professeur</th>
-                <th style="text-align:right">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for e in emplois %}
-            <tr>
-                <td class="font-weight-600">{{ e.jour }}</td>
-                <td><small class="text-muted">{{ e.heure_debut }} - {{ e.heure_fin }}</small></td>
-                <td><span class="font-weight-500">{{ e.matiere }}</span></td>
-                <td><span class="badge bg-light text-dark border">{{ e.classe_nom }}</span></td>
-                <td><i class="bi bi-person-circle text-muted"></i> {{ e.prof_nom }}</td>
-                <td style="text-align:right">
-                    <a href="/admin/emplois/delete/{{ e.id }}" class="btn btn-sm btn-link text-danger text-decoration-none font-weight-600">
-                        <i class="bi bi-trash3"></i>
-                    </a>
-                </td>
-            </tr>
-        {% else %}
-            <tr><td colspan="6" class="text-center py-5 text-muted">Aucun créneau programmé</td></tr>
+<!-- ── GRILLE CALENDRIER ──────────────────────────────────────────────── -->
+<div class="cal-wrapper">
+{% set today_str = lundi.isoformat() %}
+{% if vue == 'hebdo' %}
+<table class="cal-grid">
+    <thead>
+        <tr>
+            <th class="heure-th"></th>
+            {% for jour in jours_semaine %}
+            {% set is_today = (jour.isoformat() == lundi.today().isoformat()) %}
+            <th class="{{ 'col-today' if is_today }}">
+                <span class="day-name">
+                    {{ ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'][jour.weekday()] }}
+                </span><br>
+                <a href="?semaine={{ semaine_str }}&vue=jour&jour={{ jour.isoformat() }}{% if selected_classe %}&classe_id={{ selected_classe }}{% endif %}"
+                   class="date-label text-decoration-none text-white opacity-75">
+                    {{ jour.strftime('%-d/%m') }}
+                </a>
+            </th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for heure in heures %}
+        <tr>
+            <td class="time-cell">{{ heure }}</td>
+            {% for jour in jours_semaine %}
+            {% set is_today = (jour.isoformat() == lundi.today().isoformat()) %}
+            <td class="cal-cell {{ 'today-col' if is_today }}">
+                {% set ns = namespace(ci=0) %}
+                {% for c in cours %}
+                {% if c.date_cours_str == jour.isoformat() and c.heure_debut[:2] == heure[:2] %}
+                {% set couleur = 'c' ~ (ns.ci % 8) %}
+                <div class="cours-bloc {{ couleur }}">
+                    <strong>{{ c.matiere }}</strong>
+                    {% if c.prof_nom %}
+                    <span class="cb-meta"><i class="bi bi-person-fill"></i> {{ c.prof_nom }}</span>
+                    {% endif %}
+                    <span class="cb-class">{{ c.classe_nom }}</span>
+                    <span class="cb-time">{{ c.heure_debut }} – {{ c.heure_fin }}</span>
+                    {% if c.salle %}
+                    <span class="cb-meta"><i class="bi bi-geo-alt-fill"></i> {{ c.salle }}</span>
+                    {% endif %}
+                    {# FIXED [VULN-005]: DELETE via POST + CSRF token (était GET) #}
+                    <form method="POST" action="/admin/emplois/delete/{{ c.id }}" style="display:inline;" onsubmit="return confirm('Supprimer ce créneau ?')">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn-del-slot" title="Supprimer">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </form>
+                </div>
+                {% set ns.ci = ns.ci + 1 %}
+                {% endif %}
+                {% endfor %}
+            </td>
+            {% endfor %}
+        </tr>
         {% endfor %}
-        </tbody>
-    </table>
+    </tbody>
+</table>
+
+{% else %}
+<!-- Vue journalière -->
+<table class="cal-grid">
+    <thead>
+        <tr>
+            <th class="heure-th"></th>
+            <th>
+                {{ ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'][jour_selectionne.weekday()] }}
+                {{ jour_selectionne.strftime('%-d %B %Y') }}
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for heure in heures %}
+        <tr>
+            <td class="time-cell">{{ heure }}</td>
+            <td class="cal-cell">
+                {% set ns = namespace(ci=0) %}
+                {% for c in cours %}
+                {% if c.heure_debut[:2] == heure[:2] %}
+                {% set couleur = 'c' ~ (ns.ci % 8) %}
+                <div class="cours-bloc {{ couleur }}">
+                    <strong>{{ c.matiere }}</strong>
+                    {% if c.prof_nom %}
+                    <span class="cb-meta"><i class="bi bi-person-fill"></i> {{ c.prof_nom }}</span>
+                    {% endif %}
+                    <span class="cb-class">{{ c.classe_nom }}</span>
+                    <span class="cb-time">{{ c.heure_debut }} – {{ c.heure_fin }}</span>
+                    {% if c.salle %}
+                    <span class="cb-meta"><i class="bi bi-geo-alt-fill"></i> {{ c.salle }}</span>
+                    {% endif %}
+                    {# FIXED [VULN-005]: DELETE via POST + CSRF token (était GET) - vue journalière #}
+                    <form method="POST" action="/admin/emplois/delete/{{ c.id }}" style="display:inline;" onsubmit="return confirm('Supprimer ce créneau ?')">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn-del-slot" title="Supprimer">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </form>
+                </div>
+                {% set ns.ci = ns.ci + 1 %}
+                {% endif %}
+                {% endfor %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
 </div>
+
+<!-- ── MODAL AJOUT ─────────────────────────────────────────────────── -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius:14px; overflow:hidden; border:none;">
+            <div class="modal-header modal-header-custom">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-calendar-plus-fill me-2"></i>Ajouter un cours
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="/admin/emplois/add">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label-sm">Matière *</label>
+                            <input type="text" name="matiere" class="form-control" placeholder="ex: Mathématiques" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-sm">Date du cours *</label>
+                            <input type="date" name="date_cours" class="form-control" value="{{ semaine_str }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-sm">Heure de début *</label>
+                            <input type="time" name="heure_debut" class="form-control" step="900" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-sm">Heure de fin *</label>
+                            <input type="time" name="heure_fin" class="form-control" step="900" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-sm">Classe *</label>
+                            <select name="classe_id" class="form-select" required>
+                                <option value="">Sélectionner une classe</option>
+                                {% for c in classes %}
+                                <option value="{{ c.id }}" {% if c.id == selected_classe %}selected{% endif %}>{{ c.nom }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-sm">Professeur</label>
+                            <select name="professeur_id" class="form-select">
+                                <option value="">Aucun / à définir</option>
+                                {% for p in profs %}
+                                <option value="{{ p.id }}">{{ p.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-sm">Salle</label>
+                            <input type="text" name="salle" class="form-control" placeholder="ex: Amphi A, Salle 201...">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 px-4 pb-4">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius:8px;">Annuler</button>
+                    <button type="submit" class="btn btn-primary fw-bold px-4" style="border-radius:8px; background:#6366f1; border-color:#6366f1;">
+                        <i class="bi bi-check2 me-1"></i> Créer le cours
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script nonce="{{ csp_nonce() }}">
+    // Move modal to body to avoid z-index/stacking context issues with absolute/animated wrappers
+    document.addEventListener("DOMContentLoaded", function() {
+        var modal = document.getElementById('addModal');
+        if(modal) {
+            document.body.appendChild(modal);
+        }
+    });
+</script>
 {% endblock %}

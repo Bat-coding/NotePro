@@ -8,3 +8,5 @@ mysql-connector-python
 gunicorn
 WTForms
 python-dotenv
+pyotp
+qrcode[pil]

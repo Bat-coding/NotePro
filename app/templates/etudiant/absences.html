@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    .abs-etu-layout {
+        max-width: 780px;
+        margin: 0 auto;
+    }
+
+    /* STATS */
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-box {
+        background: white;
+        border-radius: 1rem;
+        border: 1px solid #e2e8f0;
+        padding: 1.25rem 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        text-align: center;
+        transition: transform 0.2s;
+    }
+
+    .stat-box:hover {
+        transform: translateY(-2px);
+    }
+
+    .stat-num {
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+        margin-bottom: 0.2rem;
+    }
+
+    .stat-label {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .stat-red .stat-num {
+        color: #dc2626;
+    }
+
+    .stat-yellow .stat-num {
+        color: #d97706;
+    }
+
+    .stat-green .stat-num {
+        color: #16a34a;
+    }
+
+    .stat-blue .stat-num {
+        color: #2563eb;
+    }
+
+    /* TABLE */
+    .abs-table-card {
+        background: white;
+        border-radius: 1.25rem;
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .abs-table-hdr {
+        padding: 1rem 1.5rem;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .abs-table-hdr span {
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .abs-etu-row {
+        display: grid;
+        grid-template-columns: 42px 1fr auto auto;
+        align-items: center;
+        padding: 0.9rem 1.5rem;
+        border-bottom: 1px solid #f8fafc;
+        gap: 1rem;
+        transition: background 0.15s;
+    }
+
+    .abs-etu-row:last-child {
+        border-bottom: none;
+    }
+
+    .abs-etu-row:hover {
+        background: #fafaff;
+    }
+
+    .abs-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .abs-icon.absence {
+        background: #fee2e2;
+    }
+
+    .abs-icon.retard {
+        background: #fef3c7;
+    }
+
+    .abs-info-date {
+        font-weight: 700;
+        color: #0f172a;
+        font-size: 0.9rem;
+    }
+
+    .abs-info-sub {
+        font-size: 0.78rem;
+        color: #64748b;
+        margin-top: 0.1rem;
+    }
+
+    .abs-info-motif {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        font-style: italic;
+    }
+
+    .badge-abs {
+        background: #fee2e2;
+        color: #b91c1c;
+        border: 1px solid #fca5a5;
+        padding: 0.2rem 0.6rem;
+        border-radius: 2rem;
+        font-size: 0.68rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .badge-ret {
+        background: #fef3c7;
+        color: #b45309;
+        border: 1px solid #fde68a;
+        padding: 0.2rem 0.6rem;
+        border-radius: 2rem;
+        font-size: 0.68rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .badge-just {
+        background: #d1fae5;
+        color: #065f46;
+        border: 1px solid #6ee7b7;
+        padding: 0.2rem 0.6rem;
+        border-radius: 2rem;
+        font-size: 0.68rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .badge-nj {
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #cbd5e1;
+        padding: 0.2rem 0.6rem;
+        border-radius: 2rem;
+        font-size: 0.68rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .empty-etu {
+        padding: 4rem 2rem;
+        text-align: center;
+        color: #94a3b8;
+    }
+
+    .empty-etu i {
+        font-size: 3rem;
+        display: block;
+        margin-bottom: 1rem;
+        opacity: 0.3;
+    }
+
+    @media (max-width: 600px) {
+        .stats-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .abs-etu-row {
+            grid-template-columns: 38px 1fr;
+        }
+
+        .abs-etu-row .badge-abs,
+        .abs-etu-row .badge-ret,
+        .abs-etu-row .badge-just,
+        .abs-etu-row .badge-nj {
+            display: none;
+        }
+    }
+</style>
+
+<header class="page-header">
+    <div style="display:flex;align-items:center;gap:1rem;">
+        <div
+            style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#dc2626,#b91c1c);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(220,38,38,0.3);">
+            <i class="bi bi-person-x-fill" style="font-size:1.5rem;color:white;"></i>
+        </div>
+        <div>
+            <h1 class="page-title" style="margin:0;">Mes Absences</h1>
+            <p style="color:#64748b;font-size:0.875rem;margin:0.15rem 0 0;">Historique de tes absences et retards</p>
+        </div>
+    </div>
+</header>
+
+<div class="abs-etu-layout">
+
+    <!-- STATS -->
+    <div class="stats-row">
+        <div class="stat-box stat-blue">
+            <div class="stat-num">{{ total }}</div>
+            <div class="stat-label">Total</div>
+        </div>
+        <div class="stat-box stat-red">
+            <div class="stat-num">{{ nb_abs }}</div>
+            <div class="stat-label">Absences</div>
+        </div>
+        <div class="stat-box stat-yellow">
+            <div class="stat-num">{{ nb_ret }}</div>
+            <div class="stat-label">Retards</div>
+        </div>
+        <div class="stat-box stat-green">
+            <div class="stat-num">{{ nb_just }}</div>
+            <div class="stat-label">Justifiées</div>
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="abs-table-card">
+        <div class="abs-table-hdr">
+            <span><i class="bi bi-clock-history"></i> Historique complet</span>
+            <span style="font-size:0.72rem;color:#94a3b8;font-weight:500;">{{ total }} entrée{{ 's' if total != 1
+                }}</span>
+        </div>
+
+        {% for a in absences %}
+        <div class="abs-etu-row">
+            <div class="abs-icon {{ a.type_absence }}">
+                {% if a.type_absence == 'absence' %}🔴{% else %}🟡{% endif %}
+            </div>
+            <div>
+                <div class="abs-info-date">{{ a.date_absence.strftime('%-d %B %Y') if a.date_absence else '' }}</div>
+                <div class="abs-info-sub">
+                    {% if a.prof_nom %}<i class="bi bi-person-fill" style="color:#2563eb;"></i> {{ a.prof_nom }}{% endif
+                    %}
+                </div>
+                {% if a.motif %}<div class="abs-info-motif">{{ a.motif }}</div>{% endif %}
+            </div>
+            <span class="{{ 'badge-abs' if a.type_absence == 'absence' else 'badge-ret' }}">
+                {{ 'Absence' if a.type_absence == 'absence' else 'Retard' }}
+            </span>
+            <span class="{{ 'badge-just' if a.justifiee else 'badge-nj' }}">
+                {{ 'Justifiée' if a.justifiee else 'Non justifiée' }}
+            </span>
+        </div>
+        {% else %}
+        <div class="empty-etu">
+            <i class="bi bi-emoji-smile-fill"></i>
+            <p style="font-weight:600;color:#475569;">Aucune absence enregistrée !</p>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

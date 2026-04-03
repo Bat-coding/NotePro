@@ -30,9 +30,16 @@
                 <td class="text-muted small">#{{ c.id }}</td>
                 <td><span class="font-weight-600">{{ c.nom }}</span></td>
                 <td style="text-align:right">
-                    <a href="/admin/classes/delete/{{ c.id }}" class="btn btn-sm btn-link text-danger text-decoration-none font-weight-600">
-                        <i class="bi bi-trash3"></i> Supprimer
+                    <a href="/admin/classes/{{ c.id }}" class="btn btn-sm btn-link text-primary text-decoration-none font-weight-600 me-2">
+                        <i class="bi bi-pencil-square"></i> Gérer
                     </a>
+                    {# FIXED [VULN-005]: DELETE via POST + CSRF token (était un lien GET vulnérable au CSRF) #}
+                    <form method="POST" action="/admin/classes/delete/{{ c.id }}" style="display:inline;" onsubmit="return confirm('Supprimer cette classe ? Cette action est irréversible.')">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none font-weight-600">
+                            <i class="bi bi-trash3"></i> Supprimer
+                        </button>
+                    </form>
                 </td>
             </tr>
         {% else %}

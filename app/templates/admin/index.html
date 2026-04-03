@@ -1,67 +1,317 @@
 {% extends "base.html" %}
 {% block content %}
-<header class="page-header">
-    <h1 class="page-title">Tableau de bord</h1>
-    <span class="text-muted small">{{ now }}</span>
-</header>
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js"></script>
 
-<div class="row g-4">
-    <div class="col-md-4">
-        <a href="/admin/classes" class="text-decoration-none">
-            <div class="stat-card">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="icon-box" style="background: #eff6ff; color: #2563eb;">
-                        <i class="bi bi-building-fill h4 mb-0"></i>
-                    </div>
-                    <div>
-                        <div class="h5 mb-0 font-weight-bold">Classes</div>
-                        <div class="small text-muted">Gérer les promotions</div>
-                    </div>
-                </div>
-            </div>
-        </a>
-    </div>
-    
-    <div class="col-md-4">
-        <a href="/admin/users" class="text-decoration-none">
-            <div class="stat-card">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="icon-box" style="background: #f0fdf4; color: #16a34a;">
-                        <i class="bi bi-people-fill h4 mb-0"></i>
-                    </div>
-                    <div>
-                        <div class="h5 mb-0 font-weight-bold">Utilisateurs</div>
-                        <div class="small text-muted">Comptes et accès</div>
-                    </div>
-                </div>
-            </div>
-        </a>
-    </div>
+<style>
+/* Style Pronote-like Cards */
+.top-card {
+    display: flex;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    overflow: hidden;
+    height: 100px;
+}
+.top-card-left {
+    flex: 1;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.top-card-left .val {
+    font-size: 2rem;
+    font-weight: 300;
+    color: #94a3b8;
+    line-height: 1;
+}
+.top-card-left .lbl {
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+}
+.top-card-right {
+    width: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+.top-card-right i {
+    font-size: 3rem;
+}
 
-    <div class="col-md-4">
-        <a href="/admin/emplois" class="text-decoration-none">
-            <div class="stat-card">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="icon-box" style="background: #fffbeb; color: #d97706;">
-                        <i class="bi bi-calendar3-week-fill h4 mb-0"></i>
-                    </div>
-                    <div>
-                        <div class="h5 mb-0 font-weight-bold">Planning</div>
-                        <div class="small text-muted">Emplois du temps</div>
-                    </div>
-                </div>
-            </div>
-        </a>
-    </div>
-</div>
+/* Headers style Pronote */
+.block-header {
+    padding: 0.75rem 1rem;
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+.block-content {
+    background: #fff;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.list-row {
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.85rem;
+}
+.list-row:last-child {
+    border-bottom: none;
+}
 
-<div class="mt-5">
-    <div class="table-container p-4">
-        <h5 class="mb-4 font-weight-bold">Actions rapides</h5>
-        <div class="d-flex gap-2">
-            <button class="btn btn-primary" style="border-radius: 0.75rem;"><i class="bi bi-plus-lg"></i> Nouveau message</button>
-            <button class="btn btn-outline-secondary" style="border-radius: 0.75rem;"><i class="bi bi-download"></i> Exporter données</button>
+/* Fullcalendar overrides */
+#calendar {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.fc-toolbar-title {
+    font-size: 1.25rem !important;
+    text-transform: capitalize;
+    color: #475569;
+}
+.fc-button-primary {
+    background-color: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
+    color: #475569 !important;
+}
+</style>
+
+<div class="row g-3 mb-4">
+    <!-- Enseignants -->
+    <div class="col-md-3">
+        <div class="top-card">
+            <div class="top-card-left">
+                <span class="val">{{ total_enseignants }}</span>
+                <span class="lbl">Enseignants</span>
+            </div>
+            <div class="top-card-right" style="background-color: #0ea5e9;">
+                <i class="bi bi-person-badge"></i>
+            </div>
+        </div>
+    </div>
+    <!-- Élèves -->
+    <div class="col-md-3">
+        <div class="top-card">
+            <div class="top-card-left">
+                <span class="val">{{ total_eleves }}</span>
+                <span class="lbl">Élèves</span>
+            </div>
+            <div class="top-card-right" style="background-color: #10b981;">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
+        </div>
+    </div>
+    <!-- Classes -->
+    <div class="col-md-3">
+        <div class="top-card">
+            <div class="top-card-left">
+                <span class="val">{{ total_classes }}</span>
+                <span class="lbl">Classes</span>
+            </div>
+            <div class="top-card-right" style="background-color: #eab308;">
+                <i class="bi bi-journal-album"></i>
+            </div>
+        </div>
+    </div>
+    <!-- Total Absences -->
+    <div class="col-md-3">
+        <div class="top-card">
+            <div class="top-card-left">
+                <span class="val">{{ total_absences }}</span>
+                <span class="lbl">Absences</span>
+            </div>
+            <div class="top-card-right" style="background-color: #f97316;">
+                <i class="bi bi-clock-history"></i>
+            </div>
         </div>
     </div>
 </div>
+
+<div class="row g-3">
+    <!-- Calendrier -->
+    <div class="col-md-8">
+        <div id="calendar"></div>
+    </div>
+
+    <!-- Blocs Droite -->
+    <div class="col-md-4">
+        <!-- Dernières Évaluations -->
+        <div class="mb-3">
+            <div class="block-header" style="background-color: #16a34a;">Dernières évaluations</div>
+            <div class="block-content">
+                {% for ev in dernieres_evaluations %}
+                <div class="list-row d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="text-muted">{{ loop.index }}</span>
+                        <div>
+                            <div class="fw-semibold text-dark">{{ ev.titre }}</div>
+                            <div class="text-muted" style="font-size:0.75rem;">
+                                {{ ev.classe_nom }} - <span class="badge bg-light text-dark fw-normal border">{{ ev.matiere }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="p-3 text-center text-muted small">Aucune évaluation programmée.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Nouveaux Utilisateurs -->
+        <div class="mb-3">
+            <div class="block-header" style="background-color: #f97316;">Nouveaux inscrits</div>
+            <div class="block-content">
+                {% for u in nouveaux_utilisateurs %}
+                <div class="list-row d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="text-muted">{{ loop.index }}</span>
+                        <div class="fw-semibold text-dark">{{ u.username }}</div>
+                    </div>
+                    <div>
+                        {% if u.role == 'admin' %}
+                            <span class="badge bg-danger" style="font-size: 0.70rem;">Admin</span>
+                        {% elif u.role == 'professeur' %}
+                            <span class="badge bg-info" style="font-size: 0.70rem;">Prof.</span>
+                        {% else %}
+                            <span class="badge bg-secondary" style="font-size: 0.70rem;">Élève</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="p-3 text-center text-muted small">Aucun inscrit récent.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Élèves alertes (statique/démo basé sur A2F pour garder la couleur rouge) -->
+        <div class="mb-3">
+            <div class="block-header" style="background-color: #dc2626;">Alertes plateformes</div>
+            <div class="block-content">
+                {% for m in recent_messages %}
+                <div class="list-row">
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-bold text-dark text-truncate" style="max-width: 70%;">{{ m.contenu }}</span>
+                        <span class="text-muted small">{{ m.created_at.strftime('%d/%m') }}</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="p-3 text-center text-muted small">Aucune alerte active.</div>
+                {% endfor %}
+                <div class="p-2 border-top bg-light text-center">
+                    <a href="/admin/messages" class="btn btn-sm btn-outline-danger font-weight-600">
+                        <i class="bi bi-exclamation-triangle"></i> Créer une alerte
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Détails Cours -->
+<div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:12px; overflow:hidden; border:none; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+            <div class="modal-header text-white" id="eventModalHeader" style="background-color: #3b82f6;">
+                <h5 class="modal-title fw-bold" id="eventModalTitle">
+                    <i class="bi bi-journal-text me-2"></i> Détails du cours
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-light rounded-circle p-3 me-3 text-primary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-clock-fill" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 text-muted text-uppercase" style="font-size:0.8rem; letter-spacing:0.05em;">Horaire</h6>
+                        <div class="fw-bold fs-5 text-dark" id="eventHoraire">--:--</div>
+                    </div>
+                </div>
+
+                <hr class="text-muted opacity-25 my-3">
+
+                <div class="row g-3">
+                    <div class="col-6">
+                        <h6 class="text-muted small text-uppercase mb-1">Matière</h6>
+                        <div class="fw-semibold text-dark" id="eventMatiere">-</div>
+                    </div>
+                    <div class="col-6">
+                        <h6 class="text-muted small text-uppercase mb-1">Classe</h6>
+                        <div class="fw-semibold text-dark" id="eventClasse">-</div>
+                    </div>
+                    <div class="col-6">
+                        <h6 class="text-muted small text-uppercase mb-1">Professeur</h6>
+                        <div class="fw-semibold text-dark" id="eventProfesseur">-</div>
+                    </div>
+                    <div class="col-6">
+                        <h6 class="text-muted small text-uppercase mb-1">Salle</h6>
+                        <div class="fw-semibold text-dark" id="eventSalle">-</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 p-3 bg-light">
+                <button type="button" class="btn btn-secondary w-100 fw-bold" data-bs-dismiss="modal" style="border-radius:8px;">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script nonce="{{ csp_nonce() }}">
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'fr',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: {{ calendar_events | tojson }},
+        height: 700,
+        eventTimeFormat: {
+            hour: '2-digit',
+            minute: '2-digit',
+            meridiem: false
+        },
+        eventDisplay: 'block',
+        eventClick: function(info) {
+            info.jsEvent.preventDefault();
+            
+            // Populate modal fields
+            var props = info.event.extendedProps;
+            document.getElementById('eventMatiere').innerText = props.matiere || '-';
+            document.getElementById('eventClasse').innerText = props.classe || '-';
+            document.getElementById('eventProfesseur').innerText = props.professeur || '-';
+            document.getElementById('eventSalle').innerText = props.salle || '-';
+            document.getElementById('eventHoraire').innerText = props.horaire || '-';
+            
+            // Set header color to match event color
+            document.getElementById('eventModalHeader').style.backgroundColor = info.event.backgroundColor;
+
+            // Show modal
+            var eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
+            eventModal.show();
+        }
+    });
+    calendar.render();
+    
+    // Deplacer la modale dans le body
+    const modalEl = document.getElementById('eventModal');
+    if (modalEl) {
+        document.body.appendChild(modalEl);
+    }
+});
+</script>
 {% endblock %}
