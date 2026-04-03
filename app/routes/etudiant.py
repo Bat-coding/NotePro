@@ -96,12 +96,12 @@ def index():
     conn = get_db()
     cur = conn.cursor(dictionary=True)
     etudiant_id = current_user.id
-    
+
     # Récupérer la classe de l'étudiant
     cur.execute("SELECT classe_id FROM classe_etudiants WHERE etudiant_id = %s", (etudiant_id,))
     row_classe = cur.fetchone()
     classe_id = row_classe['classe_id'] if row_classe else None
-    
+
     classe_nom = "Non assigné"
     if classe_id:
         cur.execute("SELECT nom FROM classes WHERE id = %s", (classe_id,))
@@ -112,24 +112,24 @@ def index():
     notes = get_notes_etudiant(etudiant_id)
     valeurs_notes = [n['valeur'] for n in notes if n['valeur'] is not None]
     moyenne = sum(valeurs_notes) / len(valeurs_notes) if valeurs_notes else 0.0
-    
+
     # KPI 2: Total Absences
     cur.execute("SELECT COUNT(*) as count FROM absences WHERE etudiant_id = %s AND type_absence = 'absence'", (etudiant_id,))
     total_absences = cur.fetchone()['count']
-    
+
     # KPI 3: Travail à faire (Agenda futur)
     cur.execute("""
-        SELECT COUNT(*) as count FROM agenda 
+        SELECT COUNT(*) as count FROM agenda
         WHERE classe_id = %s AND date_event >= CURDATE()
     """, (classe_id,))
     total_agenda = cur.fetchone()['count']
-    
+
     # Cours du jour
     today = date.today()
     cours_du_jour = []
     if classe_id:
         cur.execute("""
-            SELECT e.*, u.username as prof_nom 
+            SELECT e.*, u.username as prof_nom
             FROM emplois_du_temps e
             LEFT JOIN users u ON e.professeur_id = u.id
             WHERE e.classe_id = %s AND e.date_cours = %s
@@ -142,12 +142,12 @@ def index():
 
     # Dernières notes
     recent_notes = notes[:5]
-    
+
     # Prochains travaux (Agenda)
     agenda_events = []
     if classe_id:
         cur.execute("""
-            SELECT a.*, u.username as prof_nom 
+            SELECT a.*, u.username as prof_nom
             FROM agenda a
             LEFT JOIN users u ON a.professeur_id = u.id
             WHERE a.classe_id = %s AND a.date_event >= CURDATE()
@@ -158,18 +158,18 @@ def index():
     # Alertes / Messages récents
     cur.execute("SELECT * FROM messages_admin ORDER BY created_at DESC LIMIT 5")
     recent_messages = cur.fetchall()
-    
+
     # Événements pour le calendrier (tous les cours de la classe)
     calendar_events = []
     if classe_id:
         cur.execute("""
-            SELECT e.*, u.username as prof_nom 
+            SELECT e.*, u.username as prof_nom
             FROM emplois_du_temps e
             LEFT JOIN users u ON e.professeur_id = u.id
             WHERE e.classe_id = %s AND e.date_cours IS NOT NULL
         """, (classe_id,))
         tous_cours = cur.fetchall()
-        
+
         for c in tous_cours:
             hd = td_to_str(c.get('heure_debut'))
             hf = td_to_str(c.get('heure_fin'))
@@ -186,7 +186,7 @@ def index():
                     'horaire': f"{hd} - {hf}"
                 }
             })
-    
+
     return render_template('etudiant/index.html',
                            classe_nom=classe_nom,
                            moyenne=moyenne,

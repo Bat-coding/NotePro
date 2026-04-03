@@ -34,7 +34,7 @@ def parametres():
 
     if request.method == 'POST':
         action = request.form.get('action')
-        
+
         # Action : Activer 2FA
         if action == 'enable_2fa':
             secret = pyotp.random_base32()
@@ -103,7 +103,7 @@ def parametres():
             if not validate_image_content(avatar.stream):
                 flash('Le contenu du fichier ne correspond pas à une image valide.', 'danger')
                 return redirect('/user/parametres')
-            
+
             extension = avatar.filename.rsplit('.', 1)[1].lower()
             unique_filename = f"avatar_{user_id}_{uuid.uuid4().hex}.{extension}"
             upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_filename)

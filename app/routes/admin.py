@@ -7,6 +7,7 @@ from app import bcrypt
 from datetime import date, timedelta, datetime
 import uuid
 import re
+import json
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -76,37 +77,35 @@ def build_ical(cours_list):
 
 
 # ── INDEX ─────────────────────────────────────────────────────────────────────
-import json
-
 @admin_bp.route('/')
 @role_required('admin')
 def index():
     conn = get_db()
     cur = conn.cursor(dictionary=True)
-    
+
     # KPIs
     cur.execute("SELECT COUNT(*) as count FROM users WHERE role = 'etudiant'")
     total_eleves = cur.fetchone()['count']
-    
+
     cur.execute("SELECT COUNT(*) as count FROM users WHERE role = 'professeur'")
     total_enseignants = cur.fetchone()['count']
-    
+
     cur.execute("SELECT COUNT(*) as count FROM classes")
     total_classes = cur.fetchone()['count']
-    
+
     cur.execute("SELECT COUNT(*) as count FROM absences")
     total_absences = cur.fetchone()['count']
-    
+
     # Dernières Évaluations
     cur.execute("""
-        SELECT ev.*, c.nom as classe_nom, u.username as prof_nom 
+        SELECT ev.*, c.nom as classe_nom, u.username as prof_nom
         FROM evaluations ev
         JOIN classes c ON ev.classe_id = c.id
         LEFT JOIN users u ON ev.professeur_id = u.id
         ORDER BY ev.id DESC LIMIT 6
     """)
     dernieres_evaluations = cur.fetchall()
-    
+
     # Nouveaux Utilisateurs
     cur.execute("""
         SELECT username, role, created_at
@@ -117,24 +116,24 @@ def index():
 
     # Evenements du calendrier (Tous les cours)
     cur.execute("""
-        SELECT e.*, c.nom as classe_nom, u.username as prof_nom 
+        SELECT e.*, c.nom as classe_nom, u.username as prof_nom
         FROM emplois_du_temps e
         JOIN classes c ON e.classe_id = c.id
         LEFT JOIN users u ON e.professeur_id = u.id
         WHERE e.date_cours IS NOT NULL
     """)
     tous_cours = cur.fetchall()
-    
+
     calendar_events = []
     for c in tous_cours:
         hd = td_to_str(c.get('heure_debut'))
         hf = td_to_str(c.get('heure_fin'))
         dc = c.get('date_cours').isoformat()
-        
+
         # Format string for datetime needed by FullCalendar
         start_time = f"{dc}T{hd}:00"
         end_time = f"{dc}T{hf}:00"
-        
+
         # Alternating colors based on some attribute (e.g. hash of class name)
         calendar_events.append({
             'title': f"{c['matiere']} ({c['classe_nom']})",
@@ -157,7 +156,7 @@ def index():
     cur.execute("SELECT * FROM messages_admin ORDER BY created_at DESC LIMIT 5")
     recent_messages = cur.fetchall()
 
-    return render_template('admin/index.html', 
+    return render_template('admin/index.html',
                            total_eleves=total_eleves,
                            total_enseignants=total_enseignants,
                            total_classes=total_classes,
@@ -301,7 +300,6 @@ def add_user():
     if role not in ('admin', 'professeur', 'etudiant'):
         flash('Rôle invalide.', 'danger')
         return redirect('/admin/users')
-    import re
     if len(password) < 15 or not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
         flash('Le mot de passe doit contenir au moins 15 caractères et un caractère spécial.', 'danger')
         return redirect('/admin/users')
@@ -337,7 +335,7 @@ def delete_user_2fa(id):
     cur = conn.cursor(dictionary=True)
     cur.execute("SELECT role FROM users WHERE id = %s", (id,))
     user = cur.fetchone()
-    
+
     if user:
         if user['role'] != 'admin':
             cur = conn.cursor()
@@ -346,7 +344,7 @@ def delete_user_2fa(id):
             flash("La double authentification de l'utilisateur a été désactivée.", 'info')
         else:
             flash("Impossible de désactiver le 2FA d'un autre administrateur.", 'danger')
-            
+
     return redirect('/admin/users')
 
 
@@ -357,7 +355,7 @@ def admin_change_pwd(id):
     cur = conn.cursor(dictionary=True)
     cur.execute("SELECT role FROM users WHERE id = %s", (id,))
     target_user = cur.fetchone()
-    
+
     if not target_user:
         flash("Utilisateur introuvable.", "danger")
         return redirect('/admin/users')
@@ -365,13 +363,13 @@ def admin_change_pwd(id):
     if target_user['role'] == 'admin':
         flash("Sécurité : Un administrateur ne peut pas changer le mot de passe d'un autre administrateur.", "danger")
         return redirect('/admin/users')
-        
+
     new_password = request.form['new_password']
-    
+
     if len(new_password) < 15 or not re.search(r'[!@#$%^&*(),.?":{}|<>]', new_password):
         flash("La politique de sécurité exige 15 caractères et 1 caractère spécial minimum.", "danger")
         return redirect('/admin/users')
-        
+
     pw_hash = bcrypt.generate_password_hash(new_password).decode('utf-8')
     cur.execute("UPDATE users SET password_hash = %s WHERE id = %s", (pw_hash, id))
     conn.commit()
@@ -804,7 +802,7 @@ def delete_message(id):
 def etudiant_absences():
     conn = get_db()
     cur = conn.cursor(dictionary=True)
-    
+
     # Récupérer toutes les absences élèves pour la vue globale admin
     cur.execute("""
         SELECT a.*, e.username as etudiant_nom, p.username as prof_nom, c.nom as classe_nom
@@ -815,7 +813,7 @@ def etudiant_absences():
         ORDER BY a.date_absence DESC, a.created_at DESC
     """)
     absences_list = cur.fetchall()
-    
+
     return render_template('admin/etudiant_absences.html', absences=absences_list)
 
 @admin_bp.route('/etudiant_absences/justifier/<int:id>', methods=['POST'])

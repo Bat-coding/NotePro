@@ -66,39 +66,39 @@ def index():
     conn = get_db()
     cur = conn.cursor(dictionary=True)
     prof_id = current_user.id
-    
+
     # KPI 1: Nombre de classes
     cur.execute("SELECT COUNT(DISTINCT classe_id) as count FROM classe_professeurs WHERE professeur_id = %s", (prof_id,))
     total_classes = cur.fetchone()['count']
-    
+
     # KPI 2: Nombre d'élèves total
     cur.execute("""
-        SELECT COUNT(DISTINCT ce.etudiant_id) as count 
-        FROM classe_etudiants ce 
-        JOIN classe_professeurs cp ON ce.classe_id = cp.classe_id 
+        SELECT COUNT(DISTINCT ce.etudiant_id) as count
+        FROM classe_etudiants ce
+        JOIN classe_professeurs cp ON ce.classe_id = cp.classe_id
         WHERE cp.professeur_id = %s
     """, (prof_id,))
     total_eleves = cur.fetchone()['count']
-    
+
     # KPI 3: Heures de cours cette semaine
     today = date.today()
     lundi = today - timedelta(days=today.weekday())
     dimanche = lundi + timedelta(days=6)
     cur.execute("""
-        SELECT SUM(TIMESTAMPDIFF(MINUTE, heure_debut, heure_fin))/60 as total_hours 
-        FROM emplois_du_temps 
+        SELECT SUM(TIMESTAMPDIFF(MINUTE, heure_debut, heure_fin))/60 as total_hours
+        FROM emplois_du_temps
         WHERE professeur_id = %s AND date_cours BETWEEN %s AND %s
     """, (prof_id, lundi, dimanche))
     res_hours = cur.fetchone()['total_hours']
     total_heures = float(res_hours) if res_hours else 0.0
-    
+
     # KPI 4: Absences signalées (total historique)
     cur.execute("SELECT COUNT(*) as count FROM absences WHERE professeur_id = %s", (prof_id,))
     total_absences_signalees = cur.fetchone()['count']
-    
+
     # Cours du jour
     cur.execute("""
-        SELECT e.*, c.nom as classe_nom 
+        SELECT e.*, c.nom as classe_nom
         FROM emplois_du_temps e
         JOIN classes c ON e.classe_id = c.id
         WHERE e.professeur_id = %s AND e.date_cours = %s
@@ -108,30 +108,30 @@ def index():
     for c in cours_du_jour:
         c['heure_debut'] = td_to_str(c.get('heure_debut'))
         c['heure_fin'] = td_to_str(c.get('heure_fin'))
-        
+
     # Dernières évaluations créées
     cur.execute("""
-        SELECT ev.*, c.nom as classe_nom 
+        SELECT ev.*, c.nom as classe_nom
         FROM evaluations ev
         JOIN classes c ON ev.classe_id = c.id
         WHERE ev.professeur_id = %s
         ORDER BY ev.id DESC LIMIT 5
     """, (prof_id,))
     recent_evals = cur.fetchall()
-    
+
     # Alertes / Messages récents
     cur.execute("SELECT * FROM messages_admin ORDER BY created_at DESC LIMIT 5")
     recent_messages = cur.fetchall()
-    
+
     # Événements pour le calendrier (tous les cours du prof)
     cur.execute("""
-        SELECT e.*, c.nom as classe_nom 
+        SELECT e.*, c.nom as classe_nom
         FROM emplois_du_temps e
         JOIN classes c ON e.classe_id = c.id
         WHERE e.professeur_id = %s AND e.date_cours IS NOT NULL
     """, (prof_id,))
     tous_cours = cur.fetchall()
-    
+
     calendar_events = []
     for c in tous_cours:
         hd = td_to_str(c.get('heure_debut'))
@@ -149,7 +149,7 @@ def index():
                 'horaire': f"{hd} - {hf}"
             }
         })
-    
+
     return render_template('professeur/index.html',
                            total_classes=total_classes,
                            total_eleves=total_eleves,
