@@ -1,7 +1,7 @@
 services:
   web:
     build: .
-    ports: [ "5001:5000" ]
+    ports: [ "5001:8080" ]
     env_file: .env
     depends_on:
       db:
@@ -16,7 +16,7 @@ services:
       - notepro_net
     # FIXED [VULN-006]: Healthcheck au niveau compose également
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')" ]
       interval: 30s
       timeout: 10s
       start_period: 30s
@@ -35,7 +35,7 @@ services:
       - db_data:/var/lib/mysql
     # FIXED [VULN-006]: Ajouter un healthcheck MySQL natif
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "notepro", "-p${MYSQL_PASSWORD}"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "notepro", "-p${MYSQL_PASSWORD}" ]
       interval: 10s
       timeout: 5s
       start_period: 30s
@@ -47,7 +47,7 @@ services:
 volumes:
   db_data:
 
-# FIXED [VULN-018]: Définir un réseau interne dédié pour isoler les services
+    # FIXED [VULN-018]: Définir un réseau interne dédié pour isoler les services
 networks:
   notepro_net:
     driver: bridge

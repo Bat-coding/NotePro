@@ -1,10 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-    --primary-main: #0f172a;/* Navy 900 */
-    --primary-light: #1e293b;/* Navy 800 */
-    --accent-blue: #2563eb;/* Blue 600 */
-    --accent-blue-hover: #1d4ed8;
+    --primary-main: #04786B;/* Emerald 700 */
+    --primary-light: #065f54;/* Darker Emerald */
+    --accent-blue: #04786B;/* Emerald 700 */
+    --accent-blue-hover: #065f54;
     --bg-main: #f8fafc;
     --bg-card: #ffffff;
     --text-main: #0f172a;
@@ -93,9 +93,12 @@ body {
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.sidebar-header i {
+.sidebar-header i, .sidebar-header img {
     font-size: 1.75rem;
-    color: var(--accent-blue);
+    color: #ffffff;
+    height: 32px;
+    width: auto;
+    object-fit: contain;
 }
 
 .sidebar-header .app-name {
@@ -112,7 +115,7 @@ body {
 .nav-label {
     font-size: 0.65rem;
     font-weight: 800;
-    color: #475569;
+    color: rgba(255, 255, 255, 0.6);
     text-transform: uppercase;
     letter-spacing: 0.1em;
     padding: 1rem 0.75rem 0.5rem;
@@ -122,7 +125,7 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    color: #94a3b8;
+    color: #ffffff;
     text-decoration: none;
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;
