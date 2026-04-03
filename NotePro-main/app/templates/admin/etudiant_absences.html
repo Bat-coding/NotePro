@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="page-title"><i class="bi bi-person-x-fill text-danger"></i> Absences & Retards (Élèves)</h1>
+        <p class="text-muted small mb-0">Gestion et justification des absences signalées par les professeurs.</p>
+    </div>
+</header>
+
+<div class="table-container p-4">
+    <table class="modern-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Élève</th>
+                <th>Type</th>
+                <th>Cour & Professeur</th>
+                <th>Statut</th>
+                <th style="text-align:right">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in absences %}
+            <tr>
+                <td class="font-weight-bold text-dark">{{ a.date_absence.strftime('%d/%m/%Y') }}</td>
+                <td>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="bg-light rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                            <i class="bi bi-person text-primary"></i>
+                        </div>
+                        <span class="font-weight-600">{{ a.etudiant_nom }}</span>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge {{ 'bg-danger' if a.type_absence == 'absence' else 'bg-warning text-dark' }}">{{ a.type_absence|capitalize }}</span>
+                </td>
+                <td class="text-muted small">
+                    <i class="bi bi-person-video3"></i> {{ a.prof_nom or 'Non attribué' }} <br>
+                    <i class="bi bi-building"></i> {{ a.classe_nom or 'Classe ext.' }}
+                </td>
+                <td>
+                    {% if a.justifiee %}
+                        <span class="badge bg-success bg-opacity-10 text-success"><i class="bi bi-check-circle-fill"></i> Justifiée</span>
+                    {% else %}
+                        <span class="badge bg-danger bg-opacity-10 text-danger"><i class="bi bi-exclamation-circle-fill"></i> A justifier</span>
+                    {% endif %}
+                </td>
+                <td style="text-align:right">
+                    <div class="d-flex justify-content-end gap-2">
+                        {% if not a.justifiee %}
+                        <form method="POST" action="/admin/etudiant_absences/justifier/{{ a.id }}" style="display:inline;" onsubmit="return confirm('Marquer cette absence comme justifiée ?')">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-outline-success font-weight-600">
+                                <i class="bi bi-check-lg"></i> Justifier
+                            </button>
+                        </form>
+                        {% endif %}
+                        
+                        <form method="POST" action="/admin/etudiant_absences/delete/{{ a.id }}" style="display:inline;" onsubmit="return confirm('Supprimer ce signalement ?')">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-link text-danger font-weight-600 text-decoration-none p-0" style="padding-top:0.3rem !important;">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" class="text-center py-5 text-muted"><i class="bi bi-check2-circle" style="font-size:2rem;"></i><br>Aucune absence ou retard élève enregistré.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

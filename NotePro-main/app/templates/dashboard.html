@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-title"><i class="bi bi-speedometer2"></i> Tableau de bord</div>
+{% if session.role == 'admin' %}
+<div class="row g-4">
+    <div class="col-md-4">
+        <a href="/admin/classes" class="text-decoration-none">
+            <div class="card p-4" style="border-radius:14px;border-left:4px solid #3b82f6;transition:transform .2s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+                <div style="display:flex;align-items:center;gap:16px">
+                    <div style="width:48px;height:48px;background:#eff6ff;border-radius:12px;display:flex;align-items:center;justify-content:center">
+                        <i class="bi bi-building-fill" style="font-size:1.4rem;color:#3b82f6"></i>
+                    </div>
+                    <div><div style="font-weight:700;color:#1a2b4a">Classes</div><div style="color:#94a3b8;font-size:.82rem">Créer et gérer</div></div>
+                    <i class="bi bi-chevron-right ms-auto" style="color:#cbd5e1"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/admin/users" class="text-decoration-none">
+            <div class="card p-4" style="border-radius:14px;border-left:4px solid #22c55e;transition:transform .2s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+                <div style="display:flex;align-items:center;gap:16px">
+                    <div style="width:48px;height:48px;background:#f0fdf4;border-radius:12px;display:flex;align-items:center;justify-content:center">
+                        <i class="bi bi-people-fill" style="font-size:1.4rem;color:#22c55e"></i>
+                    </div>
+                    <div><div style="font-weight:700;color:#1a2b4a">Utilisateurs</div><div style="color:#94a3b8;font-size:.82rem">Gérer les comptes</div></div>
+                    <i class="bi bi-chevron-right ms-auto" style="color:#cbd5e1"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/admin/emplois" class="text-decoration-none">
+            <div class="card p-4" style="border-radius:14px;border-left:4px solid #f59e0b;transition:transform .2s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+                <div style="display:flex;align-items:center;gap:16px">
+                    <div style="width:48px;height:48px;background:#fffbeb;border-radius:12px;display:flex;align-items:center;justify-content:center">
+                        <i class="bi bi-calendar3-week-fill" style="font-size:1.4rem;color:#f59e0b"></i>
+                    </div>
+                    <div><div style="font-weight:700;color:#1a2b4a">Emplois du temps</div><div style="color:#94a3b8;font-size:.82rem">Créer les créneaux</div></div>
+                    <i class="bi bi-chevron-right ms-auto" style="color:#cbd5e1"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+{% elif session.role == 'professeur' %}
+<div class="row g-4">
+    <div class="col-md-4">
+        <a href="/professeur/evaluations" class="text-decoration-none">
+            <div class="card p-4" style="border-radius:14px;border-left:4px solid #f59e0b;transition:transform .2s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+                <div style="display:flex;align-items:center;gap:16px">
+                    <div style="width:48px;height:48px;background:#fffbeb;border-radius:12px;display:flex;align-items:center;justify-content:center">
+                        <i class="bi bi-clipboard-check-fill" style="font-size:1.4rem;color:#f59e0b"></i>
+                    </div>
+                    <div><div style="font-weight:700;color:#1a2b4a">Évaluations</div><div style="color:#94a3b8;font-size:.82rem">Créer et gérer</div></div>
+                    <i class="bi bi-chevron-right ms-auto" style="color:#cbd5e1"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/professeur/notes" class="text-decoration-none">
+            <div class="card p-4" style="border-radius:14px;border-left:4px solid #3b82f6;transition:transform .2s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+                <div style="display:flex;align-items:center;gap:16px">
+                    <div style="width:48px;height:48px;background:#eff6ff;border-radius:12px;display:flex;align-items:center;justify-content:center">
+                        <i class="bi bi-pencil-fill" style="font-size:1.4rem;color:#3b82f6"></i>
+                    </div>
+                    <div><div style="font-weight:700;color:#1a2b4a">Notes</div><div style="color:#94a3b8;font-size:.82rem">Saisir les notes

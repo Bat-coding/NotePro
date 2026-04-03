@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="page-header">
+    <h1 class="page-title">Gestion des Utilisateurs</h1>
+</header>
+
+<div class="table-container p-4 mb-4">
+    <h6 class="mb-4 font-weight-bold text-primary"><i class="bi bi-person-plus-fill"></i> Ajouter un nouvel utilisateur</h6>
+    <form method="POST" action="/admin/users/add">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <input type="text" name="username" class="form-control" placeholder="Nom d'utilisateur" required>
+            </div>
+            <div class="col-md-4">
+                <input type="password" name="password" class="form-control" placeholder="Mot de passe (15 car, 1 spécial)" minlength="15" required>
+            </div>
+            <div class="col-md-2">
+                <select name="role" class="form-select">
+                    <option value="etudiant">Étudiant</option>
+                    <option value="professeur">Professeur</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100 font-weight-bold">
+                    <i class="bi bi-plus-lg"></i> Ajouter
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="table-container">
+    <table class="modern-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Identifiant</th>
+                <th>Rôle</th>
+                <th>Sécurité</th>
+                <th style="text-align:right">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for u in users %}
+            <tr>
+                <td class="text-muted small">#{{ u.id }}</td>
+                <td>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="bg-light rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                            <i class="bi bi-person text-muted"></i>
+                        </div>
+                        <span class="font-weight-600">{{ u.username }}</span>
+                    </div>
+                </td>
+                <td>
+                    {% if u.role == 'admin' %}
+                        <span class="badge badge-admin">Admin</span>
+                    {% elif u.role == 'professeur' %}
+                        <span class="badge badge-prof">Professeur</span>
+                    {% else %}
+                        <span class="badge badge-student">Étudiant</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if u.totp_enabled %}
+                        <span class="badge bg-success"><i class="bi bi-shield-lock-fill"></i> 2FA Actif</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Désactivé</span>
+                    {% endif %}
+                </td>
+                <td style="text-align:right">
+                    {% if u.totp_enabled and u.role != 'admin' %}
+                    <form method="POST" action="/admin/users/delete_2fa/{{ u.id }}" style="display:inline;" onsubmit="return confirm('Désactiver le 2FA pour cet utilisateur ?')">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-link text-warning text-decoration-none font-weight-600" title="Désactiver 2FA">
+                            <i class="bi bi-shield-slash"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                    
+                    {% if u.role != 'admin' %}
+                    <button class="btn btn-sm btn-link text-info text-decoration-none font-weight-600" title="Changer Mot de passe" data-bs-toggle="modal" data-bs-target="#pwdModal{{ u.id }}">
+                        <i class="bi bi-key"></i>
+                    </button>
+                    {% endif %}
+                    
+                    {# FIXED [VULN-005]: DELETE via POST + CSRF token (était un lien GET vulnérable au CSRF) #}
+                    <form method="POST" action="/admin/users/delete/{{ u.id }}" style="display:inline;" onsubmit="return confirm('Supprimer cet utilisateur ? Cette action est irréversible.')">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none font-weight-600">
+                            <i class="bi bi-trash3"></i> Supprimer
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="5" class="text-center py-5 text-muted">Aucun utilisateur trouvé</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modals pour changer le mot de passe -->
+{% for u in users %}
+{% if u.role != 'admin' %}
+<div class="modal fade" id="pwdModal{{ u.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:12px; border:none; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold text-dark">
+                    <i class="bi bi-key me-2"></i> Changer le mot de passe
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="/admin/users/changepwd/{{ u.id }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-body p-4">
+                    <p class="small text-muted mb-3">Utilisateur ciblé : <strong class="text-dark">{{ u.username }}</strong></p>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">Nouveau Mot de passe *</label>
+                        <input type="password" name="new_password" class="form-control" placeholder="15 caractères min, 1 caractère spécial" minlength="15" required>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-3 bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <button type="submit" class="btn btn-primary fw-bold">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+
+<script nonce="{{ csp_nonce() }}">
+document.addEventListener("DOMContentLoaded", function() {
+    var modals = document.querySelectorAll('[id^="pwdModal"]');
+    modals.forEach(function(modal) {
+        document.body.appendChild(modal);
+    });
+});
+</script>
+
+{% endblock %}

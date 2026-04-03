@@ -1,0 +1,52 @@
+services:
+  web:
+    build: .
+    ports: [ "5001:5000" ]
+    env_file: .env
+    depends_on:
+      db:
+        # FIXED [VULN-006]: Attendre que la DB soit healthy avant de démarrer web
+        condition: service_healthy
+    # FIXED [VULN-012]: Supprimer le bind-mount .:/app en production (exposait le code source en RW)
+    # Pour le développement local, décommentez les lignes volumes ci-dessous
+    # volumes:
+    #   - .:/app
+    # FIXED [VULN-018]: Connecter le service web au réseau interne
+    networks:
+      - notepro_net
+    # FIXED [VULN-006]: Healthcheck au niveau compose également
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+
+  db:
+    # FIXED [VULN-016]: Épingler l'image MySQL par version mineure précise
+    # Pour épingler par digest: docker pull mysql:8.0.36 && docker inspect mysql:8.0.36 --format='{{index .RepoDigests 0}}'
+    image: mysql:8.0.36
+    # FIXED [VULN-013]: Supprimer l'exposition du port MySQL sur l'hôte (3306:3306 retiré)
+    # Le service db n'est accessible QUE depuis les conteneurs sur le réseau notepro_net
+    # ports: ["3306:3306"]  ← RETIRÉ intentionnellement pour la sécurité
+    env_file: .env
+    volumes:
+      - db_data:/var/lib/mysql
+    # FIXED [VULN-006]: Ajouter un healthcheck MySQL natif
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "notepro", "-p${MYSQL_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+    # FIXED [VULN-018]: Isoler la DB sur le réseau interne uniquement
+    networks:
+      - notepro_net
+
+volumes:
+  db_data:
+
+# FIXED [VULN-018]: Définir un réseau interne dédié pour isoler les services
+networks:
+  notepro_net:
+    driver: bridge

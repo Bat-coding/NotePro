@@ -1,0 +1,12 @@
+Flask
+Flask-SQLAlchemy
+Flask-Login
+Flask-WTF
+Flask-Bcrypt
+Flask-Talisman
+mysql-connector-python
+gunicorn
+WTForms
+python-dotenv
+pyotp
+qrcode[pil]

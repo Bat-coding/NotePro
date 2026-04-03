@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="page-header">
+    <h1 class="page-title">Mes Notes</h1>
+</header>
+
+<div class="table-container">
+    <table class="modern-table">
+        <thead>
+            <tr>
+                <th>Évaluation</th>
+                <th style="text-align:right">Note / 20</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for note in notes %}
+            <tr>
+                <td class="font-weight-600">{{ note.titre }}</td>
+                <td style="text-align:right">
+                    <span class="badge {{ 'bg-success' if note.valeur >= 14 else 'bg-warning' if note.valeur >= 10 else 'bg-danger' }} rounded-pill px-3">
+                        {{ note.valeur }}
+                    </span>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="2" class="text-center py-5 text-muted">Aucune note disponible</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
