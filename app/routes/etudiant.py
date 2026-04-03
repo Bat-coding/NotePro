@@ -112,7 +112,11 @@ def index():
     moyenne = sum(valeurs_notes) / len(valeurs_notes) if valeurs_notes else 0.0
 
     # KPI 2: Total Absences
-    cur.execute("SELECT COUNT(*) as count FROM absences WHERE etudiant_id = %s AND type_absence = 'absence'", (etudiant_id,))
+    cur.execute(
+        "SELECT COUNT(*) as count FROM absences "
+        "WHERE etudiant_id = %s AND type_absence = 'absence'",
+        (etudiant_id,)
+    )
     total_absences = cur.fetchone()['count']
 
     # KPI 3: Travail à faire (Agenda futur)

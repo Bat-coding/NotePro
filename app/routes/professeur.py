@@ -1,6 +1,6 @@
 # app/routes/professeur.py
 from flask import Blueprint, render_template, request, redirect, flash, Response
-from flask_login import current_user  # FIXED [VULN-015]: Utiliser current_user Flask-Login
+from flask_login import login_required
 from app.decorators import role_required
 from app.models import get_db
 from datetime import date, timedelta
@@ -68,7 +68,11 @@ def index():
     prof_id = current_user.id
 
     # KPI 1: Nombre de classes
-    cur.execute("SELECT COUNT(DISTINCT classe_id) as count FROM classe_professeurs WHERE professeur_id = %s", (prof_id,))
+    cur.execute(
+        "SELECT COUNT(DISTINCT classe_id) as count "
+        "FROM classe_professeurs WHERE professeur_id = %s",
+        (prof_id,)
+    )
     total_classes = cur.fetchone()['count']
 
     # KPI 2: Nombre d'élèves total
@@ -203,7 +207,8 @@ def emploi_du_temps():
                 FROM emplois_du_temps e
                 JOIN classes c ON e.classe_id = c.id
                 LEFT JOIN users u ON e.professeur_id = u.id
-                LEFT JOIN professeur_absences pa ON pa.professeur_id = e.professeur_id AND pa.date_absence = e.date_cours
+                LEFT JOIN professeur_absences pa
+                    ON pa.professeur_id = e.professeur_id AND pa.date_absence = e.date_cours
                 WHERE e.date_cours = %s AND e.classe_id = %s AND e.professeur_id = %s
                 ORDER BY e.heure_debut
             """, (jour_selectionne, classe_id, prof_id))
@@ -213,7 +218,8 @@ def emploi_du_temps():
                 FROM emplois_du_temps e
                 JOIN classes c ON e.classe_id = c.id
                 LEFT JOIN users u ON e.professeur_id = u.id
-                LEFT JOIN professeur_absences pa ON pa.professeur_id = e.professeur_id AND pa.date_absence = e.date_cours
+                LEFT JOIN professeur_absences pa
+                    ON pa.professeur_id = e.professeur_id AND pa.date_absence = e.date_cours
                 WHERE e.date_cours = %s AND e.professeur_id = %s
                 ORDER BY e.heure_debut
             """, (jour_selectionne, prof_id))
@@ -224,7 +230,8 @@ def emploi_du_temps():
                 FROM emplois_du_temps e
                 JOIN classes c ON e.classe_id = c.id
                 LEFT JOIN users u ON e.professeur_id = u.id
-                LEFT JOIN professeur_absences pa ON pa.professeur_id = e.professeur_id AND pa.date_absence = e.date_cours
+                LEFT JOIN professeur_absences pa
+                    ON pa.professeur_id = e.professeur_id AND pa.date_absence = e.date_cours
                 WHERE e.date_cours BETWEEN %s AND %s AND e.classe_id = %s AND e.professeur_id = %s
                 ORDER BY e.date_cours, e.heure_debut
             """, (lundi, dimanche, classe_id, prof_id))
@@ -234,7 +241,8 @@ def emploi_du_temps():
                 FROM emplois_du_temps e
                 JOIN classes c ON e.classe_id = c.id
                 LEFT JOIN users u ON e.professeur_id = u.id
-                LEFT JOIN professeur_absences pa ON pa.professeur_id = e.professeur_id AND pa.date_absence = e.date_cours
+                LEFT JOIN professeur_absences pa
+                    ON pa.professeur_id = e.professeur_id AND pa.date_absence = e.date_cours
                 WHERE e.date_cours BETWEEN %s AND %s AND e.professeur_id = %s
                 ORDER BY e.date_cours, e.heure_debut
             """, (lundi, dimanche, prof_id))
