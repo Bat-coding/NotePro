@@ -23,7 +23,7 @@ USER notepro
 
 # FIXED [VULN-006]: Ajouter un HEALTHCHECK pour détecter les pannes silencieuses
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')" || exit 1
+    CMD python -c "import urllib.request, os; urllib.request.urlopen('http://localhost:' + os.environ.get('PORT', '5000') + '/health')" || exit 1
 
 # FIXED [VULN-017]: Supprimer --reload (mode développement) pour la production
-CMD ["sh", "-c", "python db_init.py && gunicorn --bind 0.0.0.0:5000 --timeout 120 --workers 2 'app:create_app()'"]
+CMD ["sh", "-c", "python db_init.py && gunicorn --bind 0.0.0.0:${PORT:-5000} --timeout 120 --workers 2 'app:create_app()'"]
