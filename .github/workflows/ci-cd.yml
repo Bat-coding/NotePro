@@ -112,8 +112,7 @@ jobs:
 
       # ── 06 OWASP ZAP DAST ─────────────────────────────────────────────────
       - name: OWASP ZAP Baseline Scan
-        # FIXED [VULN-007]: Épingler zaproxy/action-baseline par SHA
-        uses: zaproxy/action-baseline@7cea08522cd386f6c675776d5e4296aecf61f33b  # v0.12.0
+        uses: zaproxy/action-baseline@v0.14.0
         with:
           target: 'http://localhost:5001'
           fail_action: false
@@ -123,11 +122,9 @@ jobs:
       # ── 08 DÉPLOIEMENT SUR RAILWAY ────────────────────────────────────────
       - name: Deploy to Railway
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        # On installe le CLI Railway et on déploie. 
-        # --detach permet de ne pas attendre la fin du déploiement dans GitHub Actions
         run: |
           npm i -g @railway/cli
-          railway up --detach
+          railway up --detach --service NotePro
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
