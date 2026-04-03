@@ -105,6 +105,17 @@ jobs:
           allow_issue_writing: false
         continue-on-error: true
 
+      # ── 08 DÉPLOIEMENT SUR RAILWAY ────────────────────────────────────────
+      - name: Deploy to Railway
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        # On installe le CLI Railway et on déploie. 
+        # --detach permet de ne pas attendre la fin du déploiement dans GitHub Actions
+        run: |
+          npm i -g @railway/cli
+          railway up --detach
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
       # ── 07 ARRÊT ──────────────────────────────────────────────────────────
       - name: Stop containers
         if: always()  # Toujours nettoyer même si les étapes précédentes ont échoué
