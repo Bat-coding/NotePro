@@ -1,9 +1,9 @@
 # app/routes/professeur.py
-from flask import Blueprint, render_template, request, redirect, flash, session, Response
+from flask import Blueprint, render_template, request, redirect, flash, Response
 from flask_login import current_user  # FIXED [VULN-015]: Utiliser current_user Flask-Login
 from app.decorators import role_required
 from app.models import get_db
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta
 import uuid
 
 prof_bp = Blueprint('professeur', __name__)

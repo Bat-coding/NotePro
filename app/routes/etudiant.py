@@ -1,5 +1,5 @@
 # app/routes/etudiant.py
-from flask import Blueprint, render_template, session, request, Response, current_app, redirect, flash
+from flask import Blueprint, render_template, session, request, Response, redirect, flash
 from flask_login import current_user  # FIXED [VULN-015]: Importer current_user Flask-Login
 from app.decorators import role_required
 from app.models import get_db, get_notes_etudiant

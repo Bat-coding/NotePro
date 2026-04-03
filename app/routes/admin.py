@@ -4,7 +4,7 @@ from flask_login import current_user  # FIXED [VULN-015]: Utiliser current_user 
 from app.decorators import role_required
 from app.models import get_db
 from app import bcrypt
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta
 import uuid
 import re
 import json

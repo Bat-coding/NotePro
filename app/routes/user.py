@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, current_app, redirect, flash, session
+from flask import Blueprint, render_template, request, current_app, redirect, flash
 from flask_login import current_user, login_required
 from app.models import get_db, db, User
 from app import bcrypt
@@ -10,6 +10,7 @@ import qrcode
 import qrcode.image.svg
 import base64
 from io import BytesIO
+import re
 
 user_bp = Blueprint('user', __name__)
 
@@ -86,7 +87,6 @@ def parametres():
             queries.append("telephone = NULL")
 
         if new_password:
-            import re
             if len(new_password) < 15 or not re.search(r"[!@#$%^&*(),.?\":{}|<>]", new_password):
                 flash("Le nouveau mot de passe doit contenir au moins 15 caractères et un caractère spécial.", 'danger')
                 return redirect('/user/parametres')
