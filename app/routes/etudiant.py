@@ -1,14 +1,11 @@
 # app/routes/etudiant.py
-from flask import Blueprint, render_template, session, request, Response, redirect, flash
+from flask import Blueprint, render_template, request, Response
 from flask_login import current_user  # FIXED [VULN-015]: Importer current_user Flask-Login
 from app.decorators import role_required
 from app.models import get_db, get_notes_etudiant
 from datetime import date, timedelta
-from app import bcrypt
 import uuid
-import os
 import imghdr  # FIXED [VULN-008]: Pour validation du type MIME réel (magic bytes)
-from werkzeug.utils import secure_filename
 
 etu_bp = Blueprint('etudiant', __name__)
 
@@ -106,7 +103,8 @@ def index():
     if classe_id:
         cur.execute("SELECT nom FROM classes WHERE id = %s", (classe_id,))
         row_n = cur.fetchone()
-        if row_n: classe_nom = row_n['nom']
+        if row_n:
+            classe_nom = row_n['nom']
 
     # KPI 1: Moyenne Générale
     notes = get_notes_etudiant(etudiant_id)
@@ -427,4 +425,3 @@ def cantine():
                            next_semaine=next_semaine,
                            titre_semaine=titre_semaine,
                            today=today)
-

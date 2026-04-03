@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, current_app, redirect, flash
 from flask_login import current_user, login_required
-from app.models import get_db, db, User
+from app.models import get_db
 from app import bcrypt
 import os
 import uuid
@@ -17,14 +17,17 @@ user_bp = Blueprint('user', __name__)
 ALLOWED_IMAGE_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif', 'webp'}
 ALLOWED_IMAGE_MIMETYPES = {'jpeg', 'png', 'gif', 'webp', 'bmp'}
 
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_IMAGE_EXTENSIONS
+
 
 def validate_image_content(file_stream):
     header = file_stream.read(512)
     file_stream.seek(0)
     fmt = imghdr.what(None, header)
     return fmt in ALLOWED_IMAGE_MIMETYPES
+
 
 @user_bp.route('/parametres', methods=['GET', 'POST'])
 @login_required

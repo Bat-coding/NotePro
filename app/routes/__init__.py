@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 
 main_bp = Blueprint('main', __name__)
 
+
 @main_bp.route('/')
 def home():
     if current_user.is_authenticated:

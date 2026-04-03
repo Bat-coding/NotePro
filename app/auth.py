@@ -71,6 +71,7 @@ def verify_2fa():
 
     return render_template('verify_2fa.html')
 
+
 @auth_bp.route('/logout')
 @login_required
 def logout():

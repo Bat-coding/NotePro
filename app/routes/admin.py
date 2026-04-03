@@ -1,5 +1,5 @@
 # app/routes/admin.py
-from flask import Blueprint, render_template, request, redirect, flash, Response, url_for
+from flask import Blueprint, render_template, request, redirect, flash, Response
 from flask_login import current_user  # FIXED [VULN-015]: Utiliser current_user Flask-Login
 from app.decorators import role_required
 from app.models import get_db
@@ -7,7 +7,6 @@ from app import bcrypt
 from datetime import date, timedelta
 import uuid
 import re
-import json
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -233,7 +232,11 @@ def class_detail(id):
     """, (id,))
     etudiants_dispo = cur.fetchall()
 
-    return render_template('admin/classe_detail.html', classe=classe, etudiants=etudiants, etudiants_dispo=etudiants_dispo)
+    return render_template(
+        'admin/classe_detail.html',
+        classe=classe,
+        etudiants=etudiants,
+        etudiants_dispo=etudiants_dispo)
 
 
 @admin_bp.route('/classes/edit/<int:id>', methods=['POST'])
@@ -377,6 +380,8 @@ def admin_change_pwd(id):
     return redirect('/admin/users')
 
 # ── EMPLOIS DU TEMPS ──────────────────────────────────────────────────────────
+
+
 @admin_bp.route('/emplois')
 @role_required('admin')
 def emplois():
@@ -816,6 +821,7 @@ def etudiant_absences():
 
     return render_template('admin/etudiant_absences.html', absences=absences_list)
 
+
 @admin_bp.route('/etudiant_absences/justifier/<int:id>', methods=['POST'])
 @role_required('admin')
 def justifier_absence(id):
@@ -825,6 +831,7 @@ def justifier_absence(id):
     conn.commit()
     flash('Absence marquée comme justifiée.', 'success')
     return redirect('/admin/etudiant_absences')
+
 
 @admin_bp.route('/etudiant_absences/delete/<int:id>', methods=['POST'])
 @role_required('admin')

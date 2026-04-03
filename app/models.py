@@ -46,6 +46,7 @@ def get_db():
         )
     return g.db_conn
 
+
 def get_notes_etudiant(etudiant_id):
     conn = get_db()
     cur = conn.cursor(dictionary=True)
