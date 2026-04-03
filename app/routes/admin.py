@@ -1,6 +1,5 @@
 # app/routes/admin.py
 from flask import Blueprint, render_template, request, redirect, flash, Response
-from flask_login import login_required
 from app.decorators import role_required
 from app.models import get_db
 from app import bcrypt
