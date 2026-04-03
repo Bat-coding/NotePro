@@ -72,7 +72,7 @@ jobs:
       - name: pip-audit - Scan dépendances (CVE)
         # FIXED [INFO-002]: pip-audit NE doit PAS avoir continue-on-error sur des CVE critiques
         # Le pipeline échoue si des CVE critiques sont détectées
-        run: pip-audit -r requirements.txt --severity critical
+        run: pip-audit -r requirements.txt
 
       - name: pip-audit - Scan complet (non bloquant pour les warnings)
         run: pip-audit -r requirements.txt
