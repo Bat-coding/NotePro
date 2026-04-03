@@ -412,6 +412,7 @@ def emplois():
 
     cur.execute("SELECT * FROM classes ORDER BY nom")
     classes = cur.fetchall()
+
     cur.execute("SELECT id, username FROM users WHERE role = 'professeur' ORDER BY username")
     profs = cur.fetchall()
 
