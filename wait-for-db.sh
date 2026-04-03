@@ -1,11 +1,9 @@
 #!/bin/bash
-# FIXED [VULN-001]: Suppression des credentials root codés en dur (rootpassword)
-# Le script utilise maintenant les variables d'environnement injectées par Docker
-
 echo "Waiting for MySQL..."
 
-# FIXED [VULN-001]: Utiliser les variables d'environnement au lieu de credentials en clair
-# DB_USER et DB_PASSWORD sont injectés via le fichier .env de docker-compose
+MAX_RETRIES=30
+COUNT=0
+
 while ! python -c "
 import mysql.connector, os
 mysql.connector.connect(
@@ -14,6 +12,12 @@ mysql.connector.connect(
     password=os.getenv('DB_PASSWORD', ''),
     database=os.getenv('DB_NAME', 'notepro')
 )" 2>/dev/null; do
+  COUNT=$((COUNT+1))
+  if [ $COUNT -ge $MAX_RETRIES ]; then
+    echo "MySQL not reachable after $MAX_RETRIES attempts, exiting."
+    exit 1
+  fi
+  echo "Attempt $COUNT/$MAX_RETRIES..."
   sleep 2
 done
 
