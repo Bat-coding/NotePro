@@ -79,6 +79,21 @@ jobs:
         continue-on-error: true
 
       # ── 04 BUILD DOCKER ───────────────────────────────────────────────────
+      - name: Créer le fichier .env
+        run: |
+          echo "SECRET_KEY=${{ secrets.CI_SECRET_KEY }}" >> .env
+          echo "MYSQL_ROOT_PASSWORD=${{ secrets.CI_MYSQL_ROOT_PASSWORD }}" >> .env
+          echo "MYSQL_PASSWORD=${{ secrets.CI_MYSQL_PASSWORD }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.CI_MYSQL_PASSWORD }}" >> .env
+          echo "DB_HOST=db" >> .env
+          echo "DB_USER=notepro" >> .env
+          echo "DB_NAME=notepro" >> .env
+          echo "MYSQL_DATABASE=notepro" >> .env
+          echo "MYSQL_USER=notepro" >> .env
+          echo "DATABASE_URL=mysql+mysqlconnector://notepro:${{ secrets.CI_MYSQL_PASSWORD }}@db/notepro" >> .env
+          echo "FLASK_ENV=development" >> .env
+          echo "FLASK_DEBUG=false" >> .env
+
       - name: Build Docker image
         run: docker compose build
 
