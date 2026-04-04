@@ -1,130 +1,501 @@
 {% extends "base.html" %}
 {% block content %}
-<header class="page-header">
-    <h1 class="page-title">Gestion des Utilisateurs</h1>
-</header>
+<style>
+    body {
+        background: #e8eaed !important;
+        font-family: Arial, sans-serif;
+    }
 
-<div class="table-container p-4 mb-4">
-    <h6 class="mb-4 font-weight-bold text-primary"><i class="bi bi-person-plus-fill"></i> Ajouter un nouvel utilisateur</h6>
-    <form method="POST" action="/admin/users/add">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <div class="row g-3">
-            <div class="col-md-4">
-                <input type="text" name="username" class="form-control" placeholder="Nom d'utilisateur" required>
+    /* ── En-tête ─────────────────────────────────── */
+    .pn-page-header {
+        margin-bottom: 10px;
+        padding: 12px 0 10px;
+        border-bottom: 2px solid #3a6ea5;
+    }
+
+    .pn-page-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e293b;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin: 0;
+    }
+
+    /* ── Bloc formulaire ─────────────────────────── */
+    .pn-form-block {
+        background: #fff;
+        border: 1px solid #d0d3d8;
+        margin-bottom: 8px;
+    }
+
+    .pn-form-header {
+        padding: 7px 14px;
+        background: #3a6ea5;
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+    }
+
+    .pn-form-body {
+        padding: 14px;
+        display: flex;
+        gap: 8px;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .pn-field-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+        min-width: 160px;
+    }
+
+    .pn-field-wrap label {
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: #8a939e;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
+    .pn-input,
+    .pn-select {
+        border: 1px solid #b8bdc3;
+        border-radius: 0;
+        padding: 8px 10px;
+        font-size: 0.84rem;
+        font-family: Arial, sans-serif;
+        color: #1e293b;
+        outline: none;
+        background: #fff;
+        transition: border-color .15s;
+        width: 100%;
+        height: 36px;
+    }
+
+    .pn-input:focus,
+    .pn-select:focus {
+        border-color: #3a6ea5;
+    }
+
+    .pn-input::placeholder {
+        color: #b8bdc3;
+    }
+
+    .pn-btn-add {
+        background: #3a6ea5;
+        color: #fff;
+        border: none;
+        padding: 0 18px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        font-family: Arial, sans-serif;
+        cursor: pointer;
+        height: 36px;
+        white-space: nowrap;
+        border-radius: 0;
+        transition: background .15s;
+        flex-shrink: 0;
+        align-self: flex-end;
+    }
+
+    .pn-btn-add:hover {
+        background: #2d5a8a;
+    }
+
+    /* ── Tableau ─────────────────────────────────── */
+    .pn-table-block {
+        background: #fff;
+        border: 1px solid #d0d3d8;
+    }
+
+    .pn-table-header {
+        padding: 7px 14px;
+        background: #4a5568;
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+    }
+
+    .pn-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.84rem;
+    }
+
+    .pn-table thead th {
+        background: #f0f2f4;
+        padding: 8px 14px;
+        text-align: left;
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: #8a939e;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        border-bottom: 1px solid #d0d3d8;
+        border-right: 1px solid #e4e6e9;
+    }
+
+    .pn-table thead th:last-child {
+        border-right: none;
+        text-align: right;
+    }
+
+    .pn-table tbody td {
+        padding: 10px 14px;
+        border-bottom: 1px solid #eef0f2;
+        color: #1e293b;
+        vertical-align: middle;
+        border-right: 1px solid #f0f2f4;
+    }
+
+    .pn-table tbody td:last-child {
+        border-right: none;
+    }
+
+    .pn-table tbody tr:hover {
+        background: #f6f7f8;
+    }
+
+    .pn-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* ── Badges rôle ─────────────────────────────── */
+    .pn-role {
+        font-size: 0.62rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        padding: 2px 7px;
+        display: inline-block;
+        color: #fff;
+    }
+
+    .pn-role-admin {
+        background: #b91c1c;
+    }
+
+    .pn-role-prof {
+        background: #1d6fa4;
+    }
+
+    .pn-role-etudiant {
+        background: #4b5563;
+    }
+
+    /* ── Badges sécurité ─────────────────────────── */
+    .pn-sec {
+        font-size: 0.62rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        padding: 2px 7px;
+        display: inline-block;
+    }
+
+    .pn-sec-on {
+        background: #d1fae5;
+        color: #065f46;
+        border: 1px solid #6ee7b7;
+    }
+
+    .pn-sec-off {
+        background: #f1f5f9;
+        color: #64748b;
+        border: 1px solid #cbd5e1;
+    }
+
+    /* ── Boutons actions ─────────────────────────── */
+    .pn-actions {
+        display: flex;
+        gap: 5px;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .pn-btn-action {
+        font-size: 0.62rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        padding: 3px 9px;
+        border-radius: 0;
+        cursor: pointer;
+        font-family: Arial, sans-serif;
+        transition: background .15s, color .15s;
+        border: 1px solid;
+        background: none;
+    }
+
+    .pn-btn-2fa {
+        color: #92400e;
+        background: #fffbeb;
+        border-color: #fcd34d;
+    }
+
+    .pn-btn-2fa:hover {
+        background: #fcd34d;
+    }
+
+    .pn-btn-pwd {
+        color: #1d6fa4;
+        background: #eff6ff;
+        border-color: #bfdbfe;
+    }
+
+    .pn-btn-pwd:hover {
+        background: #dbeafe;
+    }
+
+    .pn-btn-del {
+        color: #b91c1c;
+        background: #fff0f0;
+        border-color: #fca5a5;
+    }
+
+    .pn-btn-del:hover {
+        background: #b91c1c;
+        color: #fff;
+        border-color: #b91c1c;
+    }
+
+    .pn-id {
+        color: #c0c8d0;
+        font-size: 0.72rem;
+        font-weight: 700;
+    }
+
+    .pn-empty {
+        text-align: center;
+        padding: 3.5rem;
+        color: #a0a8b0;
+        font-size: 0.8rem;
+        font-style: italic;
+    }
+
+    /* ── Modal ───────────────────────────────────── */
+    .pn-modal-content {
+        border-radius: 0;
+        border: 1px solid #b8bdc3;
+        box-shadow: 2px 4px 12px rgba(0, 0, 0, .18);
+    }
+
+    .pn-modal-header {
+        padding: 7px 14px;
+        background: #3a6ea5;
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .pn-modal-body {
+        padding: 16px;
+    }
+
+    .pn-modal-footer {
+        padding: 8px 14px;
+        background: #f0f2f4;
+        border-top: 1px solid #d0d3d8;
+        display: flex;
+        justify-content: flex-end;
+        gap: 6px;
+    }
+
+    .pn-modal-field-lbl {
+        font-size: 0.62rem;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #8a939e;
+        margin-bottom: 3px;
+        font-weight: 700;
+    }
+
+    .pn-modal-note {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin-bottom: 10px;
+    }
+
+    .pn-btn-cancel {
+        background: #dde0e4;
+        color: #2c3e50;
+        border: 1px solid #b8bdc3;
+        padding: 4px 14px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        font-family: Arial, sans-serif;
+        cursor: pointer;
+        border-radius: 0;
+    }
+
+    .pn-btn-cancel:hover {
+        background: #c8cdd3;
+    }
+
+    .pn-btn-save {
+        background: #3a6ea5;
+        color: #fff;
+        border: 1px solid #2d5a8a;
+        padding: 4px 14px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        font-family: Arial, sans-serif;
+        cursor: pointer;
+        border-radius: 0;
+    }
+
+    .pn-btn-save:hover {
+        background: #2d5a8a;
+    }
+</style>
+
+<!-- ── En-tête ─────────────────────────────────────── -->
+<div class="pn-page-header">
+    <h1 class="pn-page-title">Gestion des Utilisateurs</h1>
+</div>
+
+<!-- ── Formulaire ajout ────────────────────────────── -->
+<div class="pn-form-block">
+    <div class="pn-form-header">Ajouter un nouvel utilisateur</div>
+    <div class="pn-form-body">
+        <form method="POST" action="/admin/users/add"
+            style="display:flex;gap:8px;align-items:flex-end;flex:1;flex-wrap:wrap;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="pn-field-wrap">
+                <label>Nom d'utilisateur</label>
+                <input class="pn-input" type="text" name="username" placeholder="Nom d'utilisateur" required>
             </div>
-            <div class="col-md-4">
-                <input type="password" name="password" class="form-control" placeholder="Mot de passe (15 car, 1 spécial)" minlength="15" required>
+            <div class="pn-field-wrap" style="flex:2;">
+                <label>Mot de passe</label>
+                <input class="pn-input" type="password" name="password" placeholder="15 car. min, 1 caractère spécial"
+                    minlength="15" required>
             </div>
-            <div class="col-md-2">
-                <select name="role" class="form-select">
+            <div class="pn-field-wrap" style="flex:0 0 130px;min-width:130px;">
+                <label>Rôle</label>
+                <select class="pn-select" name="role">
                     <option value="etudiant">Étudiant</option>
                     <option value="professeur">Professeur</option>
                     <option value="admin">Admin</option>
                 </select>
             </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100 font-weight-bold">
-                    <i class="bi bi-plus-lg"></i> Ajouter
-                </button>
-            </div>
-        </div>
-    </form>
+            <button type="submit" class="pn-btn-add">+ Ajouter</button>
+        </form>
+    </div>
 </div>
 
-<div class="table-container">
-    <table class="modern-table">
+<!-- ── Tableau utilisateurs ────────────────────────── -->
+<div class="pn-table-block">
+    <div class="pn-table-header">Utilisateurs</div>
+    <table class="pn-table">
         <thead>
             <tr>
-                <th>#</th>
+                <th style="width:50px;">#</th>
                 <th>Identifiant</th>
-                <th>Rôle</th>
-                <th>Sécurité</th>
-                <th style="text-align:right">Actions</th>
+                <th style="width:110px;">Rôle</th>
+                <th style="width:120px;">Sécurité</th>
+                <th style="width:220px;text-align:right;">Actions</th>
             </tr>
         </thead>
         <tbody>
-        {% for u in users %}
+            {% for u in users %}
             <tr>
-                <td class="text-muted small">#{{ u.id }}</td>
-                <td>
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="bg-light rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                            <i class="bi bi-person text-muted"></i>
-                        </div>
-                        <span class="font-weight-600">{{ u.username }}</span>
-                    </div>
-                </td>
+                <td><span class="pn-id">#{{ u.id }}</span></td>
+                <td><span style="font-weight:700;">{{ u.username }}</span></td>
                 <td>
                     {% if u.role == 'admin' %}
-                        <span class="badge badge-admin">Admin</span>
+                    <span class="pn-role pn-role-admin">Admin</span>
                     {% elif u.role == 'professeur' %}
-                        <span class="badge badge-prof">Professeur</span>
+                    <span class="pn-role pn-role-prof">Professeur</span>
                     {% else %}
-                        <span class="badge badge-student">Étudiant</span>
+                    <span class="pn-role pn-role-etudiant">Étudiant</span>
                     {% endif %}
                 </td>
                 <td>
                     {% if u.totp_enabled %}
-                        <span class="badge bg-success"><i class="bi bi-shield-lock-fill"></i> 2FA Actif</span>
+                    <span class="pn-sec pn-sec-on">2FA Actif</span>
                     {% else %}
-                        <span class="badge bg-secondary">Désactivé</span>
+                    <span class="pn-sec pn-sec-off">Désactivé</span>
                     {% endif %}
                 </td>
-                <td style="text-align:right">
-                    {% if u.totp_enabled and u.role != 'admin' %}
-                    <form method="POST" action="/admin/users/delete_2fa/{{ u.id }}" style="display:inline;" onsubmit="return confirm('Désactiver le 2FA pour cet utilisateur ?')">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="btn btn-sm btn-link text-warning text-decoration-none font-weight-600" title="Désactiver 2FA">
-                            <i class="bi bi-shield-slash"></i>
+                <td>
+                    <div class="pn-actions">
+                        {% if u.totp_enabled and u.role != 'admin' %}
+                        <form method="POST" action="/admin/users/delete_2fa/{{ u.id }}" style="display:inline;"
+                            onsubmit="return confirm('Désactiver le 2FA pour cet utilisateur ?')">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="pn-btn-action pn-btn-2fa">
+                                Désact. 2FA
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        {% if u.role != 'admin' %}
+                        <button class="pn-btn-action pn-btn-pwd" data-bs-toggle="modal"
+                            data-bs-target="#pwdModal{{ u.id }}">
+                            Mot de passe
                         </button>
-                    </form>
-                    {% endif %}
-                    
-                    {% if u.role != 'admin' %}
-                    <button class="btn btn-sm btn-link text-info text-decoration-none font-weight-600" title="Changer Mot de passe" data-bs-toggle="modal" data-bs-target="#pwdModal{{ u.id }}">
-                        <i class="bi bi-key"></i>
-                    </button>
-                    {% endif %}
-                    
-                    <form method="POST" action="/admin/users/delete/{{ u.id }}" style="display:inline;" onsubmit="return confirm('Supprimer cet utilisateur ? Cette action est irréversible.')">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none font-weight-600">
-                            <i class="bi bi-trash3"></i> Supprimer
-                        </button>
-                    </form>
+                        {% endif %}
+
+                        <form method="POST" action="/admin/users/delete/{{ u.id }}" style="display:inline;"
+                            onsubmit="return confirm('Supprimer cet utilisateur ? Cette action est irréversible.')">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="pn-btn-action pn-btn-del">Supprimer</button>
+                        </form>
+                    </div>
                 </td>
             </tr>
-        {% else %}
-            <tr><td colspan="5" class="text-center py-5 text-muted">Aucun utilisateur trouvé</td></tr>
-        {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="5" class="pn-empty">Aucun utilisateur trouvé.</td>
+            </tr>
+            {% endfor %}
         </tbody>
     </table>
 </div>
 
-<!-- Modals pour changer le mot de passe -->
+<!-- ── Modals changement mot de passe ─────────────── -->
 {% for u in users %}
 {% if u.role != 'admin' %}
 <div class="modal fade" id="pwdModal{{ u.id }}" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius:12px; border:none; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
-            <div class="modal-header bg-light">
-                <h5 class="modal-title fw-bold text-dark">
-                    <i class="bi bi-key me-2"></i> Changer le mot de passe
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content pn-modal-content">
+            <div class="pn-modal-header">
+                <span>Changer le mot de passe</span>
+                <button type="button" class="btn-close btn-close-white btn-sm" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" action="/admin/users/changepwd/{{ u.id }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <div class="modal-body p-4">
-                    <p class="small text-muted mb-3">Utilisateur ciblé : <strong class="text-dark">{{ u.username }}</strong></p>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold small text-secondary">Nouveau Mot de passe *</label>
-                        <input type="password" name="new_password" class="form-control" placeholder="15 caractères min, 1 caractère spécial" minlength="15" required>
-                    </div>
+                <div class="pn-modal-body">
+                    <p class="pn-modal-note">
+                        Utilisateur ciblé : <strong style="color:#1e293b;">{{ u.username }}</strong>
+                    </p>
+                    <div class="pn-modal-field-lbl">Nouveau mot de passe</div>
+                    <input class="pn-input" type="password" name="new_password"
+                        placeholder="15 caractères min, 1 caractère spécial" minlength="15" required
+                        style="width:100%;">
                 </div>
-                <div class="modal-footer border-0 p-3 bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                    <button type="submit" class="btn btn-primary fw-bold">Enregistrer</button>
+                <div class="pn-modal-footer">
+                    <button type="button" class="pn-btn-cancel" data-bs-dismiss="modal">Fermer</button>
+                    <button type="submit" class="pn-btn-save">Enregistrer</button>
                 </div>
             </form>
         </div>
@@ -134,12 +505,10 @@
 {% endfor %}
 
 <script nonce="{{ csp_nonce() }}">
-document.addEventListener("DOMContentLoaded", function() {
-    var modals = document.querySelectorAll('[id^="pwdModal"]');
-    modals.forEach(function(modal) {
-        document.body.appendChild(modal);
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('[id^="pwdModal"]').forEach(function (m) {
+            document.body.appendChild(m);
+        });
     });
-});
 </script>
-
 {% endblock %}

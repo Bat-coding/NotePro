@@ -1,72 +1,265 @@
 {% extends "base.html" %}
 {% block content %}
-<header class="page-header d-flex justify-content-between align-items-center">
-    <div>
-        <h1 class="page-title"><i class="bi bi-person-x-fill text-danger"></i> Absences & Retards (Élèves)</h1>
-        <p class="text-muted small mb-0">Gestion et justification des absences signalées par les professeurs.</p>
-    </div>
-</header>
+<style>
+    body {
+        background: #e8eaed !important;
+        font-family: Arial, sans-serif;
+    }
 
-<div class="table-container p-4">
-    <table class="modern-table">
+    .pn-page-header {
+        margin-bottom: 12px;
+        padding: 14px 0 12px;
+        border-bottom: 2px solid #3a6ea5;
+    }
+
+    .pn-page-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin: 0 0 4px 0;
+    }
+
+    .pn-page-sub {
+        font-size: 0.82rem;
+        color: #8a939e;
+        margin: 0;
+    }
+
+    .pn-table-block {
+        background: #fff;
+        border: 1px solid #d0d3d8;
+    }
+
+    .pn-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+    }
+
+    .pn-table thead th {
+        background: #f0f2f4;
+        padding: 11px 16px;
+        text-align: left;
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: #8a939e;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        border-bottom: 1px solid #d0d3d8;
+        border-right: 1px solid #e4e6e9;
+    }
+
+    .pn-table thead th:last-child {
+        border-right: none;
+        text-align: right;
+    }
+
+    .pn-table tbody td {
+        padding: 14px 16px;
+        border-bottom: 1px solid #eef0f2;
+        color: #1e293b;
+        vertical-align: middle;
+        border-right: 1px solid #f0f2f4;
+        font-size: 0.92rem;
+    }
+
+    .pn-table tbody td:last-child {
+        border-right: none;
+    }
+
+    .pn-table tbody tr:hover {
+        background: #f6f7f8;
+    }
+
+    .pn-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .pn-date {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #1e293b;
+        white-space: nowrap;
+    }
+
+    .pn-eleve-name {
+        font-weight: 700;
+        font-size: 0.92rem;
+        color: #1e293b;
+    }
+
+    .pn-type {
+        font-size: 0.74rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        padding: 3px 10px;
+        display: inline-block;
+    }
+
+    .pn-type-abs {
+        background: #fee2e2;
+        color: #b91c1c;
+        border: 1px solid #fca5a5;
+    }
+
+    .pn-type-ret {
+        background: #fef9c3;
+        color: #92400e;
+        border: 1px solid #fcd34d;
+    }
+
+    .pn-cours-info {
+        font-size: 0.82rem;
+        color: #64748b;
+        line-height: 1.7;
+    }
+
+    .pn-cours-info span {
+        display: block;
+    }
+
+    .pn-statut {
+        font-size: 0.74rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        padding: 3px 10px;
+        display: inline-block;
+    }
+
+    .pn-statut-ok {
+        background: #d1fae5;
+        color: #065f46;
+        border: 1px solid #6ee7b7;
+    }
+
+    .pn-statut-ko {
+        background: #fee2e2;
+        color: #b91c1c;
+        border: 1px solid #fca5a5;
+    }
+
+    .pn-actions {
+        display: flex;
+        gap: 6px;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .pn-btn-action {
+        font-size: 0.74rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        padding: 5px 13px;
+        border-radius: 0;
+        cursor: pointer;
+        font-family: Arial, sans-serif;
+        transition: background .15s, color .15s;
+        border: 1px solid;
+        background: none;
+    }
+
+    .pn-btn-justify {
+        color: #065f46;
+        background: #d1fae5;
+        border-color: #6ee7b7;
+    }
+
+    .pn-btn-justify:hover {
+        background: #065f46;
+        color: #fff;
+        border-color: #065f46;
+    }
+
+    .pn-btn-del {
+        color: #b91c1c;
+        background: #fff0f0;
+        border-color: #fca5a5;
+    }
+
+    .pn-btn-del:hover {
+        background: #b91c1c;
+        color: #fff;
+        border-color: #b91c1c;
+    }
+
+    .pn-empty {
+        text-align: center;
+        padding: 4.5rem;
+        color: #a0a8b0;
+        font-size: 0.92rem;
+        font-style: italic;
+    }
+</style>
+
+<div class="pn-page-header">
+    <h1 class="pn-page-title">Absences &amp; Retards (Élèves)</h1>
+    <p class="pn-page-sub">Gestion et justification des absences signalées par les professeurs.</p>
+</div>
+
+<div class="pn-table-block">
+    <table class="pn-table">
         <thead>
             <tr>
-                <th>Date</th>
+                <th style="width:105px;">Date</th>
                 <th>Élève</th>
-                <th>Type</th>
-                <th>Cour & Professeur</th>
-                <th>Statut</th>
-                <th style="text-align:right">Actions</th>
+                <th style="width:115px;">Type</th>
+                <th>Cours &amp; Professeur</th>
+                <th style="width:135px;">Statut</th>
+                <th style="width:210px;text-align:right;">Actions</th>
             </tr>
         </thead>
         <tbody>
             {% for a in absences %}
             <tr>
-                <td class="font-weight-bold text-dark">{{ a.date_absence.strftime('%d/%m/%Y') }}</td>
+                <td><span class="pn-date">{{ a.date_absence.strftime('%d/%m/%Y') }}</span></td>
+                <td><span class="pn-eleve-name">{{ a.etudiant_nom }}</span></td>
                 <td>
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="bg-light rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                            <i class="bi bi-person text-primary"></i>
-                        </div>
-                        <span class="font-weight-600">{{ a.etudiant_nom }}</span>
+                    {% if a.type_absence == 'absence' %}
+                    <span class="pn-type pn-type-abs">Absence</span>
+                    {% else %}
+                    <span class="pn-type pn-type-ret">{{ a.type_absence|capitalize }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="pn-cours-info">
+                        <span>{{ a.prof_nom or 'Non attribué' }}</span>
+                        <span style="color:#a0a8b0;">{{ a.classe_nom or 'Classe ext.' }}</span>
                     </div>
                 </td>
                 <td>
-                    <span class="badge {{ 'bg-danger' if a.type_absence == 'absence' else 'bg-warning text-dark' }}">{{ a.type_absence|capitalize }}</span>
-                </td>
-                <td class="text-muted small">
-                    <i class="bi bi-person-video3"></i> {{ a.prof_nom or 'Non attribué' }} <br>
-                    <i class="bi bi-building"></i> {{ a.classe_nom or 'Classe ext.' }}
-                </td>
-                <td>
                     {% if a.justifiee %}
-                        <span class="badge bg-success bg-opacity-10 text-success"><i class="bi bi-check-circle-fill"></i> Justifiée</span>
+                    <span class="pn-statut pn-statut-ok">Justifiée</span>
                     {% else %}
-                        <span class="badge bg-danger bg-opacity-10 text-danger"><i class="bi bi-exclamation-circle-fill"></i> A justifier</span>
+                    <span class="pn-statut pn-statut-ko">À justifier</span>
                     {% endif %}
                 </td>
-                <td style="text-align:right">
-                    <div class="d-flex justify-content-end gap-2">
+                <td>
+                    <div class="pn-actions">
                         {% if not a.justifiee %}
-                        <form method="POST" action="/admin/etudiant_absences/justifier/{{ a.id }}" style="display:inline;" onsubmit="return confirm('Marquer cette absence comme justifiée ?')">
+                        <form method="POST" action="/admin/etudiant_absences/justifier/{{ a.id }}"
+                            style="display:inline;"
+                            onsubmit="return confirm('Marquer cette absence comme justifiée ?')">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="btn btn-sm btn-outline-success font-weight-600">
-                                <i class="bi bi-check-lg"></i> Justifier
-                            </button>
+                            <button type="submit" class="pn-btn-action pn-btn-justify">Justifier</button>
                         </form>
                         {% endif %}
-                        
-                        <form method="POST" action="/admin/etudiant_absences/delete/{{ a.id }}" style="display:inline;" onsubmit="return confirm('Supprimer ce signalement ?')">
+                        <form method="POST" action="/admin/etudiant_absences/delete/{{ a.id }}" style="display:inline;"
+                            onsubmit="return confirm('Supprimer ce signalement ?')">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="btn btn-sm btn-link text-danger font-weight-600 text-decoration-none p-0" style="padding-top:0.3rem !important;">
-                                <i class="bi bi-trash3"></i>
-                            </button>
+                            <button type="submit" class="pn-btn-action pn-btn-del">Supprimer</button>
                         </form>
                     </div>
                 </td>
             </tr>
             {% else %}
-            <tr><td colspan="6" class="text-center py-5 text-muted"><i class="bi bi-check2-circle" style="font-size:2rem;"></i><br>Aucune absence ou retard élève enregistré.</td></tr>
+            <tr>
+                <td colspan="6" class="pn-empty">Aucune absence ou retard élève enregistré.</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>

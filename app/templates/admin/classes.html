@@ -1,49 +1,289 @@
 {% extends "base.html" %}
 {% block content %}
-<header class="page-header">
-    <h1 class="page-title">Gestion des Classes</h1>
-</header>
+<style>
+    body {
+        background: #e8eaed !important;
+        font-family: Arial, sans-serif;
+    }
 
-<div class="table-container p-4 mb-4">
-    <h6 class="mb-4 font-weight-bold text-primary"><i class="bi bi-plus-circle-fill"></i> Ajouter une classe</h6>
-    <form method="POST" action="/admin/classes/add" class="d-flex gap-3">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <input type="text" name="nom" class="form-control" style="max-width:320px" placeholder="Ex: GCS2-A" required>
-        <button type="submit" class="btn btn-primary px-4 font-weight-bold">
-            <i class="bi bi-plus-lg"></i> Ajouter
-        </button>
-    </form>
+    /* ── En-tête de page ─────────────────────────── */
+    .pn-page-header {
+        margin-bottom: 10px;
+        padding: 12px 0 10px;
+        border-bottom: 2px solid #3a6ea5;
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+    }
+
+    .pn-page-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e293b;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin: 0;
+    }
+
+    /* ── Bloc formulaire ─────────────────────────── */
+    .pn-form-block {
+        background: #fff;
+        border: 1px solid #d0d3d8;
+        margin-bottom: 8px;
+    }
+
+    .pn-form-header {
+        padding: 7px 14px;
+        background: #3a6ea5;
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+    }
+
+    .pn-form-body {
+        padding: 14px;
+        display: flex;
+        gap: 10px;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .pn-field-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+        max-width: 360px;
+    }
+
+    .pn-field-wrap label {
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: #8a939e;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
+    .pn-input {
+        border: 1px solid #b8bdc3;
+        border-radius: 0;
+        padding: 8px 10px;
+        font-size: 0.84rem;
+        font-family: Arial, sans-serif;
+        color: #1e293b;
+        outline: none;
+        background: #fff;
+        transition: border-color .15s;
+        width: 100%;
+        height: 36px;
+    }
+
+    .pn-input:focus {
+        border-color: #3a6ea5;
+    }
+
+    .pn-input::placeholder {
+        color: #b8bdc3;
+    }
+
+    .pn-btn-add {
+        background: #3a6ea5;
+        color: #fff;
+        border: none;
+        padding: 0 18px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        font-family: Arial, sans-serif;
+        cursor: pointer;
+        height: 36px;
+        white-space: nowrap;
+        border-radius: 0;
+        transition: background .15s;
+        flex-shrink: 0;
+    }
+
+    .pn-btn-add:hover {
+        background: #2d5a8a;
+    }
+
+    /* ── Tableau ─────────────────────────────────── */
+    .pn-table-block {
+        background: #fff;
+        border: 1px solid #d0d3d8;
+    }
+
+    .pn-table-header {
+        padding: 7px 14px;
+        background: #4a5568;
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+    }
+
+    .pn-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.84rem;
+    }
+
+    .pn-table thead th {
+        background: #f0f2f4;
+        padding: 8px 14px;
+        text-align: left;
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: #8a939e;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        border-bottom: 1px solid #d0d3d8;
+        border-right: 1px solid #e4e6e9;
+    }
+
+    .pn-table thead th:last-child {
+        border-right: none;
+        text-align: right;
+    }
+
+    .pn-table tbody td {
+        padding: 10px 14px;
+        border-bottom: 1px solid #eef0f2;
+        color: #1e293b;
+        vertical-align: middle;
+        border-right: 1px solid #f0f2f4;
+    }
+
+    .pn-table tbody td:last-child {
+        border-right: none;
+    }
+
+    .pn-table tbody tr:hover {
+        background: #f6f7f8;
+    }
+
+    .pn-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* ── Boutons actions ─────────────────────────── */
+    .pn-actions {
+        display: flex;
+        gap: 6px;
+        justify-content: flex-end;
+    }
+
+    .pn-btn-manage,
+    .pn-btn-del {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        padding: 3px 10px;
+        border-radius: 0;
+        cursor: pointer;
+        font-family: Arial, sans-serif;
+        text-decoration: none;
+        display: inline-block;
+        transition: background .15s, color .15s;
+    }
+
+    .pn-btn-manage {
+        background: #eff6ff;
+        color: #1d6fa4;
+        border: 1px solid #bfdbfe;
+    }
+
+    .pn-btn-manage:hover {
+        background: #dbeafe;
+        color: #1d6fa4;
+    }
+
+    .pn-btn-del {
+        background: #fff0f0;
+        color: #b91c1c;
+        border: 1px solid #fca5a5;
+    }
+
+    .pn-btn-del:hover {
+        background: #b91c1c;
+        color: #fff;
+        border-color: #b91c1c;
+    }
+
+    /* Index # */
+    .pn-id {
+        color: #c0c8d0;
+        font-size: 0.72rem;
+        font-weight: 700;
+    }
+
+    .pn-empty {
+        text-align: center;
+        padding: 3.5rem;
+        color: #a0a8b0;
+        font-size: 0.8rem;
+        font-style: italic;
+    }
+</style>
+
+<!-- ── En-tête ─────────────────────────────────────── -->
+<div class="pn-page-header">
+    <h1 class="pn-page-title">Gestion des Classes</h1>
 </div>
 
-<div class="table-container">
-    <table class="modern-table">
+<!-- ── Formulaire ajout ────────────────────────────── -->
+<div class="pn-form-block">
+    <div class="pn-form-header">Ajouter une classe</div>
+    <div class="pn-form-body">
+        <form method="POST" action="/admin/classes/add"
+            style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="pn-field-wrap">
+                <label for="nom">Nom de la classe</label>
+                <input class="pn-input" type="text" id="nom" name="nom" placeholder="Ex: GCS2-A" required>
+            </div>
+            <button type="submit" class="pn-btn-add">+ Ajouter</button>
+        </form>
+    </div>
+</div>
+
+<!-- ── Tableau des classes ─────────────────────────── -->
+<div class="pn-table-block">
+    <div class="pn-table-header">Classes</div>
+    <table class="pn-table">
         <thead>
             <tr>
-                <th>#</th>
+                <th style="width:60px;">#</th>
                 <th>Nom de la classe</th>
-                <th style="text-align:right">Actions</th>
+                <th style="width:180px;text-align:right;">Actions</th>
             </tr>
         </thead>
         <tbody>
-        {% for c in classes %}
+            {% for c in classes %}
             <tr>
-                <td class="text-muted small">#{{ c.id }}</td>
-                <td><span class="font-weight-600">{{ c.nom }}</span></td>
-                <td style="text-align:right">
-                    <a href="/admin/classes/{{ c.id }}" class="btn btn-sm btn-link text-primary text-decoration-none font-weight-600 me-2">
-                        <i class="bi bi-pencil-square"></i> Gérer
-                    </a>
-                    <form method="POST" action="/admin/classes/delete/{{ c.id }}" style="display:inline;" onsubmit="return confirm('Supprimer cette classe ? Cette action est irréversible.')">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none font-weight-600">
-                            <i class="bi bi-trash3"></i> Supprimer
-                        </button>
-                    </form>
+                <td><span class="pn-id">#{{ c.id }}</span></td>
+                <td><span style="font-weight:700;">{{ c.nom }}</span></td>
+                <td>
+                    <div class="pn-actions">
+                        <a href="/admin/classes/{{ c.id }}" class="pn-btn-manage">Gérer</a>
+                        <form method="POST" action="/admin/classes/delete/{{ c.id }}" style="display:inline;"
+                            onsubmit="return confirm('Supprimer cette classe ? Cette action est irréversible.')">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="pn-btn-del">Supprimer</button>
+                        </form>
+                    </div>
                 </td>
             </tr>
-        {% else %}
-            <tr><td colspan="3" class="text-center py-5 text-muted">Aucune classe créée</td></tr>
-        {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="3" class="pn-empty">Aucune classe créée.</td>
+            </tr>
+            {% endfor %}
         </tbody>
     </table>
 </div>

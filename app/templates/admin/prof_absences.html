@@ -1,53 +1,242 @@
 {% extends "base.html" %}
 {% block content %}
 <style>
-.admin-card { background: white; border-radius: 1.25rem; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-.form-inline-custom { display:flex; gap:1rem; flex-wrap:wrap; align-items:flex-end; padding:1.5rem; }
-.form-group-c { display:flex; flex-direction:column; gap:0.4rem; flex:1; min-width:200px; }
-.form-group-c label { font-size:0.75rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; }
-.form-group-c select, .form-group-c input { border:1.5px solid #e2e8f0; border-radius:0.5rem; padding:0.6rem 0.8rem; font-size:0.85rem; outline:none; transition:0.2s; }
-.form-group-c select:focus, .form-group-c input:focus { border-color:#dc2626; }
-.btn-primary-c { background:linear-gradient(135deg,#dc2626,#991b1b); color:white; border:none; border-radius:0.5rem; padding:0.6rem 1.25rem; font-weight:600; font-size:0.85rem; cursor:pointer; height:42px; display:inline-flex; align-items:center; gap:0.5rem; }
-.btn-primary-c:hover { background:#991b1b; }
+    body {
+        background: #e8eaed !important;
+        font-family: Arial, sans-serif;
+    }
 
-.modern-table-c { width:100%; border-collapse:collapse; }
-.modern-table-c th { background:#f8fafc; padding:0.85rem 1.5rem; text-align:left; font-size:0.75rem; font-weight:700; color:#64748b; text-transform:uppercase; border-bottom:2px solid #e2e8f0; }
-.modern-table-c td { padding:1rem 1.5rem; border-bottom:1px solid #f1f5f9; vertical-align:middle; font-size:0.9rem; color:#334155; }
-.btn-del-c { color:#ef4444; background:#fef2f2; border:1px solid #fee2e2; padding:0.4rem 0.8rem; border-radius:0.4rem; font-size:0.8rem; text-decoration:none; font-weight:600; transition:0.2s; }
-.btn-del-c:hover { background:#ef4444; color:white; }
+    /* ── En-tête ─────────────────────────────────── */
+    .pn-page-header {
+        margin-bottom: 12px;
+        padding: 14px 0 12px;
+        border-bottom: 2px solid #3a6ea5;
+    }
+
+    .pn-page-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin: 0 0 4px 0;
+    }
+
+    .pn-page-sub {
+        font-size: 0.82rem;
+        color: #8a939e;
+        margin: 0;
+    }
+
+    /* ── Bloc formulaire ─────────────────────────── */
+    .pn-form-block {
+        background: #fff;
+        border: 1px solid #d0d3d8;
+        margin-bottom: 8px;
+    }
+
+    .pn-form-header {
+        padding: 7px 14px;
+        background: #b91c1c;
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+    }
+
+    .pn-form-body {
+        padding: 14px;
+        display: flex;
+        gap: 10px;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .pn-field-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .pn-field-wrap label {
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: #8a939e;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
+    .pn-input,
+    .pn-select {
+        border: 1px solid #b8bdc3;
+        border-radius: 0;
+        padding: 8px 10px;
+        font-size: 0.88rem;
+        font-family: Arial, sans-serif;
+        color: #1e293b;
+        outline: none;
+        background: #fff;
+        transition: border-color .15s;
+        width: 100%;
+        height: 38px;
+    }
+
+    .pn-input:focus,
+    .pn-select:focus {
+        border-color: #b91c1c;
+    }
+
+    .pn-btn-declare {
+        background: #b91c1c;
+        color: #fff;
+        border: none;
+        padding: 0 20px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        font-family: Arial, sans-serif;
+        cursor: pointer;
+        height: 38px;
+        white-space: nowrap;
+        border-radius: 0;
+        transition: background .15s;
+        flex-shrink: 0;
+        align-self: flex-end;
+    }
+
+    .pn-btn-declare:hover {
+        background: #991b1b;
+    }
+
+    /* ── Tableau ─────────────────────────────────── */
+    .pn-table-block {
+        background: #fff;
+        border: 1px solid #d0d3d8;
+    }
+
+    .pn-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+    }
+
+    .pn-table thead th {
+        background: #f0f2f4;
+        padding: 11px 16px;
+        text-align: left;
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: #8a939e;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        border-bottom: 1px solid #d0d3d8;
+        border-right: 1px solid #e4e6e9;
+    }
+
+    .pn-table thead th:last-child {
+        border-right: none;
+        text-align: right;
+    }
+
+    .pn-table tbody td {
+        padding: 14px 16px;
+        border-bottom: 1px solid #eef0f2;
+        color: #1e293b;
+        vertical-align: middle;
+        border-right: 1px solid #f0f2f4;
+        font-size: 0.92rem;
+    }
+
+    .pn-table tbody td:last-child {
+        border-right: none;
+    }
+
+    .pn-table tbody tr:hover {
+        background: #f6f7f8;
+    }
+
+    .pn-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .pn-prof-name {
+        font-weight: 700;
+        color: #b91c1c;
+    }
+
+    .pn-date-cell {
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 0.88rem;
+    }
+
+    .pn-btn-del {
+        font-size: 0.74rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        padding: 5px 13px;
+        border-radius: 0;
+        cursor: pointer;
+        font-family: Arial, sans-serif;
+        transition: background .15s, color .15s;
+        border: 1px solid #fca5a5;
+        background: #fff0f0;
+        color: #b91c1c;
+    }
+
+    .pn-btn-del:hover {
+        background: #b91c1c;
+        color: #fff;
+        border-color: #b91c1c;
+    }
+
+    .pn-empty {
+        text-align: center;
+        padding: 4rem;
+        color: #a0a8b0;
+        font-size: 0.92rem;
+        font-style: italic;
+    }
 </style>
 
-<header class="page-header">
-    <div style="display:flex;align-items:center;gap:1rem;">
-        <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#ef4444,#b91c1c);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(239,68,68,0.3);">
-            <i class="bi bi-person-x-fill" style="font-size:1.5rem;color:white;"></i>
-        </div>
-        <div>
-            <h1 class="page-title" style="margin:0;">Absences Professeurs</h1>
-            <p style="color:#64748b;font-size:0.875rem;margin:0.15rem 0 0;">Gérez les absences des professeurs. Elles annuleront les cours sur le planning étudiant.</p>
-        </div>
-    </div>
-</header>
-
-<div class="admin-card mb-4">
-    <form method="POST" action="/admin/prof_absences/add" class="form-inline-custom">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <div class="form-group-c">
-            <label>Professeur</label>
-            <select name="professeur_id" required>
-                {% for p in profs %}<option value="{{ p.id }}">{{ p.username }}</option>{% endfor %}
-            </select>
-        </div>
-        <div class="form-group-c">
-            <label>Date de l'absence</label>
-            <input type="date" name="date_absence" value="{{ today.isoformat() }}" required>
-        </div>
-        <button type="submit" class="btn-primary-c"><i class="bi bi-plus-lg"></i> Déclarer Absent</button>
-    </form>
+<!-- ── En-tête ─────────────────────────────────────── -->
+<div class="pn-page-header">
+    <h1 class="pn-page-title">Absences Professeurs</h1>
+    <p class="pn-page-sub">Gérez les absences des professeurs. Elles annuleront les cours sur le planning étudiant.</p>
 </div>
 
-<div class="admin-card">
-    <table class="modern-table-c">
+<!-- ── Formulaire ─────────────────────────────────── -->
+<div class="pn-form-block">
+    <div class="pn-form-header">Déclarer une absence</div>
+    <div class="pn-form-body">
+        <form method="POST" action="/admin/prof_absences/add"
+            style="display:flex;gap:10px;align-items:flex-end;flex:1;flex-wrap:wrap;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="pn-field-wrap">
+                <label>Professeur</label>
+                <select class="pn-select" name="professeur_id" required>
+                    {% for p in profs %}
+                    <option value="{{ p.id }}">{{ p.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="pn-field-wrap">
+                <label>Date de l'absence</label>
+                <input class="pn-input" type="date" name="date_absence" value="{{ today.isoformat() }}" required>
+            </div>
+            <button type="submit" class="pn-btn-declare">+ Déclarer Absent</button>
+        </form>
+    </div>
+</div>
+
+<!-- ── Tableau ─────────────────────────────────────── -->
+<div class="pn-table-block">
+    <table class="pn-table">
         <thead>
             <tr>
                 <th>Professeur</th>
@@ -58,17 +247,20 @@
         <tbody>
             {% for a in absences %}
             <tr>
-                <td><i class="bi bi-person-fill" style="color:#ef4444;"></i> <strong>{{ a.prof_nom }}</strong></td>
-                <td>{{ a.date_absence.strftime('%d/%m/%Y') }}</td>
+                <td><span class="pn-prof-name">{{ a.prof_nom }}</span></td>
+                <td><span class="pn-date-cell">{{ a.date_absence.strftime('%d/%m/%Y') }}</span></td>
                 <td style="text-align:right;">
-                    <form method="POST" action="/admin/prof_absences/delete/{{ a.id }}" style="display:inline;" onsubmit="return confirm('Supprimer cette absence ?')">
+                    <form method="POST" action="/admin/prof_absences/delete/{{ a.id }}" style="display:inline;"
+                        onsubmit="return confirm('Supprimer cette absence ?')">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="btn-del-c">Supprimer</button>
+                        <button type="submit" class="pn-btn-del">Supprimer</button>
                     </form>
                 </td>
             </tr>
             {% else %}
-            <tr><td colspan="3" style="text-align:center;padding:3rem;color:#94a3b8;">Aucune absence enregistrée.</td></tr>
+            <tr>
+                <td colspan="3" class="pn-empty">Aucune absence enregistrée.</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>

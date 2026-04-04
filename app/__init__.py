@@ -55,6 +55,8 @@ def create_app():
         'script-src': [
             "'self'",
             "https://cdn.jsdelivr.net",
+            "https://cdnjs.cloudflare.com",
+            "'unsafe-inline'",
         ],
         'style-src': [
             "'self'",
@@ -69,7 +71,7 @@ def create_app():
             "https://cdn.jsdelivr.net",
         ],
         'img-src': ["'self'", "data:"],
-        'connect-src': ["'self'"],
+        'connect-src': ["'self'", "https://cdnjs.cloudflare.com"],
         'frame-ancestors': ["'none'"],
     }
     Talisman(

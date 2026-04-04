@@ -5,313 +5,608 @@
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js"></script>
 
 <style>
-/* Style Pronote-like Cards */
-.top-card {
-    display: flex;
-    background: #fff;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    overflow: hidden;
-    height: 100px;
-}
-.top-card-left {
-    flex: 1;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-.top-card-left .val {
-    font-size: 2rem;
-    font-weight: 300;
-    color: #94a3b8;
-    line-height: 1;
-}
-.top-card-left .lbl {
-    font-size: 0.9rem;
-    color: #cbd5e1;
-    text-transform: uppercase;
-    margin-top: 0.5rem;
-}
-.top-card-right {
-    width: 90px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-}
-.top-card-right i {
-    font-size: 3rem;
-}
+    body {
+        background: #e8eaed !important;
+        font-family: Arial, sans-serif;
+    }
 
-/* Headers style Pronote */
-.block-header {
-    padding: 0.75rem 1rem;
-    color: white;
-    font-weight: 600;
-    font-size: 0.95rem;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-}
-.block-content {
-    background: #fff;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-.list-row {
-    padding: 0.5rem 1rem;
-    border-bottom: 1px solid #f1f5f9;
-    font-size: 0.85rem;
-}
-.list-row:last-child {
-    border-bottom: none;
-}
+    /* ── Stats ─────────────────────────────────────── */
+    .pn-stats {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 6px;
+    }
 
-/* Fullcalendar overrides */
-#calendar {
-    background: #fff;
-    padding: 1rem;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-.fc-toolbar-title {
-    font-size: 1.25rem !important;
-    text-transform: capitalize;
-    color: #475569;
-}
-.fc-button-primary {
-    background-color: #f1f5f9 !important;
-    border-color: #e2e8f0 !important;
-    color: #475569 !important;
-}
+    .pn-stat {
+        flex: 1;
+        background: #fff;
+        border: 1px solid #d0d3d8;
+        display: flex;
+        overflow: hidden;
+    }
+
+    .pn-stat-stripe {
+        width: 6px;
+        flex-shrink: 0;
+    }
+
+    .pn-stat-body {
+        padding: 8px 12px;
+    }
+
+    .pn-stat-val {
+        font-size: 1.7rem;
+        font-weight: 300;
+        color: #2c3e50;
+        line-height: 1;
+    }
+
+    .pn-stat-lbl {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #8a939e;
+        margin-top: 3px;
+    }
+
+    /* ── Panneaux ───────────────────────────────────── */
+    .pn-panel {
+        background: #fff;
+        border: 1px solid #d0d3d8;
+        margin-bottom: 5px;
+    }
+
+    .pn-panel-header {
+        padding: 5px 10px;
+        color: #fff;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .pn-expand-btn {
+        font-size: 0.62rem;
+        opacity: .65;
+        cursor: pointer;
+        font-weight: 400;
+        letter-spacing: normal;
+        text-transform: none;
+    }
+
+    .pn-panel-body {
+        font-size: 0.78rem;
+    }
+
+    .pn-row {
+        padding: 5px 10px;
+        border-bottom: 1px solid #eef0f2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .pn-row:hover {
+        background: #f6f7f8;
+    }
+
+    .pn-row:last-child {
+        border-bottom: none;
+    }
+
+    .pn-empty {
+        padding: 10px;
+        text-align: center;
+        color: #a0a8b0;
+        font-size: 0.73rem;
+        font-style: italic;
+    }
+
+    .pn-footer {
+        padding: 5px 10px;
+        border-top: 1px solid #eef0f2;
+        background: #f6f7f8;
+        text-align: center;
+    }
+
+    .pn-index {
+        color: #c0c8d0;
+        font-size: 0.7rem;
+        width: 14px;
+        text-align: right;
+        flex-shrink: 0;
+    }
+
+    .pn-role {
+        font-size: 0.62rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        padding: 1px 5px;
+        color: #fff;
+    }
+
+    /* ── Calendrier ─────────────────────────────────── */
+    #calendar {
+        background: #fff;
+        border: 1px solid #d0d3d8;
+    }
+
+    /* Toolbar */
+    .fc .fc-toolbar {
+        margin-bottom: 0 !important;
+        padding: 5px 8px;
+        background: #f0f2f4;
+        border-bottom: 1px solid #d0d3d8;
+    }
+
+    .fc-toolbar-title {
+        font-size: 0.88rem !important;
+        font-weight: 700;
+        text-transform: capitalize;
+        color: #2c3e50;
+        letter-spacing: .02em;
+    }
+
+    /* Boutons vues (Mois / Semaine / Jour) */
+    .fc .fc-button {
+        font-size: 0.66rem !important;
+        padding: 2px 7px !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        font-weight: 700;
+    }
+
+    .fc .fc-button-primary {
+        background-color: #dde0e4 !important;
+        border-color: #b8bdc3 !important;
+        color: #4a5568 !important;
+    }
+
+    .fc .fc-button-primary:hover {
+        background-color: #c8cdd3 !important;
+    }
+
+    .fc .fc-button-primary.fc-button-active {
+        background-color: #3a6ea5 !important;
+        border-color: #2d5a8a !important;
+        color: #fff !important;
+    }
+
+    /* Flèches prev / next */
+    .fc .fc-prev-button .fc-icon,
+    .fc .fc-next-button .fc-icon {
+        display: none !important;
+    }
+
+    .fc .fc-prev-button::after {
+        content: "‹";
+        font-size: 1.35rem;
+        font-weight: 400;
+        line-height: 1;
+        color: #3a6ea5;
+    }
+
+    .fc .fc-next-button::after {
+        content: "›";
+        font-size: 1.35rem;
+        font-weight: 400;
+        line-height: 1;
+        color: #3a6ea5;
+    }
+
+    .fc .fc-prev-button,
+    .fc .fc-next-button {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 4px !important;
+        min-width: unset !important;
+        box-shadow: none !important;
+        transition: opacity .15s;
+    }
+
+    .fc .fc-prev-button:hover,
+    .fc .fc-next-button:hover {
+        background: transparent !important;
+        opacity: .5;
+    }
+
+    /* Bouton Aujourd'hui */
+    .fc .fc-today-button {
+        background: #fff !important;
+        border: 1px solid #b8bdc3 !important;
+        color: #3a6ea5 !important;
+        font-size: 0.66rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: .05em !important;
+        border-radius: 0 !important;
+        padding: 2px 7px !important;
+    }
+
+    .fc .fc-today-button:hover {
+        background: #eef0f2 !important;
+    }
+
+    .fc .fc-today-button:disabled {
+        opacity: .35 !important;
+    }
+
+    /* Entêtes jours */
+    .fc-col-header-cell-cushion {
+        color: #3a6ea5;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        padding: 3px 0 !important;
+    }
+
+    .fc-daygrid-day-number {
+        color: #3a6ea5;
+        font-size: 0.75rem;
+    }
+
+    /* Horaires */
+    .fc-timegrid-slot-label-cushion {
+        font-size: 0.62rem;
+        color: #8a939e;
+        font-weight: 700;
+    }
+
+    /* Indicateur heure actuelle */
+    .fc-timegrid-now-indicator-line {
+        border-color: #c0392b !important;
+        border-top-width: 2px !important;
+    }
+
+    .fc-timegrid-now-indicator-arrow {
+        border-top-color: #c0392b !important;
+    }
+
+    /* Événements */
+    .fc-event {
+        border-radius: 0 !important;
+        font-size: 0.68rem !important;
+        padding: 0 !important;
+        border-left-width: 3px !important;
+        border-top: none !important;
+        border-right: none !important;
+        border-bottom: none !important;
+        cursor: pointer;
+    }
+
+    .fc-event-title {
+        font-weight: 700 !important;
+    }
+
+    .fc-timegrid-col-events {
+        margin: 0 1px !important;
+    }
+
+    .fc .fc-timegrid-col {
+        border-left: 1px solid #e8eaed;
+    }
+
+    .fc .fc-scrollgrid {
+        border: none !important;
+    }
+
+    .fc .fc-scrollgrid-section td,
+    .fc .fc-scrollgrid-section th {
+        border-color: #e4e6e9 !important;
+    }
+
+    /* ── Layout ──────────────────────────────────────── */
+    .pn-layout {
+        display: grid;
+        grid-template-columns: 1fr 265px;
+        gap: 5px;
+        align-items: start;
+    }
+
+    @media (max-width: 991px) {
+        .pn-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* ── Modal ───────────────────────────────────────── */
+    .pn-modal-content {
+        border-radius: 0;
+        border: 1px solid #b8bdc3;
+        box-shadow: 2px 4px 12px rgba(0, 0, 0, .18);
+    }
+
+    .pn-modal-header {
+        padding: 6px 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+    }
+
+    .pn-field-lbl {
+        font-size: 0.62rem;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #8a939e;
+        margin-bottom: 1px;
+    }
+
+    .pn-field-val {
+        font-size: 0.84rem;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .pn-modal-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px 16px;
+    }
 </style>
 
-<div class="row g-3 mb-4">
-    <!-- Enseignants -->
-    <div class="col-md-3">
-        <div class="top-card">
-            <div class="top-card-left">
-                <span class="val">{{ total_enseignants }}</span>
-                <span class="lbl">Enseignants</span>
-            </div>
-            <div class="top-card-right" style="background-color: #0ea5e9;">
-                <i class="bi bi-person-badge"></i>
-            </div>
+<!-- ── Stats ─────────────────────────────────────────── -->
+<div class="pn-stats">
+    <div class="pn-stat">
+        <div class="pn-stat-stripe" style="background:#0ea5e9;"></div>
+        <div class="pn-stat-body">
+            <div class="pn-stat-val">{{ total_enseignants }}</div>
+            <div class="pn-stat-lbl">Enseignants</div>
         </div>
     </div>
-    <!-- Élèves -->
-    <div class="col-md-3">
-        <div class="top-card">
-            <div class="top-card-left">
-                <span class="val">{{ total_eleves }}</span>
-                <span class="lbl">Élèves</span>
-            </div>
-            <div class="top-card-right" style="background-color: #10b981;">
-                <i class="bi bi-mortarboard-fill"></i>
-            </div>
+    <div class="pn-stat">
+        <div class="pn-stat-stripe" style="background:#10b981;"></div>
+        <div class="pn-stat-body">
+            <div class="pn-stat-val">{{ total_eleves }}</div>
+            <div class="pn-stat-lbl">Élèves</div>
         </div>
     </div>
-    <!-- Classes -->
-    <div class="col-md-3">
-        <div class="top-card">
-            <div class="top-card-left">
-                <span class="val">{{ total_classes }}</span>
-                <span class="lbl">Classes</span>
-            </div>
-            <div class="top-card-right" style="background-color: #eab308;">
-                <i class="bi bi-journal-album"></i>
-            </div>
+    <div class="pn-stat">
+        <div class="pn-stat-stripe" style="background:#d4a017;"></div>
+        <div class="pn-stat-body">
+            <div class="pn-stat-val">{{ total_classes }}</div>
+            <div class="pn-stat-lbl">Classes</div>
         </div>
     </div>
-    <!-- Total Absences -->
-    <div class="col-md-3">
-        <div class="top-card">
-            <div class="top-card-left">
-                <span class="val">{{ total_absences }}</span>
-                <span class="lbl">Absences</span>
-            </div>
-            <div class="top-card-right" style="background-color: #f97316;">
-                <i class="bi bi-clock-history"></i>
-            </div>
+    <div class="pn-stat">
+        <div class="pn-stat-stripe" style="background:#e07b39;"></div>
+        <div class="pn-stat-body">
+            <div class="pn-stat-val">{{ total_absences }}</div>
+            <div class="pn-stat-lbl">Absences</div>
         </div>
     </div>
 </div>
 
-<div class="row g-3">
-    <!-- Calendrier -->
-    <div class="col-md-8">
-        <div id="calendar"></div>
-    </div>
+<!-- ── Grille ─────────────────────────────────────────── -->
+<div class="pn-layout">
 
-    <!-- Blocs Droite -->
-    <div class="col-md-4">
-        <!-- Dernières Évaluations -->
-        <div class="mb-3">
-            <div class="block-header" style="background-color: #16a34a;">Dernières évaluations</div>
-            <div class="block-content">
+    <!-- Calendrier -->
+    <div id="calendar" data-events='{{ calendar_events | tojson | safe }}'></div>
+
+    <!-- Panneaux droite -->
+    <div>
+
+        <!-- Dernières évaluations -->
+        <div class="pn-panel">
+            <div class="pn-panel-header" style="background:#2e7d32;">
+                Dernières évaluations
+                <span class="pn-expand-btn">&#8599;</span>
+            </div>
+            <div class="pn-panel-body">
                 {% for ev in dernieres_evaluations %}
-                <div class="list-row d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="text-muted">{{ loop.index }}</span>
+                <div class="pn-row">
+                    <div style="display:flex;align-items:flex-start;gap:6px;">
+                        <span class="pn-index">{{ loop.index }}</span>
                         <div>
-                            <div class="fw-semibold text-dark">{{ ev.titre }}</div>
-                            <div class="text-muted" style="font-size:0.75rem;">
-                                {{ ev.classe_nom }} - <span class="badge bg-light text-dark fw-normal border">{{ ev.matiere }}</span>
+                            <div style="font-weight:700;color:#1e293b;">{{ ev.titre }}</div>
+                            <div style="color:#64748b;font-size:0.68rem;">
+                                {{ ev.classe_nom }} &mdash;
+                                <span style="color:#2e7d32;">{{ ev.matiere }}</span>
                             </div>
                         </div>
                     </div>
                 </div>
                 {% else %}
-                <div class="p-3 text-center text-muted small">Aucune évaluation programmée.</div>
+                <div class="pn-empty">Aucune évaluation programmée.</div>
                 {% endfor %}
             </div>
         </div>
 
-        <!-- Nouveaux Utilisateurs -->
-        <div class="mb-3">
-            <div class="block-header" style="background-color: #f97316;">Nouveaux inscrits</div>
-            <div class="block-content">
+        <!-- Nouveaux inscrits -->
+        <div class="pn-panel">
+            <div class="pn-panel-header" style="background:#c2541a;">
+                Nouveaux inscrits
+                <span class="pn-expand-btn">&#8599;</span>
+            </div>
+            <div class="pn-panel-body">
                 {% for u in nouveaux_utilisateurs %}
-                <div class="list-row d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="text-muted">{{ loop.index }}</span>
-                        <div class="fw-semibold text-dark">{{ u.username }}</div>
+                <div class="pn-row">
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <span class="pn-index">{{ loop.index }}</span>
+                        <span style="font-weight:700;color:#1e293b;">{{ u.username }}</span>
                     </div>
-                    <div>
-                        {% if u.role == 'admin' %}
-                            <span class="badge bg-danger" style="font-size: 0.70rem;">Admin</span>
-                        {% elif u.role == 'professeur' %}
-                            <span class="badge bg-info" style="font-size: 0.70rem;">Prof.</span>
-                        {% else %}
-                            <span class="badge bg-secondary" style="font-size: 0.70rem;">Élève</span>
-                        {% endif %}
-                    </div>
+                    {% if u.role == 'admin' %}
+                    <span class="pn-role" style="background:#b91c1c;">Admin</span>
+                    {% elif u.role == 'professeur' %}
+                    <span class="pn-role" style="background:#1d6fa4;">Prof.</span>
+                    {% else %}
+                    <span class="pn-role" style="background:#4b5563;">Élève</span>
+                    {% endif %}
                 </div>
                 {% else %}
-                <div class="p-3 text-center text-muted small">Aucun inscrit récent.</div>
+                <div class="pn-empty">Aucun inscrit récent.</div>
                 {% endfor %}
             </div>
         </div>
 
-        <!-- Élèves alertes (statique/démo basé sur A2F pour garder la couleur rouge) -->
-        <div class="mb-3">
-            <div class="block-header" style="background-color: #dc2626;">Alertes plateformes</div>
-            <div class="block-content">
+        <!-- Alertes plateformes -->
+        <div class="pn-panel">
+            <div class="pn-panel-header" style="background:#b91c1c;">
+                Alertes plateformes
+                <span class="pn-expand-btn">&#8599;</span>
+            </div>
+            <div class="pn-panel-body">
                 {% for m in recent_messages %}
-                <div class="list-row">
-                    <div class="d-flex justify-content-between">
-                        <span class="fw-bold text-dark text-truncate" style="max-width: 70%;">{{ m.contenu }}</span>
-                        <span class="text-muted small">{{ m.created_at.strftime('%d/%m') }}</span>
-                    </div>
+                <div class="pn-row">
+                    <span
+                        style="font-weight:700;color:#1e293b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:72%;">
+                        {{ m.contenu }}
+                    </span>
+                    <span style="color:#a0a8b0;font-size:0.68rem;flex-shrink:0;">
+                        {{ m.created_at.strftime('%d/%m') }}
+                    </span>
                 </div>
                 {% else %}
-                <div class="p-3 text-center text-muted small">Aucune alerte active.</div>
+                <div class="pn-empty">Aucune alerte active.</div>
                 {% endfor %}
-                <div class="p-2 border-top bg-light text-center">
-                    <a href="/admin/messages" class="btn btn-sm btn-outline-danger font-weight-600">
-                        <i class="bi bi-exclamation-triangle"></i> Créer une alerte
-                    </a>
-                </div>
+            </div>
+            <div class="pn-footer">
+                <a href="/admin/messages"
+                    style="font-size:0.7rem;color:#b91c1c;font-weight:700;text-decoration:none;letter-spacing:.04em;text-transform:uppercase;">
+                    Créer une alerte
+                </a>
             </div>
         </div>
+
     </div>
 </div>
 
-<!-- Modal Détails Cours -->
+<!-- ── Modal détails cours ────────────────────────────── -->
 <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius:12px; overflow:hidden; border:none; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
-            <div class="modal-header text-white" id="eventModalHeader" style="background-color: #3b82f6;">
-                <h5 class="modal-title fw-bold" id="eventModalTitle">
-                    <i class="bi bi-journal-text me-2"></i> Détails du cours
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content pn-modal-content">
+            <div class="modal-header text-white pn-modal-header" id="eventModalHeader" style="background:#3a6ea5;">
+                <span id="eventModalTitle">Détails du cours</span>
+                <button type="button" class="btn-close btn-close-white btn-sm" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body p-4">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="bg-light rounded-circle p-3 me-3 text-primary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-                        <i class="bi bi-clock-fill" style="font-size: 1.5rem;"></i>
+            <div class="modal-body p-3">
+                <div style="margin-bottom:10px;">
+                    <div class="pn-field-lbl">Horaire</div>
+                    <div class="pn-field-val" id="eventHoraire" style="font-size:1rem;">--:--</div>
+                </div>
+                <hr style="border-color:#e4e6e9;margin:8px 0;">
+                <div class="pn-modal-grid">
+                    <div>
+                        <div class="pn-field-lbl">Matière</div>
+                        <div class="pn-field-val" id="eventMatiere">-</div>
                     </div>
                     <div>
-                        <h6 class="mb-0 text-muted text-uppercase" style="font-size:0.8rem; letter-spacing:0.05em;">Horaire</h6>
-                        <div class="fw-bold fs-5 text-dark" id="eventHoraire">--:--</div>
+                        <div class="pn-field-lbl">Classe</div>
+                        <div class="pn-field-val" id="eventClasse">-</div>
                     </div>
-                </div>
-
-                <hr class="text-muted opacity-25 my-3">
-
-                <div class="row g-3">
-                    <div class="col-6">
-                        <h6 class="text-muted small text-uppercase mb-1">Matière</h6>
-                        <div class="fw-semibold text-dark" id="eventMatiere">-</div>
+                    <div>
+                        <div class="pn-field-lbl">Professeur</div>
+                        <div class="pn-field-val" id="eventProfesseur">-</div>
                     </div>
-                    <div class="col-6">
-                        <h6 class="text-muted small text-uppercase mb-1">Classe</h6>
-                        <div class="fw-semibold text-dark" id="eventClasse">-</div>
-                    </div>
-                    <div class="col-6">
-                        <h6 class="text-muted small text-uppercase mb-1">Professeur</h6>
-                        <div class="fw-semibold text-dark" id="eventProfesseur">-</div>
-                    </div>
-                    <div class="col-6">
-                        <h6 class="text-muted small text-uppercase mb-1">Salle</h6>
-                        <div class="fw-semibold text-dark" id="eventSalle">-</div>
+                    <div>
+                        <div class="pn-field-lbl">Salle</div>
+                        <div class="pn-field-val" id="eventSalle">-</div>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer border-0 p-3 bg-light">
-                <button type="button" class="btn btn-secondary w-100 fw-bold" data-bs-dismiss="modal" style="border-radius:8px;">Fermer</button>
+            <div class="modal-footer border-0 p-2" style="background:#f0f2f4;">
+                <button type="button" class="btn btn-sm w-100 fw-bold" data-bs-dismiss="modal"
+                    style="border-radius:0;font-size:0.72rem;text-transform:uppercase;letter-spacing:.05em;background:#dde0e4;border:1px solid #b8bdc3;color:#2c3e50;">
+                    Fermer
+                </button>
             </div>
         </div>
     </div>
 </div>
 
 <script nonce="{{ csp_nonce() }}">
-document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        locale: 'fr',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        events: {{ calendar_events | tojson }},
-        height: 700,
-        eventTimeFormat: {
-            hour: '2-digit',
-            minute: '2-digit',
-            meridiem: false
-        },
-        eventDisplay: 'block',
-        eventClick: function(info) {
-            info.jsEvent.preventDefault();
-            
-            // Populate modal fields
-            var props = info.event.extendedProps;
-            document.getElementById('eventMatiere').innerText = props.matiere || '-';
-            document.getElementById('eventClasse').innerText = props.classe || '-';
-            document.getElementById('eventProfesseur').innerText = props.professeur || '-';
-            document.getElementById('eventSalle').innerText = props.salle || '-';
-            document.getElementById('eventHoraire').innerText = props.horaire || '-';
-            
-            // Set header color to match event color
-            document.getElementById('eventModalHeader').style.backgroundColor = info.event.backgroundColor;
+    document.addEventListener('DOMContentLoaded', function () {
+        const calendarEl = document.getElementById('calendar');
+        const modalEl = document.getElementById('eventModal');
 
-            // Show modal
-            var eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
-            eventModal.show();
+        if (modalEl) {
+            document.body.appendChild(modalEl);
+        }
+
+        if (calendarEl) {
+            const events = JSON.parse(calendarEl.dataset.events || '[]');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                locale: 'fr',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: events,
+                height: 640,
+                slotMinTime: '07:30:00',
+                slotMaxTime: '19:00:00',
+                slotDuration: '00:30:00',
+                slotLabelInterval: '01:00:00',
+                allDaySlot: false,
+                nowIndicator: true,
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    meridiem: false
+                },
+                eventDisplay: 'block',
+                dayHeaderFormat: {
+                    weekday: 'short',
+                    day: 'numeric',
+                    month: 'numeric'
+                },
+                eventContent: function (arg) {
+                    const props = arg.event.extendedProps;
+                    const title = arg.event.title || '';
+                    const prof = props.professeur
+                        ? `<div style="font-size:0.6rem;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${props.professeur}</div>`
+                        : '';
+                    const salle = props.salle
+                        ? `<div style="font-size:0.6rem;opacity:.8;">${props.salle}</div>`
+                        : '';
+
+                    return {
+                        html: `<div style="padding:2px 4px;overflow:hidden;height:100%;">
+                            <div style="font-weight:700;font-size:0.7rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${title}</div>
+                            ${prof} ${salle}
+                        </div>`
+                    };
+                },
+                eventClick: function (info) {
+                    info.jsEvent.preventDefault();
+                    const props = info.event.extendedProps;
+
+                    const fields = {
+                        'eventMatiere': props.matiere,
+                        'eventClasse': props.classe,
+                        'eventProfesseur': props.professeur,
+                        'eventSalle': props.salle,
+                        'eventHoraire': props.horaire
+                    };
+
+                    Object.entries(fields).forEach(([id, val]) => {
+                        const el = document.getElementById(id);
+                        if (el) el.innerText = val || '-';
+                    });
+
+                    const header = document.getElementById('eventModalHeader');
+                    if (header) {
+                        header.style.backgroundColor = info.event.backgroundColor || '#3a6ea5';
+                    }
+
+                    if (modalEl) {
+                        const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                        modal.show();
+                    }
+                }
+            });
+            calendar.render();
         }
     });
-    calendar.render();
-    
-    // Deplacer la modale dans le body
-    const modalEl = document.getElementById('eventModal');
-    if (modalEl) {
-        document.body.appendChild(modalEl);
-    }
-});
 </script>
 {% endblock %}

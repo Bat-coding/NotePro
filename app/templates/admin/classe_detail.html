@@ -1,108 +1,353 @@
 {% extends "base.html" %}
 {% block content %}
-<header class="page-header" style="margin-bottom: 2rem;">
-    <div style="display:flex;align-items:center;gap:1rem;">
-        <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#3b82f6,#2563eb);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(59,130,246,0.3);">
-            <i class="bi bi-collection-fill" style="font-size:1.5rem;color:white;"></i>
-        </div>
-        <div>
-            <h1 class="page-title" style="margin:0;">Classe : {{ classe.nom }}</h1>
-            <a href="/admin/classes" style="font-size:0.875rem;color:#64748b;text-decoration:none;"><i class="bi bi-arrow-left"></i> Retour aux classes</a>
-        </div>
-    </div>
-</header>
+<style>
+    body {
+        background: #e8eaed !important;
+        font-family: Arial, sans-serif;
+    }
 
-<div class="row">
-    <!-- Colonne gauche : Modifier et Ajouter des étudiants -->
-    <div class="col-md-5 mb-4">
+    /* ── En-tête ─────────────────────────────────── */
+    .pn-page-header {
+        margin-bottom: 10px;
+        padding: 12px 0 10px;
+        border-bottom: 2px solid #3a6ea5;
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+    }
+
+    .pn-page-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e293b;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin: 0;
+    }
+
+    .pn-back-link {
+        font-size: 0.72rem;
+        color: #3a6ea5;
+        text-decoration: none;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        transition: opacity .15s;
+    }
+
+    .pn-back-link:hover {
+        opacity: .65;
+        color: #3a6ea5;
+    }
+
+    /* ── Layout 2 colonnes ───────────────────────── */
+    .pn-layout {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 6px;
+        align-items: start;
+    }
+
+    @media (max-width: 991px) {
+        .pn-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* ── Panneaux génériques ─────────────────────── */
+    .pn-panel {
+        background: #fff;
+        border: 1px solid #d0d3d8;
+        margin-bottom: 6px;
+    }
+
+    .pn-panel:last-child {
+        margin-bottom: 0;
+    }
+
+    .pn-panel-header {
+        padding: 7px 14px;
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+    }
+
+    .pn-panel-body {
+        padding: 14px;
+    }
+
+    /* ── Champs formulaire ───────────────────────── */
+    .pn-field-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 10px;
+    }
+
+    .pn-field-wrap label {
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: #8a939e;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
+    .pn-input,
+    .pn-select {
+        border: 1px solid #b8bdc3;
+        border-radius: 0;
+        padding: 8px 10px;
+        font-size: 0.84rem;
+        font-family: Arial, sans-serif;
+        color: #1e293b;
+        outline: none;
+        background: #fff;
+        transition: border-color .15s;
+        width: 100%;
+        height: 36px;
+    }
+
+    .pn-input:focus,
+    .pn-select:focus {
+        border-color: #3a6ea5;
+    }
+
+    .pn-btn {
+        display: block;
+        width: 100%;
+        border: none;
+        padding: 0 18px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        font-family: Arial, sans-serif;
+        cursor: pointer;
+        height: 36px;
+        border-radius: 0;
+        transition: background .15s;
+        color: #fff;
+    }
+
+    .pn-btn-blue {
+        background: #3a6ea5;
+    }
+
+    .pn-btn-blue:hover {
+        background: #2d5a8a;
+    }
+
+    .pn-btn-green {
+        background: #2e7d32;
+    }
+
+    .pn-btn-green:hover {
+        background: #1e5c22;
+    }
+
+    /* ── Tableau étudiants ───────────────────────── */
+    .pn-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.84rem;
+    }
+
+    .pn-table thead th {
+        background: #f0f2f4;
+        padding: 8px 14px;
+        text-align: left;
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: #8a939e;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        border-bottom: 1px solid #d0d3d8;
+        border-right: 1px solid #e4e6e9;
+    }
+
+    .pn-table thead th:last-child {
+        border-right: none;
+        text-align: right;
+    }
+
+    .pn-table tbody td {
+        padding: 10px 14px;
+        border-bottom: 1px solid #eef0f2;
+        color: #1e293b;
+        vertical-align: middle;
+        border-right: 1px solid #f0f2f4;
+    }
+
+    .pn-table tbody td:last-child {
+        border-right: none;
+    }
+
+    .pn-table tbody tr:hover {
+        background: #f6f7f8;
+    }
+
+    .pn-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Avatar initiale */
+    .pn-avatar {
+        width: 28px;
+        height: 28px;
+        background: #dbeafe;
+        color: #1d6fa4;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.72rem;
+        flex-shrink: 0;
+        border: 1px solid #bfdbfe;
+    }
+
+    /* Bouton retirer */
+    .pn-btn-remove {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        padding: 3px 10px;
+        border-radius: 0;
+        cursor: pointer;
+        font-family: Arial, sans-serif;
+        background: #fff0f0;
+        color: #b91c1c;
+        border: 1px solid #fca5a5;
+        transition: background .15s, color .15s;
+    }
+
+    .pn-btn-remove:hover {
+        background: #b91c1c;
+        color: #fff;
+        border-color: #b91c1c;
+    }
+
+    .pn-empty {
+        text-align: center;
+        padding: 3rem;
+        color: #a0a8b0;
+        font-size: 0.8rem;
+        font-style: italic;
+    }
+
+    /* Compteur dans header */
+    .pn-count {
+        font-size: 0.68rem;
+        background: rgba(255, 255, 255, .2);
+        padding: 1px 6px;
+        font-weight: 400;
+        letter-spacing: normal;
+        text-transform: none;
+        margin-left: 4px;
+    }
+</style>
+
+<!-- ── En-tête ─────────────────────────────────────── -->
+<div class="pn-page-header">
+    <h1 class="pn-page-title">Classe : {{ classe.nom }}</h1>
+    <a href="/admin/classes" class="pn-back-link">&#8592; Retour aux classes</a>
+</div>
+
+<!-- ── Grille ─────────────────────────────────────── -->
+<div class="pn-layout">
+
+    <!-- Colonne gauche -->
+    <div>
+
         <!-- Modifier la classe -->
-        <div class="table-container p-4 mb-4">
-            <h6 class="mb-4 font-weight-bold text-primary"><i class="bi bi-pencil-square"></i> Modifier la classe</h6>
-            <form method="POST" action="/admin/classes/edit/{{ classe.id }}">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                
-                <div class="mb-3">
-                    <label class="form-label" style="font-size:0.85rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.05em;">Nom de la classe</label>
-                    <input type="text" name="nom" class="form-control" value="{{ classe.nom }}" required>
-                </div>
-                
-                <button type="submit" class="btn btn-primary w-100 font-weight-bold">
-                    <i class="bi bi-floppy-fill"></i> Sauvegarder
-                </button>
-            </form>
+        <div class="pn-panel">
+            <div class="pn-panel-header" style="background:#3a6ea5;">
+                Modifier la classe
+            </div>
+            <div class="pn-panel-body">
+                <form method="POST" action="/admin/classes/edit/{{ classe.id }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="pn-field-wrap">
+                        <label for="nom">Nom de la classe</label>
+                        <input class="pn-input" type="text" id="nom" name="nom" value="{{ classe.nom }}" required>
+                    </div>
+                    <button type="submit" class="pn-btn pn-btn-blue">Sauvegarder</button>
+                </form>
+            </div>
         </div>
 
         <!-- Ajouter un étudiant -->
-        <div class="table-container p-4">
-            <h6 class="mb-4 font-weight-bold text-success"><i class="bi bi-person-plus-fill"></i> Ajouter un étudiant</h6>
-            <form method="POST" action="/admin/classes/add_student/{{ classe.id }}">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                
-                <div class="mb-3">
-                    <label class="form-label" style="font-size:0.85rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.05em;">Étudiant disponible</label>
-                    <select name="etudiant_id" class="form-select" required>
-                        <option value="" disabled selected>Sélectionnez un étudiant...</option>
-                        {% for dispo in etudiants_dispo %}
-                        <option value="{{ dispo.id }}">{{ dispo.username }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <button type="submit" class="btn btn-success w-100 font-weight-bold">
-                    <i class="bi bi-plus-circle"></i> Ajouter
-                </button>
-            </form>
+        <div class="pn-panel">
+            <div class="pn-panel-header" style="background:#2e7d32;">
+                Ajouter un étudiant
+            </div>
+            <div class="pn-panel-body">
+                <form method="POST" action="/admin/classes/add_student/{{ classe.id }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="pn-field-wrap">
+                        <label for="etudiant_id">Étudiant disponible</label>
+                        <select class="pn-select" id="etudiant_id" name="etudiant_id" required>
+                            <option value="" disabled selected>Sélectionnez un étudiant...</option>
+                            {% for dispo in etudiants_dispo %}
+                            <option value="{{ dispo.id }}">{{ dispo.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="pn-btn pn-btn-green">+ Ajouter</button>
+                </form>
+            </div>
         </div>
+
     </div>
 
-    <!-- Colonne droite : Liste des étudiants -->
-    <div class="col-md-7 mb-4">
-        <div class="table-container h-100">
-            <div class="p-4 border-bottom" style="border-color:#f1f5f9!important;">
-                <h6 class="mb-0 font-weight-bold" style="color:#0f172a;"><i class="bi bi-people-fill text-primary"></i> Étudiants assignés ({{ etudiants|length }})</h6>
-            </div>
-            
-            <table class="modern-table">
-                <thead>
-                    <tr>
-                        <th>Étudiant</th>
-                        <th>Téléphone</th>
-                        <th style="text-align:right;">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for e in etudiants %}
-                    <tr>
-                        <td>
-                            <div style="display:flex;align-items:center;gap:0.75rem;">
-                                <div style="width:32px;height:32px;border-radius:50%;background:#e0f2fe;color:#0ea5e9;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;">
-                                    {{ e.username[0] | upper }}
-                                </div>
-                                <span class="font-weight-600" style="color:#334155;">{{ e.username }}</span>
-                            </div>
-                        </td>
-                        <td>
-                            {% if e.telephone %}
-                                <a href="tel:{{ e.telephone }}" style="color:#64748b;font-size:0.9rem;text-decoration:none;"><i class="bi bi-telephone-fill"></i> {{ e.telephone }}</a>
-                            {% else %}
-                                <span class="text-muted" style="font-size:0.85rem;font-style:italic;">Non renseigné</span>
-                            {% endif %}
-                        </td>
-                        <td style="text-align:right;">
-                            <form method="POST" action="/admin/classes/remove_student/{{ classe.id }}/{{ e.id }}" style="display:inline;" onsubmit="return confirm('Retirer cet étudiant de la classe ?')">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none">
-                                    <i class="bi bi-person-x-fill"></i>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr><td colspan="3" class="text-center py-5 text-muted">Aucun étudiant dans cette classe</td></tr>
-                {% endfor %}
-                </tbody>
-            </table>
+    <!-- Colonne droite : tableau -->
+    <div class="pn-panel">
+        <div class="pn-panel-header" style="background:#4a5568;">
+            Étudiants assignés
+            <span class="pn-count">{{ etudiants|length }}</span>
         </div>
+        <table class="pn-table">
+            <thead>
+                <tr>
+                    <th>Étudiant</th>
+                    <th>Téléphone</th>
+                    <th style="text-align:right;width:110px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in etudiants %}
+                <tr>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span class="pn-avatar">{{ e.username[0] | upper }}</span>
+                            <span style="font-weight:700;">{{ e.username }}</span>
+                        </div>
+                    </td>
+                    <td style="color:#64748b;font-size:0.78rem;">
+                        {% if e.telephone %}
+                        {{ e.telephone }}
+                        {% else %}
+                        <span style="font-style:italic;color:#c0c8d0;">Non renseigné</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align:right;">
+                        <form method="POST" action="/admin/classes/remove_student/{{ classe.id }}/{{ e.id }}"
+                            style="display:inline;" onsubmit="return confirm('Retirer cet étudiant de la classe ?')">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="pn-btn-remove">Retirer</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="pn-empty">Aucun étudiant dans cette classe.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
+
 </div>
 {% endblock %}

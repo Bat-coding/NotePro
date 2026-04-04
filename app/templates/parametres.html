@@ -1,390 +1,368 @@
 {% extends "base.html" %}
 {% block content %}
 <style>
-    .settings-wrap {
-        max-width: 580px;
+    body {
+        background: #e8eaed !important;
+        font-family: Arial, sans-serif;
+    }
+
+    /* ── En-tête ─────────────────────────────────── */
+    .pn-page-header {
+        margin-bottom: 12px;
+        padding: 14px 0 12px;
+        border-bottom: 2px solid #3a6ea5;
+    }
+
+    .pn-page-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin: 0 0 4px 0;
+    }
+
+    .pn-page-sub {
+        font-size: 0.82rem;
+        color: #8a939e;
+        margin: 0;
+    }
+
+    /* ── Conteneur centré ────────────────────────── */
+    .pn-params-wrap {
+        max-width: 620px;
         margin: 0 auto;
     }
 
-    /* ── En-tête de page ── */
-    .page-header-bar {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 2rem;
-        padding-bottom: 1.25rem;
-        border-bottom: 1px solid #e5e7eb;
+    /* ── Panneaux ────────────────────────────────── */
+    .pn-panel {
+        background: #fff;
+        border: 1px solid #d0d3d8;
+        margin-bottom: 8px;
     }
 
-    .page-header-bar .icon-wrap {
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
-        background: #eff6ff;
-        display: flex;
+    .pn-panel-header {
+        padding: 7px 14px;
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+    }
+
+    .pn-panel-body {
+        padding: 18px 16px;
+    }
+
+    .pn-divider {
+        border: none;
+        border-top: 1px solid #d0d3d8;
+        margin: 16px 0;
+    }
+
+    /* ── Avatar ──────────────────────────────────── */
+    .pn-avatar-wrap {
+        text-align: center;
+        margin-bottom: 16px;
+    }
+
+    .pn-avatar-img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        /* ← rond */
+        object-fit: cover;
+        border: 2px solid #d0d3d8;
+    }
+
+    .pn-avatar-initial {
+        width: 80px;
+        height: 80px;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        color: #2563eb;
-        font-size: 1.1rem;
-        flex-shrink: 0;
-    }
-
-    .page-header-bar h1 {
-        font-size: 1.15rem;
+        background: #dbeafe;
+        color: #1d6fa4;
+        font-size: 2rem;
         font-weight: 700;
-        color: #111827;
-        margin: 0;
-        letter-spacing: -.02em;
+        border: 2px solid #d0d3d8;
+        border-radius: 50%;
+        /* ← rond */
     }
 
-    .page-header-bar p {
-        font-size: .8rem;
-        color: #6b7280;
-        margin: .1rem 0 0;
+    /* ── Champs ──────────────────────────────────── */
+    .pn-field-wrap {
+        margin-bottom: 12px;
     }
 
-    /* ── Sections ── */
-    .settings-section {
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-        overflow: hidden;
-        margin-bottom: 1.25rem;
-    }
-
-    .section-title {
-        padding: .85rem 1.25rem;
-        font-size: .75rem;
+    .pn-field-wrap label {
+        display: block;
+        font-size: 0.68rem;
         font-weight: 700;
-        color: #6b7280;
+        color: #8a939e;
         text-transform: uppercase;
         letter-spacing: .06em;
-        background: #f9fafb;
-        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 4px;
     }
 
-    .section-body {
-        padding: 1.25rem;
-    }
-
-    /* ── Avatar ── */
-    .avatar-row {
-        display: flex;
-        align-items: center;
-        gap: 1.25rem;
-        margin-bottom: 1.5rem;
-        padding-bottom: 1.25rem;
-        border-bottom: 1px solid #f3f4f6;
-    }
-
-    .avatar-img {
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #e5e7eb;
-        flex-shrink: 0;
-    }
-
-    .avatar-initials {
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-        background: #dbeafe;
-        color: #1d4ed8;
-        font-size: 1.4rem;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 2px solid #e5e7eb;
-        flex-shrink: 0;
-    }
-
-    .avatar-meta p {
-        font-size: .8rem;
-        color: #6b7280;
-        margin: 0;
-        line-height: 1.4;
-    }
-
-    .avatar-meta strong {
-        font-size: .875rem;
-        color: #111827;
-        display: block;
-        margin-bottom: .2rem;
-    }
-
-    /* ── Champs ── */
-    .field+.field {
-        margin-top: 1rem;
-    }
-
-    .field label {
-        display: block;
-        font-size: .75rem;
-        font-weight: 600;
-        color: #374151;
-        margin-bottom: .35rem;
-        letter-spacing: .01em;
-    }
-
-    .field input {
+    .pn-input {
         width: 100%;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        padding: .55rem .8rem;
-        font-size: .9rem;
-        color: #111827;
+        border: 1px solid #b8bdc3;
+        border-radius: 0;
+        padding: 8px 10px;
+        font-size: 0.88rem;
+        font-family: Arial, sans-serif;
+        color: #1e293b;
         outline: none;
         background: #fff;
-        transition: border-color .15s, box-shadow .15s;
+        transition: border-color .15s;
+        height: 38px;
+        box-sizing: border-box;
     }
 
-    .field input:focus {
-        border-color: #2563eb;
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, .1);
+    .pn-input[type="file"] {
+        height: auto;
+        padding: 6px 10px;
     }
 
-    .field input::placeholder {
-        color: #9ca3af;
+    .pn-input:focus {
+        border-color: #3a6ea5;
     }
 
-    .field input[type="file"] {
-        padding: .4rem .8rem;
-        color: #374151;
-        background: #f9fafb;
-        cursor: pointer;
+    .pn-input::placeholder {
+        color: #b8bdc3;
     }
 
-    /* ── Boutons ── */
-    .btn-primary-s {
-        display: inline-flex;
+    /* ── Boutons ─────────────────────────────────── */
+    .pn-btn {
+        display: flex;
+        justify-content: center;
         align-items: center;
-        gap: .45rem;
-        padding: .6rem 1.1rem;
-        background: #058879;
-        color: #fff;
-        font-size: .85rem;
-        font-weight: 600;
+        gap: 7px;
+        width: 100%;
         border: none;
-        border-radius: 6px;
+        padding: 0;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        font-family: Arial, sans-serif;
         cursor: pointer;
+        height: 38px;
+        border-radius: 0;
         transition: background .15s;
-        margin-top: 1.25rem;
-    }
-
-    .btn-primary-s:hover {
-        background: #087467;
-    }
-
-    .btn-danger-s {
-        display: inline-flex;
-        align-items: center;
-        gap: .45rem;
-        padding: .6rem 1.1rem;
-        background: #fff;
-        color: #dc2626;
-        font-size: .85rem;
-        font-weight: 600;
-        border: 1px solid #fecaca;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: background .15s, border-color .15s;
-    }
-
-    .btn-danger-s:hover {
-        background: #fef2f2;
-        border-color: #f87171;
-    }
-
-    .btn-success-s {
-        display: inline-flex;
-        align-items: center;
-        gap: .45rem;
-        padding: .6rem 1.1rem;
-        background: #058879;
         color: #fff;
-        font-size: .85rem;
-        font-weight: 600;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: background .15s;
-        margin-top: 1rem;
     }
 
-    .btn-success-s:hover {
-        background: #087467;
+    .pn-btn-blue {
+        background: #3a6ea5;
     }
 
-    /* ── Badge 2FA ── */
-    .badge-active {
-        display: inline-flex;
-        align-items: center;
-        gap: .35rem;
-        background: #ecfdf5;
+    .pn-btn-blue:hover {
+        background: #2d5a8a;
+    }
+
+    .pn-btn-green {
+        background: #2e7d32;
+    }
+
+    .pn-btn-green:hover {
+        background: #1e5c22;
+    }
+
+    .pn-btn-red {
+        background: #b91c1c;
+    }
+
+    .pn-btn-red:hover {
+        background: #991b1b;
+    }
+
+    /* ── Section 2FA ─────────────────────────────── */
+    .pn-2fa-title {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #1e293b;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        margin: 0 0 6px 0;
+    }
+
+    .pn-2fa-desc {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin: 0 0 14px 0;
+        line-height: 1.5;
+    }
+
+    .pn-alert {
+        padding: 10px 14px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        border: 1px solid;
+    }
+
+    .pn-alert-ok {
+        background: #d1fae5;
         color: #065f46;
-        border: 1px solid #a7f3d0;
-        border-radius: 4px;
-        font-size: .78rem;
-        font-weight: 600;
-        padding: .3rem .65rem;
-        margin-bottom: 1rem;
+        border-color: #6ee7b7;
     }
 
-    /* ── QR block ── */
-    .qr-block {
-        background: #f9fafb;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        padding: 1.25rem;
+    .pn-alert-info {
+        background: #eff6ff;
+        color: #1d4ed8;
+        border-color: #bfdbfe;
+    }
+
+    /* QR Code */
+    .pn-qr-wrap {
+        background: #f6f7f8;
+        border: 1px solid #d0d3d8;
+        padding: 14px;
         text-align: center;
-        margin-bottom: 1rem;
+        margin-bottom: 14px;
     }
 
-    .qr-block p {
-        font-size: .82rem;
-        color: #374151;
-        margin-bottom: .85rem;
+    .pn-qr-wrap p {
+        font-size: 0.8rem;
+        color: #334155;
+        margin: 0 0 12px 0;
     }
 
-    .qr-block img {
-        display: inline-block;
-        border: 1px solid #e5e7eb;
-        border-radius: 6px;
+    .pn-qr-img {
         background: #fff;
-        padding: .5rem;
+        padding: 10px;
+        border: 1px solid #d0d3d8;
+        display: inline-block;
     }
 
-    .divider {
-        border: none;
-        border-top: 1px solid #f3f4f6;
-        margin: 1.5rem 0;
+    .pn-qr-img img {
+        display: block;
     }
 </style>
 
-<div class="settings-wrap">
+<!-- ── En-tête ─────────────────────────────────────── -->
+<div class="pn-page-header">
+    <h1 class="pn-page-title">Paramètres de Profil</h1>
+    <p class="pn-page-sub">Modifiez vos informations personnelles.</p>
+</div>
 
-    <!-- En-tête -->
-    <div class="page-header-bar">
-        <div class="icon-wrap"><i class="bi bi-gear-fill"></i></div>
-        <div>
-            <h1>Paramètres de profil</h1>
-            <p>Modifiez vos informations personnelles et la sécurité</p>
+<div class="pn-params-wrap">
+
+    <!-- ── Profil ────────────────────────────────────── -->
+    <div class="pn-panel">
+        <div class="pn-panel-header" style="background:#3a6ea5;">
+            Informations personnelles
         </div>
-    </div>
+        <div class="pn-panel-body">
 
-    <!-- Section : Profil -->
-    <div class="settings-section">
-        <div class="section-title">Informations personnelles</div>
-        <div class="section-body">
-
-            <div class="avatar-row">
+            <!-- Avatar -->
+            <div class="pn-avatar-wrap">
                 {% if user.avatar %}
                 <img src="{{ url_for('static', filename='uploads/avatars/' + user.avatar) }}" alt="Avatar"
-                    class="avatar-img">
+                    class="pn-avatar-img">
                 {% else %}
-                <div class="avatar-initials">{{ user.username[0] | upper }}</div>
+                <div class="pn-avatar-initial">{{ user.username[0] | upper }}</div>
                 {% endif %}
-                <div class="avatar-meta">
-                    <strong>{{ user.username }}</strong>
-                    <p>JPG ou PNG · max 2 Mo recommandé</p>
-                </div>
             </div>
 
             <form method="POST" action="/user/parametres" enctype="multipart/form-data">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-                <div class="field">
-                    <label>Photo de profil</label>
-                    <input type="file" name="avatar" accept="image/*">
+                <div class="pn-field-wrap">
+                    <label>Avatar (PNG / JPG)</label>
+                    <input class="pn-input" type="file" name="avatar" accept="image/*">
                 </div>
 
-                <div class="field">
-                    <label>Numéro de téléphone</label>
-                    <input type="tel" id="telephone" name="telephone" maxlength="14" placeholder="06 12 34 56 78"
-                        value="{{ user.telephone if user.telephone else '' }}">
+                <div class="pn-field-wrap">
+                    <label>Numéro de Téléphone</label>
+                    <input class="pn-input" type="tel" id="telephone" name="telephone" maxlength="14"
+                        placeholder="Ex: 06 12 34 56 78" value="{{ user.telephone if user.telephone else '' }}">
                 </div>
 
                 <script nonce="{{ csp_nonce() }}">
                     document.addEventListener('DOMContentLoaded', function () {
-                        var telInput = document.getElementById('telephone');
-                        if (telInput.value.length === 10 && !telInput.value.includes(' ')) {
-                            telInput.value = telInput.value.replace(/(\d{2})(?=\d)/g, '$1 ');
-                        }
-                        telInput.addEventListener('input', function (e) {
-                            var val = e.target.value.replace(/\D/g, '').substring(0, 10);
-                            e.target.value = val.replace(/(\d{2})(?=\d)/g, '$1 ');
+                        var tel = document.getElementById('telephone');
+                        if (tel.value.length === 10 && !tel.value.includes(' '))
+                            tel.value = tel.value.replace(/(\d{2})(?=\d)/g, '$1 ');
+                        tel.addEventListener('input', function (e) {
+                            var v = e.target.value.replace(/\D/g, '').substring(0, 10);
+                            e.target.value = v.replace(/(\d{2})(?=\d)/g, '$1 ');
                         });
                     });
                 </script>
 
-                <hr class="divider">
+                <hr class="pn-divider">
 
-                <div class="field">
-                    <label>Ancien mot de passe</label>
-                    <input type="password" name="old_password"
-                        placeholder="Requis uniquement pour changer de mot de passe" autocomplete="current-password">
+                <div class="pn-field-wrap">
+                    <label>Ancien Mot de Passe</label>
+                    <input class="pn-input" type="password" name="old_password"
+                        placeholder="Requis si vous changez de mot de passe">
                 </div>
 
-                <div class="field">
-                    <label>Nouveau mot de passe</label>
-                    <input type="password" name="new_password" minlength="15"
-                        placeholder="15 caractères min. avec un caractère spécial" autocomplete="new-password">
+                <div class="pn-field-wrap">
+                    <label>Nouveau Mot de Passe</label>
+                    <input class="pn-input" type="password" name="new_password" minlength="15"
+                        placeholder="Laissez vide pour ne pas modifier">
                 </div>
 
-                <button type="submit" name="action" value="update_profile" class="btn-primary-s">
-                    <i class="bi bi-floppy-fill"></i> Enregistrer
+                <button type="submit" name="action" value="update_profile" class="pn-btn pn-btn-blue">
+                    Sauvegarder les modifications
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- Section : 2FA -->
-    <div class="settings-section">
-        <div class="section-title">Authentification à deux facteurs</div>
-        <div class="section-body">
-            <p style="font-size:.85rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">
-                Renforcez la sécurité de votre compte en associant une application comme
-                <strong>Google Authenticator</strong> ou <strong>Authy</strong>.
+    <!-- ── 2FA ───────────────────────────────────────── -->
+    <div class="pn-panel">
+        <div class="pn-panel-header" style="background:#4a5568;">
+            Authentification à Deux Facteurs (A2F)
+        </div>
+        <div class="pn-panel-body">
+            <p class="pn-2fa-desc">
+                Sécurisez votre compte avec une application comme Google Authenticator ou Authy.
             </p>
 
             {% if user.totp_enabled %}
-            <div class="badge-active"><i class="bi bi-check-circle-fill"></i> 2FA activé</div>
-            <br>
+            <div class="pn-alert pn-alert-ok">
+                Le 2FA est actuellement activé sur votre compte.
+            </div>
             <form method="POST" action="/user/parametres">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit" name="action" value="disable_2fa" class="btn-danger-s">
-                    <i class="bi bi-shield-slash-fill"></i> Désactiver le 2FA
+                <button type="submit" name="action" value="disable_2fa" class="pn-btn pn-btn-red">
+                    Désactiver le 2FA
                 </button>
             </form>
 
             {% elif user.totp_secret and not user.totp_enabled %}
-            <div class="qr-block">
-                <p>1. Scannez ce QR Code avec votre application d'authentification</p>
-                <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR Code 2FA">
+            <div class="pn-qr-wrap">
+                <p>1. Scannez ce QR Code avec votre application d'authentification :</p>
+                <div class="pn-qr-img">
+                    <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR Code 2FA">
+                </div>
             </div>
             <form method="POST" action="/user/parametres">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <div class="field">
-                    <label>2. Code à 6 chiffres généré par l'application</label>
-                    <input type="text" name="totp_code" required pattern="[0-9]{6}" placeholder="123456"
-                        autocomplete="off" inputmode="numeric">
+                <div class="pn-field-wrap">
+                    <label>2. Entrez le code à 6 chiffres généré</label>
+                    <input class="pn-input" type="text" name="totp_code" required pattern="[0-9]{6}"
+                        placeholder="Ex: 123456" autocomplete="off">
                 </div>
-                <button type="submit" name="action" value="confirm_2fa" class="btn-success-s">
-                    <i class="bi bi-check2-circle"></i> Valider et activer
+                <button type="submit" name="action" value="confirm_2fa" class="pn-btn pn-btn-green">
+                    Valider et Activer
                 </button>
             </form>
 
             {% else %}
             <form method="POST" action="/user/parametres">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit" name="action" value="enable_2fa" class="btn-success-s">
-                    <i class="bi bi-shield-plus"></i> Activer le 2FA
+                <button type="submit" name="action" value="enable_2fa" class="pn-btn pn-btn-green">
+                    Activer le 2FA
                 </button>
             </form>
             {% endif %}
+
         </div>
     </div>
 
