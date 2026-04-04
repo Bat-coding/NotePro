@@ -322,7 +322,6 @@
                     {{ 'Justifiée' if a.justifiee else 'Non justifiée' }}
                 </span>
                 <div class="action-btns">
-                    {# FIXED [VULN-005]: toggle via POST + CSRF token (était GET) #}
                     <form method="POST" action="/professeur/absences/toggle/{{ a.id }}" style="display:inline;">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn-toggle"
@@ -330,7 +329,6 @@
                             <i class="bi bi-check-lg"></i>
                         </button>
                     </form>
-                    {# FIXED [VULN-005]: DELETE via POST + CSRF token (était GET) #}
                     <form method="POST" action="/professeur/absences/delete/{{ a.id }}" style="display:inline;" onsubmit="return confirm('Supprimer cet enregistrement ?')">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn-del">

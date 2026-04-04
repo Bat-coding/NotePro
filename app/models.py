@@ -1,4 +1,3 @@
-# app/models.py
 from flask_login import UserMixin
 from flask import g
 import mysql.connector

@@ -86,7 +86,6 @@
                     </button>
                     {% endif %}
                     
-                    {# FIXED [VULN-005]: DELETE via POST + CSRF token (était un lien GET vulnérable au CSRF) #}
                     <form method="POST" action="/admin/users/delete/{{ u.id }}" style="display:inline;" onsubmit="return confirm('Supprimer cet utilisateur ? Cette action est irréversible.')">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none font-weight-600">

@@ -1,4 +1,3 @@
-# app/auth.py
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session
 from flask_login import login_user, logout_user, login_required, current_user
 import pyotp
@@ -8,14 +7,6 @@ from .forms import LoginForm
 auth_bp = Blueprint('auth', __name__)
 
 
-# FIXED [VULN-011]: Rate limiting sur la route de login pour prévenir le brute force
-# Nécessite l'installation de flask-limiter: pip install flask-limiter
-# Si flask-limiter n'est pas encore installé, ce décorateur est optionnel mais FORTEMENT recommandé
-# from flask_limiter import Limiter
-# from flask_limiter.util import get_remote_address
-# limiter = Limiter(key_func=get_remote_address)
-#
-# @limiter.limit("10 per minute")
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -39,8 +30,6 @@ def login():
                 return redirect(next_page)
             return redirect(url_for('main.dashboard'))
         else:
-            # FIXED [VULN-011]: Message générique — ne pas distinguer "utilisateur inconnu" de
-            # "mauvais mot de passe" pour éviter l'énumération d'utilisateurs (user enumeration)
             flash('Identifiant ou mot de passe incorrect.', 'danger')
 
     return render_template('login.html', form=form)

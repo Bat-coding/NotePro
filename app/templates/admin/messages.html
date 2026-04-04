@@ -65,14 +65,12 @@
                 <td style="max-width:300px;"><strong>{{ m.contenu }}</strong></td>
                 <td>{{ m.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
                 <td style="text-align:right;display:flex;gap:0.5rem;justify-content:flex-end;">
-                    {# FIXED [VULN-005]: toggle via POST + CSRF token (était GET) #}
                     <form method="POST" action="/admin/messages/toggle/{{ m.id }}" style="display:inline;">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="{% if m.actif %}btn-toggle-on{% else %}btn-toggle-off{% endif %}" title="Activer/Désactiver">
                             {% if m.actif %}Désactiver{% else %}Activer{% endif %}
                         </button>
                     </form>
-                    {# FIXED [VULN-005]: DELETE via POST + CSRF token (était GET) #}
                     <form method="POST" action="/admin/messages/delete/{{ m.id }}" style="display:inline;" onsubmit="return confirm('Supprimer ce message ?')">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn-del-c"><i class="bi bi-trash3"></i></button>

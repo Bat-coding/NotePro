@@ -1,6 +1,5 @@
 name: DevSecOps Pipeline
 
-# FIXED [VULN-007]: Permissions minimales par défaut pour GITHUB_TOKEN
 permissions:
   contents: read
 
@@ -14,18 +13,14 @@ jobs:
   pipeline:
     runs-on: ubuntu-latest
 
-    # FIXED [VULN-007]: Permissions minimales au niveau du job
     permissions:
       contents: read
       security-events: write  # Nécessaire pour upload des résultats SARIF (ZAP, etc.)
 
     services:
       db:
-        # FIXED [VULN-016]: Épingler l'image MySQL par digest pour éviter les supply chain attacks
-        # Commande pour obtenir le digest: docker pull mysql:8.0 && docker inspect mysql:8.0 --format='{{index .RepoDigests 0}}'
         image: mysql:8.0
         env:
-          # FIXED [VULN-001]: Utiliser des GitHub Secrets pour les credentials — ne plus mettre en clair
           MYSQL_ROOT_PASSWORD: ${{ secrets.CI_MYSQL_ROOT_PASSWORD }}
           MYSQL_DATABASE: notepro
           MYSQL_USER: notepro
@@ -40,13 +35,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        # FIXED [VULN-007]: Épingler les actions par SHA de commit (immuable)
-        # actions/checkout@v3 → SHA correspondant à v3.6.0
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
 
       # ── 01 FLAKE8 ─────────────────────────────────────────────────────────
       - name: Set up Python
-        # FIXED [VULN-007]: Épingler actions/setup-python par SHA
         uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b  # v5.3.0
         with:
           python-version: '3.11'
@@ -58,8 +50,6 @@ jobs:
 
       - name: Flake8 - Lint
         run: flake8 app/ --max-line-length=120 --exclude=app/templates
-        # FIXED [INFO-002]: Retiré continue-on-error pour que le lint bloque vraiment
-        # continue-on-error: true  ← retiré intentionnellement
 
       # ── 02 BANDIT (SAST Python) ───────────────────────────────────────────
       - name: Bandit - SAST Python
@@ -70,8 +60,6 @@ jobs:
 
       # ── 03 PIP-AUDIT (SCA) ────────────────────────────────────────────────
       - name: pip-audit - Scan dépendances (CVE)
-        # FIXED [INFO-002]: pip-audit NE doit PAS avoir continue-on-error sur des CVE critiques
-        # Le pipeline échoue si des CVE critiques sont détectées
         run: pip-audit -r requirements.txt
 
       - name: pip-audit - Scan complet (non bloquant pour les warnings)
@@ -103,7 +91,6 @@ jobs:
           docker compose up -d
           sleep 20
         env:
-          # FIXED [VULN-001]: Utiliser des GitHub Secrets pour tous les credentials CI/CD
           DB_HOST: db
           DB_USER: notepro
           DB_PASSWORD: ${{ secrets.CI_MYSQL_PASSWORD }}

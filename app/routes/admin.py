@@ -1,4 +1,3 @@
-# app/routes/admin.py
 from flask import Blueprint, render_template, request, redirect, flash, Response
 from app.decorators import role_required
 from app.models import get_db
@@ -190,8 +189,6 @@ def add_class():
     return redirect('/admin/classes')
 
 
-# FIXED [VULN-005]: Convertir la route DELETE en POST pour protection CSRF
-# Ancienne route GET retirée: @admin_bp.route('/classes/delete/<int:id>')
 @admin_bp.route('/classes/delete/<int:id>', methods=['POST'])
 @role_required('admin')
 def delete_class(id):
@@ -267,7 +264,6 @@ def add_student_to_class(id):
     return redirect(f'/admin/classes/{id}')
 
 
-# FIXED [VULN-005]: Convertir en POST pour protection CSRF
 @admin_bp.route('/classes/remove_student/<int:classe_id>/<int:etudiant_id>', methods=['POST'])
 @role_required('admin')
 def remove_student_from_class(classe_id, etudiant_id):
@@ -318,7 +314,6 @@ def add_user():
     return redirect('/admin/users')
 
 
-# FIXED [VULN-005]: Convertir en POST pour protection CSRF
 @admin_bp.route('/users/delete/<int:id>', methods=['POST'])
 @role_required('admin')
 def delete_user(id):
@@ -517,7 +512,6 @@ def add_emploi():
     return redirect(f'/admin/emplois?semaine={semaine}')
 
 
-# FIXED [VULN-005]: Convertir en POST pour protection CSRF
 @admin_bp.route('/emplois/delete/<int:id>', methods=['POST'])
 @role_required('admin')
 def delete_emploi(id):
@@ -636,7 +630,6 @@ def save_cantine():
     return redirect(f'/admin/cantine?semaine={semaine}')
 
 
-# FIXED [VULN-005]: Convertir en POST pour protection CSRF
 @admin_bp.route('/cantine/delete/<int:id>', methods=['POST'])
 @role_required('admin')
 def delete_cantine(id):
@@ -694,7 +687,6 @@ def add_affectation():
     return redirect('/admin/affectations')
 
 
-# FIXED [VULN-005]: Convertir en POST pour protection CSRF
 @admin_bp.route('/affectations/delete/<int:id>', methods=['POST'])
 @role_required('admin')
 def delete_affectation(id):
@@ -741,7 +733,6 @@ def add_prof_absence():
     return redirect('/admin/prof_absences')
 
 
-# FIXED [VULN-005]: Convertir en POST pour protection CSRF
 @admin_bp.route('/prof_absences/delete/<int:id>', methods=['POST'])
 @role_required('admin')
 def delete_prof_absence(id):
@@ -775,7 +766,6 @@ def add_message():
     return redirect('/admin/messages')
 
 
-# FIXED [VULN-005]: Convertir en POST pour protection CSRF
 @admin_bp.route('/messages/toggle/<int:id>', methods=['POST'])
 @role_required('admin')
 def toggle_message(id):
@@ -790,7 +780,6 @@ def toggle_message(id):
     return redirect('/admin/messages')
 
 
-# FIXED [VULN-005]: Convertir en POST pour protection CSRF
 @admin_bp.route('/messages/delete/<int:id>', methods=['POST'])
 @role_required('admin')
 def delete_message(id):

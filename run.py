@@ -1,4 +1,3 @@
-# run.py
 from app import create_app
 from dotenv import load_dotenv
 import os
@@ -6,8 +5,6 @@ import os
 # Load environment variables from .env file
 load_dotenv()
 
-# FIXED [VULN-003]: Ne jamais afficher DATABASE_URL (contient les credentials) dans les logs
-# Ancienne ligne retirée: print(f"DATABASE_URL: {os.getenv('DATABASE_URL')}")
 
 app = create_app()
 

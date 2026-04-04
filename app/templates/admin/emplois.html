@@ -242,7 +242,6 @@
                     {% if c.salle %}
                     <span class="cb-meta"><i class="bi bi-geo-alt-fill"></i> {{ c.salle }}</span>
                     {% endif %}
-                    {# FIXED [VULN-005]: DELETE via POST + CSRF token (était GET) #}
                     <form method="POST" action="/admin/emplois/delete/{{ c.id }}" style="display:inline;" onsubmit="return confirm('Supprimer ce créneau ?')">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn-del-slot" title="Supprimer">
@@ -291,7 +290,6 @@
                     {% if c.salle %}
                     <span class="cb-meta"><i class="bi bi-geo-alt-fill"></i> {{ c.salle }}</span>
                     {% endif %}
-                    {# FIXED [VULN-005]: DELETE via POST + CSRF token (était GET) - vue journalière #}
                     <form method="POST" action="/admin/emplois/delete/{{ c.id }}" style="display:inline;" onsubmit="return confirm('Supprimer ce créneau ?')">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn-del-slot" title="Supprimer">

@@ -1,4 +1,3 @@
-# app/routes/professeur.py
 from flask import Blueprint, render_template, request, redirect, flash, Response
 from flask_login import current_user
 from app.decorators import role_required
@@ -172,7 +171,6 @@ def index():
 def emploi_du_temps():
     conn = get_db()
     cur = conn.cursor(dictionary=True)
-    # FIXED [VULN-015]: Utiliser current_user.id au lieu de session['user_id']
     prof_id = current_user.id
 
     semaine_str = request.args.get('semaine')
@@ -274,7 +272,6 @@ def emploi_du_temps():
 def emploi_ical():
     conn = get_db()
     cur = conn.cursor(dictionary=True)
-    # FIXED [VULN-015]: Utiliser current_user.id pour filtrer les cours du professeur connecté
     cur.execute("""
         SELECT e.*, c.nom AS classe_nom, u.username AS prof_nom
         FROM emplois_du_temps e
@@ -299,7 +296,6 @@ def emploi_ical():
 def evaluations():
     db = get_db()
     cur = db.cursor(dictionary=True)
-    # FIXED [VULN-015]: Utiliser current_user.id
     cur.execute("""
         SELECT e.id, e.titre, c.nom as classe
         FROM evaluations e
@@ -319,7 +315,6 @@ def add_evaluation():
     classe_id = request.form['classe_id']
     db = get_db()
     cur = db.cursor()
-    # FIXED [VULN-015]: Utiliser current_user.id
     cur.execute("INSERT INTO evaluations (titre, classe_id, professeur_id) VALUES (%s, %s, %s)",
                 (titre, classe_id, current_user.id))
     db.commit()
@@ -333,7 +328,6 @@ def add_evaluation():
 def notes():
     db = get_db()
     cur = db.cursor(dictionary=True)
-    # FIXED [VULN-015]: Utiliser current_user.id
     cur.execute("SELECT e.id, e.titre FROM evaluations e WHERE e.professeur_id = %s", (current_user.id,))
     evals = cur.fetchall()
     return render_template('professeur/notes.html', evaluations=evals)
@@ -345,8 +339,7 @@ def saisir_notes(eval_id):
     db = get_db()
     cur = db.cursor(dictionary=True)
 
-    # FIXED: Vérifier que l'évaluation appartient bien au professeur connecté (IDOR protection)
-    # FIXED [VULN-015]: Utiliser current_user.id
+    # Vérifier que l'évaluation appartient bien au professeur connecté (IDOR protection)
     cur.execute("SELECT id FROM evaluations WHERE id = %s AND professeur_id = %s", (eval_id, current_user.id))
     if not cur.fetchone():
         flash("Évaluation introuvable ou accès non autorisé.", "danger")
@@ -415,7 +408,6 @@ def agenda():
             ORDER BY a.date_event
         """, (first_of_month, last_of_month, classe_id))
     else:
-        # FIXED [VULN-015]: Utiliser current_user.id
         cur.execute("""
             SELECT a.*, c.nom as classe_nom, u.username as prof_nom
             FROM agenda a
@@ -443,7 +435,6 @@ def agenda():
 def add_agenda():
     db = get_db()
     cur = db.cursor()
-    # FIXED [VULN-015]: Utiliser current_user.id
     cur.execute("""
         INSERT INTO agenda (classe_id, professeur_id, titre, description, date_event, type_event)
         VALUES (%s, %s, %s, %s, %s, %s)
@@ -461,13 +452,12 @@ def add_agenda():
     return redirect(f'/professeur/agenda?mois={date_ev.strftime("%Y-%m")}')
 
 
-# FIXED [VULN-005]: Convertir en POST pour protection CSRF
 @prof_bp.route('/agenda/delete/<int:id>', methods=['POST'])
 @role_required('professeur')
 def delete_agenda(id):
     db = get_db()
     cur = db.cursor(dictionary=True)
-    # FIXED [VULN-015]: Utiliser current_user.id (vérification ownership maintenue)
+    # Utiliser current_user.id (vérification ownership maintenue)
     cur.execute("SELECT date_event FROM agenda WHERE id = %s AND professeur_id = %s", (id, current_user.id))
     row = cur.fetchone()
     if row:
@@ -526,7 +516,6 @@ def add_absence():
     cur = db.cursor()
     etudiant_id = request.form['etudiant_id']
     classe_id = request.form['classe_id']
-    # FIXED [VULN-015]: Utiliser current_user.id
     cur.execute("""
         INSERT INTO absences (etudiant_id, professeur_id, classe_id, date_absence, type_absence, motif, justifiee)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
@@ -544,7 +533,6 @@ def add_absence():
     return redirect(f'/professeur/absences?classe_id={classe_id}')
 
 
-# FIXED [VULN-005]: Convertir en POST pour protection CSRF
 @prof_bp.route('/absences/toggle/<int:id>', methods=['POST'])
 @role_required('professeur')
 def toggle_justification(id):
@@ -562,7 +550,6 @@ def toggle_justification(id):
     return redirect('/professeur/absences')
 
 
-# FIXED [VULN-005]: Convertir en POST pour protection CSRF
 @prof_bp.route('/absences/delete/<int:id>', methods=['POST'])
 @role_required('professeur')
 def delete_absence(id):

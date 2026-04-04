@@ -1,15 +1,13 @@
-# app/routes/etudiant.py
 from flask import Blueprint, render_template, request, Response
-from flask_login import current_user  # FIXED [VULN-015]: Importer current_user Flask-Login
+from flask_login import current_user
 from app.decorators import role_required
 from app.models import get_db, get_notes_etudiant
 from datetime import date, timedelta
 import uuid
-import imghdr  # FIXED [VULN-008]: Pour validation du type MIME réel (magic bytes)
+import imghdr
 
 etu_bp = Blueprint('etudiant', __name__)
 
-# FIXED [VULN-008]: Extensions d'images autorisées pour l'upload d'avatar
 ALLOWED_IMAGE_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif', 'webp'}
 ALLOWED_IMAGE_MIMETYPES = {'jpeg', 'png', 'gif', 'webp', 'bmp'}
 
@@ -206,7 +204,6 @@ def index():
 @etu_bp.route('/notes')
 @role_required('etudiant')
 def mes_notes():
-    # FIXED [VULN-015]: Utiliser current_user.id (Flask-Login) au lieu de session['user_id']
     notes = get_notes_etudiant(current_user.id)
     return render_template('etudiant/notes.html', notes=notes)
 
@@ -221,7 +218,6 @@ def emploi_du_temps():
     semaine_str = request.args.get('semaine')
     vue = request.args.get('vue', 'hebdo')
     jour_str = request.args.get('jour')
-    # FIXED [VULN-015]: Utiliser current_user.id au lieu de session['user_id']
     etudiant_id = current_user.id
 
     lundi, dimanche = get_week_bounds(semaine_str)
@@ -290,7 +286,6 @@ def emploi_du_temps():
 def emploi_ical():
     conn = get_db()
     cur = conn.cursor(dictionary=True)
-    # FIXED [VULN-015]: Utiliser current_user.id au lieu de session['user_id']
     cur.execute("""
         SELECT e.*, c.nom AS classe_nom, u.username AS prof_nom
         FROM emplois_du_temps e
@@ -316,7 +311,6 @@ def emploi_ical():
 def agenda():
     conn = get_db()
     cur = conn.cursor(dictionary=True)
-    # FIXED [VULN-015]: Utiliser current_user.id au lieu de session['user_id']
     etudiant_id = current_user.id
 
     mois_str = request.args.get('mois')
@@ -363,7 +357,6 @@ def agenda():
 def mes_absences():
     conn = get_db()
     cur = conn.cursor(dictionary=True)
-    # FIXED [VULN-015]: Utiliser current_user.id au lieu de session['user_id']
     etudiant_id = current_user.id
 
     cur.execute("""

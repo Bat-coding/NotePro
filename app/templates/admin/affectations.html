@@ -72,7 +72,6 @@
                 <td><i class="bi bi-person-fill" style="color:#4f46e5;"></i> {{ a.prof_nom }}</td>
                 <td>{{ a.matiere }}</td>
                 <td style="text-align:right;">
-                    {# FIXED [VULN-005]: DELETE via POST + CSRF token #}
                     <form method="POST" action="/admin/affectations/delete/{{ a.id }}" style="display:inline;" onsubmit="return confirm('Confirmer la suppression ?')">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn-del-c">Supprimer</button>

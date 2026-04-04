@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
-# FIXED [VULN-004]: Importer Flask-Talisman pour les en-têtes HTTP de sécurité
 from flask_talisman import Talisman
 import os
 
@@ -19,7 +18,6 @@ login_manager.login_message_category = 'info'
 def create_app():
     app = Flask(__name__)
 
-    # FIXED [VULN-009]: Lever une exception si SECRET_KEY n'est pas définie — pas de fallback faible
     secret_key = os.environ.get('SECRET_KEY')
     if not secret_key:
         raise RuntimeError(
@@ -34,7 +32,6 @@ def create_app():
     )
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    # FIXED [VULN-011]: Configuration de la session pour sécuriser les cookies
     app.config['SESSION_COOKIE_SECURE'] = os.environ.get('FLASK_ENV') != 'development'
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
@@ -51,15 +48,12 @@ def create_app():
     login_manager.init_app(app)
     csrf.init_app(app)
 
-    # FIXED [VULN-004]: Initialiser Flask-Talisman avec une Content Security Policy stricte
     # force_https=False en développement (passer True en production avec TLS)
     is_production = os.environ.get('FLASK_ENV', 'production') == 'production'
     csp = {
         'default-src': ["'self'"],
         'script-src': [
             "'self'",
-            # FIXED [VULN-014]: Idéalement héberger Bootstrap en local ; en attendant,
-            # ajouter le hash SRI dans les templates ET la source ici
             "https://cdn.jsdelivr.net",
         ],
         'style-src': [
@@ -104,7 +98,6 @@ def create_app():
     app.register_blueprint(etu_bp, url_prefix='/etudiant')
     app.register_blueprint(user_bp, url_prefix='/user')
 
-    # FIXED [VULN-006]: Ajouter une route /health pour le HEALTHCHECK Docker
     @app.route('/health')
     def health_check():
         from flask import jsonify

@@ -89,7 +89,6 @@
                             {% endif %}
                         </td>
                         <td style="text-align:right;">
-                            {# FIXED [VULN-005]: remove_student via POST + CSRF token #}
                             <form method="POST" action="/admin/classes/remove_student/{{ classe.id }}/{{ e.id }}" style="display:inline;" onsubmit="return confirm('Retirer cet étudiant de la classe ?')">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none">

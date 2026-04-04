@@ -61,7 +61,6 @@
                 <td><i class="bi bi-person-fill" style="color:#ef4444;"></i> <strong>{{ a.prof_nom }}</strong></td>
                 <td>{{ a.date_absence.strftime('%d/%m/%Y') }}</td>
                 <td style="text-align:right;">
-                    {# FIXED [VULN-005]: DELETE via POST + CSRF token #}
                     <form method="POST" action="/admin/prof_absences/delete/{{ a.id }}" style="display:inline;" onsubmit="return confirm('Supprimer cette absence ?')">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn-del-c">Supprimer</button>

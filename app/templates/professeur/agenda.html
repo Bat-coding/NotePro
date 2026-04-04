@@ -2,32 +2,6 @@
 {% block content %}
 
 <style>
-    /* ── JOURS FR ── */
-        {
-        % set jours_fr=['Lundi',
-        'Mardi',
-        'Mercredi',
-        'Jeudi',
-        'Vendredi',
-        'Samedi',
-        'Dimanche'] %
-    }
-
-        {
-        % set mois_fr=['Janvier',
-        'Février',
-        'Mars',
-        'Avril',
-        'Mai',
-        'Juin',
-        'Juillet',
-        'Août',
-        'Septembre',
-        'Octobre',
-        'Novembre',
-        'Décembre'] %
-    }
-
     /* ── TYPE COLORS ── */
     .type-badge {
         display: inline-flex;
@@ -529,7 +503,6 @@
                     <div class="event-desc">{{ e.description }}</div>
                     {% endif %}
                 </div>
-                {# FIXED [VULN-005]: DELETE via POST + CSRF token (était GET) #}
                 <form method="POST" action="/professeur/agenda/delete/{{ e.id }}" style="display:inline;"
                     onsubmit="return confirm('Supprimer cet événement ?')">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
