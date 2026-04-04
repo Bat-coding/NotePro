@@ -1,422 +1,407 @@
 {% extends "base.html" %}
 {% block content %}
 
+{% set jours_fr = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'] %}
+
 <style>
-    .cantine-hero {
-        background: linear-gradient(135deg, #0f172a 0%, #1a3a2a 60%, #166534 100%);
-        border-radius: 1.25rem;
-        padding: 2rem 2.5rem;
+    .page-header-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         margin-bottom: 2rem;
-        color: white;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .cantine-hero::before {
-        content: '';
-        position: absolute;
-        top: -60px;
-        right: -60px;
-        width: 200px;
-        height: 200px;
-        background: rgba(255, 255, 255, 0.04);
-        border-radius: 50%;
-    }
-
-    .cantine-hero-title {
-        font-size: 1.5rem;
-        font-weight: 800;
-        letter-spacing: -0.03em;
-        margin: 0 0 0.3rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    .cantine-hero-sub {
-        color: rgba(255, 255, 255, 0.6);
-        font-size: 0.875rem;
-    }
-
-    .cantine-nav {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin-top: 1.25rem;
+        padding-bottom: 1.25rem;
+        border-bottom: 1px solid #e5e7eb;
         flex-wrap: wrap;
+        gap: .75rem;
     }
 
-    .cantine-nav-btn {
+    .page-header-bar h1 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #111827;
+        letter-spacing: -.02em;
+        margin: 0 0 .15rem;
+    }
+
+    .page-header-bar p {
+        font-size: .825rem;
+        color: #6b7280;
+        margin: 0;
+    }
+
+    .week-nav {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+    }
+
+    .week-nav .week-label {
+        font-size: .85rem;
+        font-weight: 600;
+        color: #374151;
+        white-space: nowrap;
+    }
+
+    .nav-btn {
+        width: 30px;
+        height: 30px;
         display: inline-flex;
         align-items: center;
-        gap: 0.4rem;
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 0.5rem;
-        padding: 0.45rem 1rem;
-        font-size: 0.8rem;
-        font-weight: 600;
+        justify-content: center;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        background: #fff;
+        color: #374151;
+        font-size: .8rem;
         text-decoration: none;
-        transition: all 0.2s;
+        transition: background .15s, border-color .15s;
     }
 
-    .cantine-nav-btn:hover {
-        background: rgba(255, 255, 255, 0.2);
+    .nav-btn:hover {
+        background: #f9fafb;
+        border-color: #d1d5db;
+        color: #111827;
         text-decoration: none;
-        color: white;
     }
 
-    .cantine-week-label {
-        font-size: 0.9rem;
-        font-weight: 700;
-        color: rgba(255, 255, 255, 0.8);
-        padding: 0 0.5rem;
-    }
-
-    /* GRID CARTE */
-    .cantine-grid {
+    /* ── Grille ── */
+    .menu-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 1.25rem;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: .875rem;
     }
 
-    .cantine-day-card {
-        background: white;
-        border-radius: 1.25rem;
-        border: 1px solid #e2e8f0;
+    .day-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
         overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        transition: box-shadow 0.2s;
     }
 
-    .cantine-day-card:hover {
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-    }
-
-    .day-card-header {
-        padding: 0.9rem 1.25rem;
-        background: #f8fafc;
-        border-bottom: 1px solid #e2e8f0;
+    .day-head {
+        padding: .6rem .9rem;
+        background: #f9fafb;
+        border-bottom: 1px solid #e5e7eb;
         display: flex;
         align-items: center;
         justify-content: space-between;
     }
 
-    .day-card-header.today-header {
-        background: linear-gradient(135deg, #16a34a, #15803d);
+    .day-head.today {
+        background: #059669;
+        border-bottom-color: #047857;
     }
 
-    .day-name-big {
-        font-size: 0.85rem;
-        font-weight: 800;
-        color: #0f172a;
+    .day-name {
+        font-size: .72rem;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: .06em;
+        color: #374151;
     }
 
-    .day-card-header.today-header .day-name-big {
-        color: white;
+    .day-date {
+        font-size: .7rem;
+        color: #6b7280;
+        margin-top: .05rem;
     }
 
-    .day-date-small {
-        font-size: 0.72rem;
-        color: #64748b;
-        font-weight: 500;
+    .day-head.today .day-name,
+    .day-head.today .day-date {
+        color: #fff;
     }
 
-    .day-card-header.today-header .day-date-small {
-        color: rgba(255, 255, 255, 0.7);
+    .day-head.today .day-date {
+        opacity: .75;
     }
 
     .today-chip {
-        font-size: 0.65rem;
+        font-size: .65rem;
         font-weight: 700;
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
-        padding: 0.15rem 0.5rem;
-        border-radius: 2rem;
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, .2);
+        color: #fff;
+        padding: .15rem .5rem;
+        border-radius: 100px;
+        border: 1px solid rgba(255, 255, 255, .3);
+        white-space: nowrap;
     }
 
-    .day-card-body {
-        padding: 1.1rem 1.25rem;
+    /* ── Contenu menu ── */
+    .day-body {
+        padding: .85rem .9rem;
         display: flex;
         flex-direction: column;
-        gap: 0.65rem;
+        gap: .6rem;
     }
 
-    .menu-line {
+    .menu-row {
         display: flex;
         flex-direction: column;
-        gap: 0.1rem;
+        gap: .1rem;
     }
 
     .menu-cat {
-        font-size: 0.64rem;
-        font-weight: 800;
+        font-size: .62rem;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: #94a3b8;
+        letter-spacing: .07em;
+        color: #9ca3af;
     }
 
-    .menu-item {
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #0f172a;
-    }
-
-    .menu-separator {
-        height: 1px;
-        background: #f1f5f9;
-    }
-
-    .menu-regime {
-        font-size: 0.75rem;
-        color: #16a34a;
+    .menu-val {
+        font-size: .83rem;
         font-weight: 500;
-        display: flex;
+        color: #111827;
+        line-height: 1.35;
+    }
+
+    .menu-sep {
+        height: 1px;
+        background: #f3f4f6;
+    }
+
+    .regime-row {
+        display: inline-flex;
         align-items: center;
-        gap: 0.3rem;
+        gap: .3rem;
+        font-size: .72rem;
+        font-weight: 600;
+        color: #059669;
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 100px;
+        padding: .2rem .55rem;
+        margin-top: .1rem;
     }
 
-    /* Formulaire d'édition - modal-like inline */
-    .day-card-form {
-        padding: 0 1.25rem 1.25rem;
+    /* ── Vide ── */
+    .empty-state {
+        padding: 1.75rem .9rem;
+        text-align: center;
+        color: #9ca3af;
+        font-size: .8rem;
     }
 
-    .day-card-form form {
+    .empty-state i {
+        font-size: 1.4rem;
+        display: block;
+        margin-bottom: .4rem;
+        opacity: .3;
+    }
+
+    /* ── Formulaire inline ── */
+    .edit-form-wrap {
+        display: none;
+        border-top: 1px solid #f3f4f6;
+        padding: .85rem .9rem;
+        background: #fafafa;
+    }
+
+    .edit-form-wrap form {
         display: flex;
         flex-direction: column;
-        gap: 0.65rem;
+        gap: .55rem;
     }
 
-    .form-mini input {
-        width: 100%;
-        border: 1.5px solid #e2e8f0;
-        border-radius: 0.5rem;
-        padding: 0.55rem 0.75rem;
-        font-size: 0.82rem;
-        color: #0f172a;
-        background: #f8fafc;
-        font-family: 'Inter', sans-serif;
-        outline: none;
-        transition: all 0.2s;
-    }
-
-    .form-mini input:focus {
-        border-color: #16a34a;
-        background: white;
-        box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
-    }
-
-    .form-mini input::placeholder {
-        color: #94a3b8;
-    }
-
-    .form-mini label {
-        font-size: 0.68rem;
+    .form-field label {
+        display: block;
+        font-size: .65rem;
         font-weight: 700;
-        color: #64748b;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
+        letter-spacing: .06em;
+        color: #6b7280;
+        margin-bottom: .25rem;
     }
 
-    .btn-save-menu {
-        background: linear-gradient(135deg, #16a34a, #15803d);
-        color: white;
-        border: none;
-        border-radius: 0.5rem;
-        padding: 0.6rem;
-        font-weight: 700;
-        font-size: 0.8rem;
-        cursor: pointer;
-        font-family: 'Inter', sans-serif;
-        transition: all 0.2s;
+    .form-field input {
+        width: 100%;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: .45rem .65rem;
+        font-size: .82rem;
+        color: #111827;
+        background: #fff;
+        outline: none;
+        transition: border-color .15s, box-shadow .15s;
+    }
+
+    .form-field input:focus {
+        border-color: #059669;
+        box-shadow: 0 0 0 3px rgba(5, 150, 105, .1);
+    }
+
+    .form-field input::placeholder {
+        color: #9ca3af;
+    }
+
+    .btn-save {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.4rem;
-        box-shadow: 0 3px 10px rgba(22, 163, 74, 0.25);
-    }
-
-    .btn-save-menu:hover {
-        transform: translateY(-1px);
-    }
-
-    .btn-edit-toggle {
+        gap: .4rem;
         width: 100%;
-        background: #f1f5f9;
-        color: #374151;
-        border: 1px solid #e2e8f0;
-        border-radius: 0 0 0.75rem 0.75rem;
-        padding: 0.5rem;
-        font-size: 0.78rem;
+        padding: .55rem;
+        background: #059669;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: .8rem;
         font-weight: 600;
         cursor: pointer;
-        font-family: 'Inter', sans-serif;
-        transition: all 0.2s;
+        transition: background .15s;
+        margin-top: .25rem;
+    }
+
+    .btn-save:hover {
+        background: #047857;
+    }
+
+    /* ── Bouton toggle ── */
+    .btn-edit {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.4rem;
+        gap: .4rem;
+        width: 100%;
+        padding: .5rem;
+        background: #f9fafb;
+        color: #374151;
+        border: none;
+        border-top: 1px solid #f3f4f6;
+        font-size: .78rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background .15s;
     }
 
-    .btn-edit-toggle:hover {
-        background: #e2e8f0;
+    .btn-edit:hover {
+        background: #f1f5f9;
+        color: #111827;
     }
 
-    .no-menu-state {
-        padding: 1.5rem 1.25rem;
-        text-align: center;
-        color: #94a3b8;
-        font-size: 0.82rem;
-    }
-
-    .no-menu-state i {
-        display: block;
-        font-size: 1.5rem;
-        margin-bottom: 0.5rem;
-        opacity: 0.3;
+    @media (max-width: 480px) {
+        .menu-grid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 
-{% set jours_fr = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'] %}
-
-<header class="page-header">
-    <div style="display:flex;align-items:center;gap:1rem;">
-        <div
-            style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#16a34a,#15803d);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(22,163,74,0.3);">
-            <i class="bi bi-egg-fried" style="font-size:1.5rem;color:white;"></i>
-        </div>
-        <div>
-            <h1 class="page-title" style="margin:0;">Menu de la Cantine</h1>
-            <p style="color:#64748b;font-size:0.875rem;margin:0.15rem 0 0;">Saisissez et gérez les menus de la semaine
-            </p>
-        </div>
+<!-- En-tête -->
+<div class="page-header-bar">
+    <div>
+        <h1>Menu de la cantine</h1>
+        <p>Saisissez et gérez les menus de la semaine</p>
     </div>
-</header>
-
-<!-- HERO NAV -->
-<div class="cantine-hero" style="margin-bottom:2rem;">
-    <h2 class="cantine-hero-title">
-        Semaine du {{ titre_semaine }}
-    </h2>
-    <p class="cantine-hero-sub">Cliquez sur "Modifier" pour éditer le menu de chaque jour</p>
-    <div class="cantine-nav">
-        <a href="/admin/cantine?semaine={{ prev_semaine }}" class="cantine-nav-btn">
-            <i class="bi bi-chevron-left"></i> Semaine précédente
-        </a>
-        <span class="cantine-week-label">{{ titre_semaine }}</span>
-        <a href="/admin/cantine?semaine={{ next_semaine }}" class="cantine-nav-btn">
-            Semaine suivante <i class="bi bi-chevron-right"></i>
-        </a>
+    <div class="week-nav">
+        <a href="/admin/cantine?semaine={{ prev_semaine }}" class="nav-btn"><i class="bi bi-chevron-left"></i></a>
+        <span class="week-label">{{ titre_semaine }}</span>
+        <a href="/admin/cantine?semaine={{ next_semaine }}" class="nav-btn"><i class="bi bi-chevron-right"></i></a>
     </div>
 </div>
 
-<!-- GRILLE DES JOURS -->
-<div class="cantine-grid">
+<!-- Grille -->
+<div class="menu-grid">
     {% for jour in jours_semaine %}
     {% set menu = menus.get(jour) %}
     {% set is_today = (jour == today) %}
     {% set jour_iso = jour.isoformat() %}
-    <div class="cantine-day-card">
-        <div class="day-card-header {{ 'today-header' if is_today }}">
+
+    <div class="day-card">
+
+        <div class="day-head {{ 'today' if is_today }}">
             <div>
-                <div class="day-name-big">{{ jours_fr[jour.weekday()] }}</div>
-                <div class="day-date-small">{{ jour.strftime('%-d %B') }}</div>
+                <div class="day-name">{{ jours_fr[jour.weekday()] }}</div>
+                <div class="day-date">{{ jour.strftime('%-d %B') }}</div>
             </div>
-            {% if is_today %}
-            <span class="today-chip">Aujourd'hui</span>
-            {% endif %}
+            {% if is_today %}<span class="today-chip">Aujourd'hui</span>{% endif %}
         </div>
 
         {% if menu %}
-        <div class="day-card-body">
+        <div class="day-body">
             {% if menu.entree %}
-            <div class="menu-line">
+            <div class="menu-row">
                 <div class="menu-cat">Entrée</div>
-                <div class="menu-item">{{ menu.entree }}</div>
+                <div class="menu-val">{{ menu.entree }}</div>
             </div>
-            <div class="menu-separator"></div>
+            <div class="menu-sep"></div>
             {% endif %}
-            <div class="menu-line">
+            <div class="menu-row">
                 <div class="menu-cat">Plat principal</div>
-                <div class="menu-item">{{ menu.plat_principal }}</div>
+                <div class="menu-val">{{ menu.plat_principal }}</div>
             </div>
             {% if menu.accompagnement %}
-            <div class="menu-line">
+            <div class="menu-row">
                 <div class="menu-cat">Accompagnement</div>
-                <div class="menu-item">{{ menu.accompagnement }}</div>
+                <div class="menu-val">{{ menu.accompagnement }}</div>
             </div>
             {% endif %}
             {% if menu.dessert %}
-            <div class="menu-separator"></div>
-            <div class="menu-line">
+            <div class="menu-sep"></div>
+            <div class="menu-row">
                 <div class="menu-cat">Dessert</div>
-                <div class="menu-item">{{ menu.dessert }}</div>
+                <div class="menu-val">{{ menu.dessert }}</div>
             </div>
             {% endif %}
             {% if menu.regime_special %}
-            <div class="menu-regime">
-                <i class="bi bi-heart-fill"></i> {{ menu.regime_special }}
-            </div>
+            <span class="regime-row"><i class="bi bi-heart-fill"></i> {{ menu.regime_special }}</span>
             {% endif %}
         </div>
         {% else %}
-        <div class="no-menu-state">
+        <div class="empty-state">
             <i class="bi bi-journal-x"></i>
             Aucun menu défini
         </div>
         {% endif %}
 
-        <!-- Formulaire édition inline (toggle) -->
-        <div id="form-{{ jour_iso }}" style="display:none;">
-            <div class="day-card-form">
-                <form method="POST" action="{{ url_for('admin.save_cantine') }}" class="form-mini">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <input type="hidden" name="date_menu" value="{{ jour_iso }}">
-                    <div><label>Entrée</label>
-                        <input type="text" name="entree" value="{{ menu.entree if menu else '' }}">
-                    </div>
-                    <div><label>Plat principal *</label>
-                        <input type="text" name="plat_principal" value="{{ menu.plat_principal if menu else '' }}"
-                            required>
-                    </div>
-                    <div><label>Accompagnement</label>
-                        <input type="text" name="accompagnement" value="{{ menu.accompagnement if menu else '' }}">
-                    </div>
-                    <div><label>Dessert</label>
-                        <input type="text" name="dessert" value="{{ menu.dessert if menu else '' }}">
-                    </div>
-                    <div><label>Régime spécial</label>
-                        <input type="text" name="regime_special" value="{{ menu.regime_special if menu else '' }}">
-                    </div>
-                    <button type="submit" class="btn-save-menu"><i class="bi bi-check2"></i> Enregistrer</button>
-                </form>
-            </div>
+        <!-- Formulaire inline -->
+        <div class="edit-form-wrap" id="form-{{ jour_iso }}">
+            <form method="POST" action="{{ url_for('admin.save_cantine') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="date_menu" value="{{ jour_iso }}">
+                <div class="form-field">
+                    <label>Entrée</label>
+                    <input type="text" name="entree" value="{{ menu.entree if menu else '' }}" placeholder="—">
+                </div>
+                <div class="form-field">
+                    <label>Plat principal *</label>
+                    <input type="text" name="plat_principal" value="{{ menu.plat_principal if menu else '' }}" required
+                        placeholder="—">
+                </div>
+                <div class="form-field">
+                    <label>Accompagnement</label>
+                    <input type="text" name="accompagnement" value="{{ menu.accompagnement if menu else '' }}"
+                        placeholder="—">
+                </div>
+                <div class="form-field">
+                    <label>Dessert</label>
+                    <input type="text" name="dessert" value="{{ menu.dessert if menu else '' }}" placeholder="—">
+                </div>
+                <div class="form-field">
+                    <label>Régime spécial</label>
+                    <input type="text" name="regime_special" value="{{ menu.regime_special if menu else '' }}"
+                        placeholder="—">
+                </div>
+                <button type="submit" class="btn-save"><i class="bi bi-check2"></i> Enregistrer</button>
+            </form>
         </div>
 
-        <button class="btn-edit-toggle toggle-form-btn" data-target="form-{{ jour_iso }}">
+        <button class="btn-edit toggle-form-btn" data-target="form-{{ jour_iso }}">
             <i class="bi bi-pencil-square"></i> Modifier le menu
         </button>
+
     </div>
     {% endfor %}
 </div>
 
 <script nonce="{{ csp_nonce() }}">
-document.addEventListener('DOMContentLoaded', function() {
-    const btns = document.querySelectorAll('.toggle-form-btn');
-    btns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const targetId = this.getAttribute('data-target');
-            const target = document.getElementById(targetId);
-            if (target) {
-                target.style.display = (target.style.display === 'none' || target.style.display === '') ? 'block' : 'none';
-            }
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.toggle-form-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var target = document.getElementById(this.getAttribute('data-target'));
+                if (target) target.style.display = target.style.display === 'block' ? 'none' : 'block';
+            });
         });
     });
-});
 </script>
 
 {% endblock %}

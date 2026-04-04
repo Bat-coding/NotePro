@@ -1,9 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-    --primary-main: #04786B;/* Emerald 700 */
-    --primary-light: #065f54;/* Darker Emerald */
-    --accent-blue: #04786B;/* Emerald 700 */
+    --primary-main: #04786B;
+    /* Emerald 700 */
+    --primary-light: #065f54;
+    /* Darker Emerald */
+    --accent-blue: #04786B;
+    /* Emerald 700 */
     --accent-blue-hover: #065f54;
     --bg-main: #f8fafc;
     --bg-card: #ffffff;
@@ -93,7 +96,8 @@ body {
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.sidebar-header i, .sidebar-header img {
+.sidebar-header i,
+.sidebar-header img {
     font-size: 1.75rem;
     color: #ffffff;
     height: 32px;
@@ -133,7 +137,8 @@ body {
     font-weight: 500;
 }
 
-.sidebar-nav a:hover, .sidebar-nav a.active {
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
     background: rgba(255, 255, 255, 0.05);
     color: white;
 }
@@ -175,7 +180,7 @@ body {
 .page-title {
     font-size: 1.5rem;
     font-weight: 800;
-    color: var(--primary-main);
+    color: var(--shadow-sm);
     letter-spacing: -0.025em;
 }
 
@@ -237,14 +242,32 @@ body {
     font-weight: 600;
 }
 
-.badge-admin { background: #fee2e2; color: #b91c1c; }
-.badge-prof { background: #fef3c7; color: #b45309; }
-.badge-student { background: #dcfce7; color: #15803d; }
+.badge-admin {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.badge-prof {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.badge-student {
+    background: #dcfce7;
+    color: #15803d;
+}
 
 /* ANIMATIONS */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .animate-fade {

@@ -1,280 +1,257 @@
 {% extends "base.html" %}
 {% block content %}
 
-<style>
-    .cantine-etu-layout {
-        max-width: 900px;
-        margin: 0 auto;
-    }
+{% set jours_fr = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'] %}
 
-    .cantine-etu-hero {
-        background: linear-gradient(135deg, #0f172a 0%, #1a3a2a 60%, #166534 100%);
-        border-radius: 1.25rem;
-        padding: 1.75rem 2rem;
-        margin-bottom: 2rem;
-        color: white;
+<style>
+    .page-header-bar {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        margin-bottom: 2rem;
+        padding-bottom: 1.25rem;
+        border-bottom: 1px solid #e5e7eb;
         flex-wrap: wrap;
-        gap: 1rem;
-        position: relative;
-        overflow: hidden;
+        gap: .75rem;
     }
 
-    .cantine-etu-hero::before {
-        content: '';
-        position: absolute;
-        top: -60px;
-        right: -60px;
-        width: 200px;
-        height: 200px;
-        background: rgba(255, 255, 255, 0.04);
-        border-radius: 50%;
-    }
-
-    .cantine-hero-left h2 {
+    .page-header-bar h1 {
         font-size: 1.3rem;
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        margin: 0 0 0.25rem;
+        font-weight: 700;
+        color: #111827;
+        letter-spacing: -.02em;
+        margin: 0 0 .15rem;
     }
 
-    .cantine-hero-left p {
-        color: rgba(255, 255, 255, 0.6);
-        font-size: 0.82rem;
+    .page-header-bar p {
+        font-size: .825rem;
+        color: #6b7280;
         margin: 0;
     }
 
-    .cantine-hero-nav {
+    /* ── Navigation semaine ── */
+    .week-nav {
         display: flex;
         align-items: center;
-        gap: 0.6rem;
+        gap: .5rem;
     }
 
-    .cantine-etu-nav-btn {
+    .week-nav .week-label {
+        font-size: .85rem;
+        font-weight: 600;
+        color: #374151;
+        white-space: nowrap;
+    }
+
+    .nav-btn {
+        width: 30px;
+        height: 30px;
         display: inline-flex;
         align-items: center;
-        gap: 0.3rem;
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 0.5rem;
-        padding: 0.45rem 0.9rem;
-        font-size: 0.8rem;
-        font-weight: 600;
+        justify-content: center;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        background: #fff;
+        color: #374151;
+        font-size: .8rem;
         text-decoration: none;
-        transition: all 0.2s;
+        transition: background .15s, border-color .15s;
     }
 
-    .cantine-etu-nav-btn:hover {
-        background: rgba(255, 255, 255, 0.2);
+    .nav-btn:hover {
+        background: #f9fafb;
+        border-color: #d1d5db;
+        color: #111827;
         text-decoration: none;
-        color: white;
     }
 
-    /* CARDS JOUR */
-    .cantine-etu-grid {
+    /* ── Grille jours ── */
+    .menu-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-        gap: 1.25rem;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: .875rem;
     }
 
-    .cantine-etu-card {
-        background: white;
-        border-radius: 1.25rem;
-        border: 1px solid #e2e8f0;
+    .day-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
         overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        transition: transform 0.2s, box-shadow 0.2s;
     }
 
-    .cantine-etu-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    .day-head {
+        padding: .6rem .9rem;
+        background: #f9fafb;
+        border-bottom: 1px solid #e5e7eb;
     }
 
-    .etu-day-header {
-        padding: 0.85rem 1.25rem;
-        background: #f8fafc;
-        border-bottom: 2px solid #e2e8f0;
+    .day-head.today {
+        background: #059669;
+        border-bottom-color: #047857;
     }
 
-    .etu-day-header.today-hdr {
-        background: linear-gradient(135deg, #16a34a, #15803d);
-        border-bottom-color: #15803d;
-    }
-
-    .etu-day-name {
-        font-size: 0.82rem;
-        font-weight: 800;
-        color: #0f172a;
+    .day-name {
+        font-size: .72rem;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: .06em;
+        color: #374151;
     }
 
-    .etu-day-header.today-hdr .etu-day-name {
-        color: white;
+    .day-date {
+        font-size: .7rem;
+        color: #6b7280;
+        margin-top: .05rem;
     }
 
-    .etu-day-date {
-        font-size: 0.7rem;
-        color: #64748b;
+    .day-head.today .day-name,
+    .day-head.today .day-date {
+        color: #fff;
+    }
+
+    .day-head.today .day-date {
+        opacity: .75;
+    }
+
+    /* ── Contenu menu ── */
+    .day-body {
+        padding: .85rem .9rem;
+        display: flex;
+        flex-direction: column;
+        gap: .6rem;
+    }
+
+    .menu-row {
+        display: flex;
+        flex-direction: column;
+        gap: .1rem;
+    }
+
+    .menu-cat {
+        font-size: .62rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        color: #9ca3af;
+    }
+
+    .menu-val {
+        font-size: .83rem;
         font-weight: 500;
+        color: #111827;
+        line-height: 1.35;
     }
 
-    .etu-day-header.today-hdr .etu-day-date {
-        color: rgba(255, 255, 255, 0.7);
-    }
-
-    .etu-menu-body {
-        padding: 1.1rem 1.25rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.7rem;
-    }
-
-    .etu-menu-item {
-        display: flex;
-        flex-direction: column;
-        gap: 0.1rem;
-    }
-
-    .etu-menu-cat {
-        font-size: 0.62rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: #94a3b8;
-    }
-
-    .etu-menu-val {
-        font-size: 0.88rem;
-        font-weight: 600;
-        color: #0f172a;
-    }
-
-    .etu-menu-sep {
+    .menu-sep {
         height: 1px;
-        background: #f1f5f9;
+        background: #f3f4f6;
     }
 
-    .etu-regime {
-        display: flex;
+    .regime-row {
+        display: inline-flex;
         align-items: center;
-        gap: 0.3rem;
-        font-size: 0.75rem;
-        color: #16a34a;
-        font-weight: 500;
+        gap: .3rem;
+        font-size: .72rem;
+        font-weight: 600;
+        color: #059669;
         background: #f0fdf4;
-        border-radius: 0.4rem;
-        padding: 0.3rem 0.5rem;
+        border: 1px solid #bbf7d0;
+        border-radius: 100px;
+        padding: .2rem .55rem;
+        margin-top: .1rem;
     }
 
-    .etu-no-menu {
-        padding: 2rem 1.25rem;
+    /* ── Vide ── */
+    .empty-state {
+        padding: 2rem .9rem;
         text-align: center;
-        color: #94a3b8;
-        font-size: 0.82rem;
+        color: #9ca3af;
+        font-size: .8rem;
     }
 
-    .etu-no-menu i {
+    .empty-state i {
+        font-size: 1.4rem;
         display: block;
-        font-size: 1.8rem;
-        margin-bottom: 0.5rem;
-        opacity: 0.25;
+        margin-bottom: .4rem;
+        opacity: .3;
     }
 
     @media (max-width: 480px) {
-        .cantine-etu-grid {
+        .menu-grid {
             grid-template-columns: 1fr;
         }
     }
 </style>
 
-{% set jours_fr = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'] %}
-
-<header class="page-header">
-    <div style="display:flex;align-items:center;gap:1rem;">
-        <div
-            style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#16a34a,#15803d);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(22,163,74,0.3);">
-            <i class="bi bi-egg-fried" style="font-size:1.5rem;color:white;"></i>
-        </div>
-        <div>
-            <h1 class="page-title" style="margin:0;">Menu de la Cantine</h1>
-            <p style="color:#64748b;font-size:0.875rem;margin:0.15rem 0 0;">Les repas de la semaine à portée de main</p>
-        </div>
+<!-- En-tête -->
+<div class="page-header-bar">
+    <div>
+        <h1>Menu de la cantine</h1>
+        <p>Semaine du {{ titre_semaine }}</p>
     </div>
-</header>
-
-<div class="cantine-etu-layout">
-
-    <div class="cantine-etu-hero">
-        <div class="cantine-hero-left">
-            <h2>Semaine du {{ titre_semaine }}</h2>
-            <p>Menus publiés par l'administration</p>
-        </div>
-        <div class="cantine-hero-nav">
-            <a href="/etudiant/cantine?semaine={{ prev_semaine }}" class="cantine-etu-nav-btn">
-                <i class="bi bi-chevron-left"></i>
-            </a>
-            <a href="/etudiant/cantine?semaine={{ next_semaine }}" class="cantine-etu-nav-btn">
-                <i class="bi bi-chevron-right"></i>
-            </a>
-        </div>
+    <div class="week-nav">
+        <a href="/etudiant/cantine?semaine={{ prev_semaine }}" class="nav-btn"><i class="bi bi-chevron-left"></i></a>
+        <span class="week-label">{{ titre_semaine }}</span>
+        <a href="/etudiant/cantine?semaine={{ next_semaine }}" class="nav-btn"><i class="bi bi-chevron-right"></i></a>
     </div>
+</div>
 
-    <div class="cantine-etu-grid">
-        {% for jour in jours_semaine %}
-        {% set menu = menus.get(jour) %}
-        {% set is_today = (jour == today) %}
-        <div class="cantine-etu-card">
-            <div class="etu-day-header {{ 'today-hdr' if is_today }}">
-                <div class="etu-day-name">{{ jours_fr[jour.weekday()] }}</div>
-                <div class="etu-day-date">{{ jour.strftime('%-d %B %Y') }}</div>
+<!-- Grille -->
+<div class="menu-grid">
+    {% for jour in jours_semaine %}
+    {% set menu = menus.get(jour) %}
+    {% set is_today = (jour == today) %}
+    <div class="day-card">
+
+        <div class="day-head {{ 'today' if is_today }}">
+            <div class="day-name">{{ jours_fr[jour.weekday()] }}</div>
+            <div class="day-date">{{ jour.strftime('%-d %B %Y') }}</div>
+        </div>
+
+        {% if menu %}
+        <div class="day-body">
+            {% if menu.entree %}
+            <div class="menu-row">
+                <div class="menu-cat">Entrée</div>
+                <div class="menu-val">{{ menu.entree }}</div>
+            </div>
+            <div class="menu-sep"></div>
+            {% endif %}
+
+            <div class="menu-row">
+                <div class="menu-cat">Plat principal</div>
+                <div class="menu-val">{{ menu.plat_principal }}</div>
             </div>
 
-            {% if menu %}
-            <div class="etu-menu-body">
-                {% if menu.entree %}
-                <div class="etu-menu-item">
-                    <div class="etu-menu-cat">Entrée</div>
-                    <div class="etu-menu-val">{{ menu.entree }}</div>
-                </div>
-                <div class="etu-menu-sep"></div>
-                {% endif %}
-                <div class="etu-menu-item">
-                    <div class="etu-menu-cat">Plat principal</div>
-                    <div class="etu-menu-val">{{ menu.plat_principal }}</div>
-                </div>
-                {% if menu.accompagnement %}
-                <div class="etu-menu-item">
-                    <div class="etu-menu-cat">Accompagnement</div>
-                    <div class="etu-menu-val">{{ menu.accompagnement }}</div>
-                </div>
-                {% endif %}
-                {% if menu.dessert %}
-                <div class="etu-menu-sep"></div>
-                <div class="etu-menu-item">
-                    <div class="etu-menu-cat">Dessert</div>
-                    <div class="etu-menu-val">{{ menu.dessert }}</div>
-                </div>
-                {% endif %}
-                {% if menu.regime_special %}
-                <div class="etu-regime">
-                    <i class="bi bi-heart-fill"></i> {{ menu.regime_special }}
-                </div>
-                {% endif %}
-            </div>
-            {% else %}
-            <div class="etu-no-menu">
-                <i class="bi bi-journal-x"></i>
-                Menu non encore publié
+            {% if menu.accompagnement %}
+            <div class="menu-row">
+                <div class="menu-cat">Accompagnement</div>
+                <div class="menu-val">{{ menu.accompagnement }}</div>
             </div>
             {% endif %}
-        </div>
-        {% endfor %}
-    </div>
 
+            {% if menu.dessert %}
+            <div class="menu-sep"></div>
+            <div class="menu-row">
+                <div class="menu-cat">Dessert</div>
+                <div class="menu-val">{{ menu.dessert }}</div>
+            </div>
+            {% endif %}
+
+            {% if menu.regime_special %}
+            <span class="regime-row"><i class="bi bi-heart-fill"></i> {{ menu.regime_special }}</span>
+            {% endif %}
+        </div>
+
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-journal-x"></i>
+            Menu non publié
+        </div>
+        {% endif %}
+
+    </div>
+    {% endfor %}
 </div>
+
 {% endblock %}
