@@ -273,3 +273,7 @@ body {
 .animate-fade {
     animation: fadeIn 0.4s ease-out forwards;
 }
+/* Grade Colors */
+.pn-note-bad { color: #b91c1c !important; }
+.pn-note-warn { color: #e07b39 !important; }
+.pn-note-good { color: #2e7d32 !important; }

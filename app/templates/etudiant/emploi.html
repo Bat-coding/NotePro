@@ -1,273 +1,357 @@
 {% extends "base.html" %}
 {% block content %}
-
 <style>
-    .calendar-header {
+    body {
+        background: #e8eaed !important;
+        font-family: Arial, sans-serif;
+    }
+
+    /* ── En-tête ─────────────────────────────────── */
+    .pn-page-header {
+        margin-bottom: 10px;
+        padding: 12px 0 10px;
+        border-bottom: 2px solid #3a6ea5;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .pn-page-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e293b;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin: 0;
+    }
+
+    .pn-header-actions {
+        display: flex;
+        gap: 5px;
+    }
+
+    .pn-btn-header {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        padding: 4px 12px;
+        border-radius: 0;
+        cursor: pointer;
+        font-family: Arial, sans-serif;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border: none;
+        transition: background .15s;
+    }
+
+    .pn-btn-ical {
+        background: #3a6ea5;
+        color: #fff;
+    }
+
+    .pn-btn-ical:hover {
+        background: #2d5a8a;
+        color: #fff;
+    }
+
+    /* ── Barre navigation semaine ─────────────────── */
+    .pn-nav-bar {
+        background: #fff;
+        border: 1px solid #d0d3d8;
+        padding: 7px 10px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 20px;
+        gap: 8px;
+        margin-bottom: 5px;
         flex-wrap: wrap;
     }
 
-    .cal-controls {
+    .pn-nav-controls {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 6px;
         flex-wrap: wrap;
     }
 
-    .btn-nav {
+    .pn-btn-nav {
+        width: 28px;
+        height: 28px;
+        border: 1px solid #b8bdc3;
+        background: #f0f2f4;
+        color: #3a6ea5;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 36px;
-        height: 36px;
-        border-radius: 8px;
-        border: 1.5px solid #e2e8f0;
-        background: #fff;
-        color: #334155;
-        font-size: 1rem;
         text-decoration: none;
-        transition: all .18s;
+        border-radius: 0;
+        transition: background .15s;
+        line-height: 1;
     }
 
-    .btn-nav:hover {
-        background: #f1f5f9;
+    .pn-btn-nav:hover {
+        background: #dde0e4;
+        color: #3a6ea5;
+    }
+
+    .pn-week-pill {
+        font-size: 0.78rem;
+        font-weight: 700;
         color: #1e293b;
-    }
-
-    .week-title-pill {
-        font-size: .9rem;
-        font-weight: 600;
-        color: #334155;
-        padding: 6px 16px;
-        border-radius: 20px;
-        background: #f8fafc;
-        border: 1.5px solid #e2e8f0;
+        padding: 3px 10px;
+        background: #f0f2f4;
+        border: 1px solid #d0d3d8;
         white-space: nowrap;
     }
 
-    .date-picker-input {
-        padding: 6px 10px;
-        border-radius: 8px;
-        border: 1.5px solid #e2e8f0;
-        font-size: .85rem;
-        color: #334155;
-        outline: none;
-        height: 36px;
-    }
-
-    .vue-btn {
-        padding: 6px 14px;
-        border-radius: 8px;
-        height: 36px;
-        border: 1.5px solid #e2e8f0;
-        background: #fff;
-        font-size: .84rem;
-        font-weight: 600;
-        color: #475569;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        transition: all .18s;
-    }
-
-    .vue-btn.active {
-        background: #6366f1;
-        color: #fff;
-        border-color: #6366f1;
-    }
-
-    .vue-btn:hover:not(.active) {
-        background: #f1f5f9;
+    .pn-date-input {
+        height: 28px;
+        border: 1px solid #b8bdc3;
+        border-radius: 0;
+        padding: 0 8px;
+        font-size: 0.75rem;
+        font-family: Arial, sans-serif;
         color: #1e293b;
+        outline: none;
+        background: #fff;
+        cursor: pointer;
+        transition: border-color .15s;
     }
 
-    .cal-wrapper {
+    .pn-date-input:focus {
+        border-color: #3a6ea5;
+    }
+
+    .pn-vue-btn {
+        height: 28px;
+        padding: 0 10px;
+        border: 1px solid #b8bdc3;
+        background: #f0f2f4;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #4a5568;
+        cursor: pointer;
+        font-family: Arial, sans-serif;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        border-radius: 0;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        transition: background .15s;
+    }
+
+    .pn-vue-btn.active {
+        background: #3a6ea5;
+        color: #fff;
+        border-color: #2d5a8a;
+    }
+
+    .pn-vue-btn:hover:not(.active) {
+        background: #dde0e4;
+        color: #4a5568;
+    }
+
+    /* ── Grille calendrier ────────────────────────── */
+    .pn-cal-wrapper {
         overflow-x: auto;
-        border-radius: 12px;
-        border: 1.5px solid #e2e8f0;
+        border: 1px solid #d0d3d8;
         background: #fff;
     }
 
-    .cal-grid {
+    .pn-cal-grid {
         width: 100%;
         border-collapse: collapse;
-        min-width: 500px;
+        min-width: 700px;
     }
 
-    .cal-grid thead th {
+    .pn-cal-grid thead th {
         background: #1e293b;
         color: #fff;
-        padding: 12px 10px;
-        font-size: .82rem;
-        font-weight: 600;
+        padding: 8px 6px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: .04em;
         text-align: center;
+        white-space: nowrap;
+        text-transform: uppercase;
+        border-right: 1px solid #2d3e50;
     }
 
-    .cal-grid thead th.heure-th {
-        width: 62px;
+    .pn-cal-grid thead th:last-child {
+        border-right: none;
+    }
+
+    .pn-cal-grid thead th.pn-heure-th {
+        width: 55px;
         background: #0f172a;
     }
 
-    .col-today {
-        background: #3730a3 !important;
+    .pn-col-today {
+        background: #2d4a8a !important;
     }
 
-    .date-label {
-        font-size: .68rem;
-        opacity: .75;
+    .pn-date-label {
+        font-size: 0.62rem;
+        opacity: .7;
         font-weight: 400;
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        margin-top: 1px;
     }
 
-    .cal-grid tbody tr {
-        border-bottom: 1px solid #f1f5f9;
+    .pn-date-label:hover {
+        opacity: 1;
+        color: #fff;
     }
 
-    .time-cell {
-        font-size: .75rem;
-        color: #94a3b8;
+    .pn-cal-grid tbody tr {
+        border-bottom: 1px solid #eef0f2;
+    }
+
+    .pn-cal-grid tbody tr:hover {
+        background: #f8f9fa;
+    }
+
+    .pn-time-cell {
+        font-size: 0.62rem;
+        color: #8a939e;
         font-weight: 700;
         text-align: right;
-        padding: 0 10px;
-        vertical-align: top;
-        padding-top: 6px;
-        background: #f8fafc;
-        border-right: 2px solid #e2e8f0;
+        padding: 0 8px;
         white-space: nowrap;
-        width: 58px;
-    }
-
-    .cal-cell {
         vertical-align: top;
-        padding: 3px 4px;
-        min-height: 52px;
-        border-right: 1px solid #f1f5f9;
+        padding-top: 5px;
+        background: #f6f7f8;
+        border-right: 2px solid #d0d3d8;
+        width: 52px;
     }
 
-    .cal-cell.today-col {
-        background: #eff6ff;
+    .pn-cal-cell {
+        vertical-align: top;
+        padding: 2px 3px;
+        min-height: 48px;
+        border-right: 1px solid #eef0f2;
+        position: relative;
     }
 
-    .cours-bloc {
-        border-radius: 7px;
-        padding: 5px 8px;
-        margin: 2px 1px;
-        font-size: .75rem;
+    .pn-cal-cell:last-child {
+        border-right: none;
+    }
+
+    .pn-cal-cell.pn-today-col {
+        background: #f0f5fb;
+    }
+
+    /* ── Blocs de cours ───────────────────────────── */
+    .pn-cours {
+        padding: 4px 6px;
+        margin: 1px;
+        font-size: 0.68rem;
         display: flex;
         flex-direction: column;
         gap: 1px;
-        border-left: 4px solid transparent;
+        border-left: 3px solid transparent;
+        position: relative;
+        cursor: default;
+        transition: filter .12s;
     }
 
-    .cours-bloc strong {
-        font-size: .79rem;
+    .pn-cours:hover {
+        filter: brightness(.95);
+    }
+
+    .pn-cours strong {
+        font-size: 0.72rem;
         font-weight: 700;
+        line-height: 1.2;
     }
 
-    .cours-bloc .cb-meta {
+    .pn-cours .pn-cb-meta {
         color: #475569;
-        font-size: .71rem;
+        font-size: 0.65rem;
     }
 
-    .cours-bloc .cb-time {
-        color: #94a3b8;
-        font-size: .68rem;
+    .pn-cours .pn-cb-time {
+        color: #8a939e;
+        font-size: 0.62rem;
     }
 
-    .cours-bloc .cb-class {
-        font-size: .68rem;
-        font-weight: 600;
+    .pn-cours .pn-cb-class {
+        font-size: 0.62rem;
+        font-weight: 700;
         color: #64748b;
     }
 
-    .c0 {
-        background: #dbeafe;
-        border-left-color: #3b82f6
+    .pn-cancelled {
+        opacity: .6;
+        text-decoration: line-through;
     }
 
-    .c1 {
-        background: #dcfce7;
-        border-left-color: #22c55e
-    }
-
-    .c2 {
-        background: #fef9c3;
-        border-left-color: #eab308
-    }
-
-    .c3 {
-        background: #fce7f3;
-        border-left-color: #ec4899
-    }
-
-    .c4 {
-        background: #ede9fe;
-        border-left-color: #8b5cf6
-    }
-
-    .c5 {
-        background: #ffedd5;
-        border-left-color: #f97316
-    }
-
-    .c6 {
-        background: #cffafe;
-        border-left-color: #06b6d4
-    }
-
-    .c7 {
-        background: #f0fdf4;
-        border-left-color: #84cc16
-    }
+    /* Palette couleurs */
+    .c0 { background: #dbeafe; border-left-color: #3b82f6; }
+    .c1 { background: #dcfce7; border-left-color: #22c55e; }
+    .c2 { background: #fef9c3; border-left-color: #eab308; }
+    .c3 { background: #fce7f3; border-left-color: #ec4899; }
+    .c4 { background: #ede9fe; border-left-color: #8b5cf6; }
+    .c5 { background: #ffedd5; border-left-color: #f97316; }
+    .c6 { background: #cffafe; border-left-color: #06b6d4; }
+    .c7 { background: #f0fdf4; border-left-color: #84cc16; }
 </style>
 
-<!-- Header -->
-<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-    <h1 class="page-title mb-0">Mon Emploi du Temps</h1>
-    <a href="/etudiant/emploi/ical" class="btn btn-sm"
-        style="background:#6366f1;color:#fff;border-radius:8px;font-weight:600;padding:7px 16px;">
-        <i class="bi bi-calendar-check-fill me-1"></i> Exporter iCal
-    </a>
+<!-- En-tête -->
+<div class="pn-page-header">
+    <h1 class="pn-page-title">Mon Emploi du Temps</h1>
+    <div class="pn-header-actions">
+        <a href="/etudiant/emploi/ical" class="pn-btn-header pn-btn-ical">
+            <i class="bi bi-calendar-check-fill me-1"></i> Exporter iCal
+        </a>
+    </div>
 </div>
 
 <!-- Navigation semaine -->
-<div class="calendar-header">
-    <a href="?semaine={{ prev_semaine }}&vue={{ vue }}" class="btn-nav">
-        <i class="bi bi-chevron-left"></i>
-    </a>
-    <div class="cal-controls">
-        <span class="week-title-pill">{{ titre_semaine }}</span>
-        <form method="GET" id="date-form">
+<div class="pn-nav-bar">
+    <a href="?semaine={{ prev_semaine }}&vue={{ vue }}" class="pn-btn-nav" title="Semaine précédente">&#8249;</a>
+
+    <div class="pn-nav-controls">
+        <span class="pn-week-pill">{{ titre_semaine }}</span>
+
+        <form method="GET" id="date-form" style="display:inline;">
             <input type="hidden" name="vue" value="{{ vue }}">
-            <input type="date" name="semaine" class="date-picker-input" value="{{ semaine_str }}"
+            <input type="date" name="semaine" class="pn-date-input" value="{{ semaine_str }}"
                 onchange="document.getElementById('date-form').submit()">
         </form>
-        <a href="?semaine={{ semaine_str }}&vue=hebdo" class="vue-btn {{ 'active' if vue == 'hebdo' }}">Hebdomadaire</a>
+
+        <a href="?semaine={{ semaine_str }}&vue=hebdo" class="pn-vue-btn {{ 'active' if vue == 'hebdo' }}">Hebdomadaire</a>
         <a href="?semaine={{ semaine_str }}&vue=jour&jour={{ jour_selectionne.isoformat() }}"
-            class="vue-btn {{ 'active' if vue == 'jour' }}">Journalier</a>
+            class="pn-vue-btn {{ 'active' if vue == 'jour' }}">Journalier</a>
     </div>
-    <a href="?semaine={{ next_semaine }}&vue={{ vue }}" class="btn-nav">
-        <i class="bi bi-chevron-right"></i>
-    </a>
+
+    <a href="?semaine={{ next_semaine }}&vue={{ vue }}" class="pn-btn-nav" title="Semaine suivante">&#8250;</a>
 </div>
 
-<!-- Grille -->
-<div class="cal-wrapper">
+<!-- Grille calendrier -->
+<div class="pn-cal-wrapper">
     {% if vue == 'hebdo' %}
-    <table class="cal-grid">
+    <table class="pn-cal-grid">
         <thead>
             <tr>
-                <th class="heure-th"></th>
+                <th class="pn-heure-th"></th>
                 {% for jour in jours_semaine %}
                 {% set is_today = (jour.isoformat() == lundi.today().isoformat()) %}
-                <th class="{{ 'col-today' if is_today }}">
-                    <span>{{ ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'][jour.weekday()] }}</span><br>
-                    <a href="?semaine={{ semaine_str }}&vue=jour&jour={{ jour.isoformat() }}"
-                        class="date-label text-decoration-none text-white opacity-75">
-                        {{ jour.strftime('%-d/%m') }}
+                <th class="{{ 'pn-col-today' if is_today }}">
+                    {{ ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'][jour.weekday()] }}
+                    <a href="?semaine={{ semaine_str }}&vue=jour&jour={{ jour.isoformat() }}" class="pn-date-label">
+                        {{ jour.strftime('%d/%m') }}
                     </a>
                 </th>
                 {% endfor %}
@@ -276,21 +360,23 @@
         <tbody>
             {% for heure in heures %}
             <tr>
-                <td class="time-cell">{{ heure }}</td>
+                <td class="pn-time-cell">{{ heure }}</td>
                 {% for jour in jours_semaine %}
                 {% set is_today = (jour.isoformat() == lundi.today().isoformat()) %}
-                <td class="cal-cell {{ 'today-col' if is_today }}">
+                <td class="pn-cal-cell {{ 'pn-today-col' if is_today }}">
                     {% set ns = namespace(ci=0) %}
                     {% for c in cours %}
                     {% if c.date_cours_str == jour.isoformat() and c.heure_debut[:2] == heure[:2] %}
-                    <div class="cours-bloc c{{ ns.ci % 8 }}">
+                    {% set couleur = 'c' ~ (ns.ci % 8) %}
+                    <div class="pn-cours {{ couleur }} {% if c.prof_absent %}pn-cancelled{% endif %}">
                         <strong>{{ c.matiere }}</strong>
-                        {% if c.prof_nom %}<span class="cb-meta"><i class="bi bi-person-fill"></i> {{ c.prof_nom
-                            }}</span>{% endif %}
-                        <span class="cb-class">{{ c.classe_nom }}</span>
-                        <span class="cb-time">{{ c.heure_debut }} – {{ c.heure_fin }}</span>
-                        {% if c.salle %}<span class="cb-meta"><i class="bi bi-geo-alt-fill"></i> {{ c.salle }}</span>{%
-                        endif %}
+                        {% if c.prof_nom %}<span class="pn-cb-meta">{{ c.prof_nom }}</span>{% endif %}
+                        <span class="pn-cb-class">{{ c.classe_nom }}</span>
+                        <span class="pn-cb-time">{{ c.heure_debut }} – {{ c.heure_fin }}</span>
+                        {% if c.salle %}<span class="pn-cb-meta">{{ c.salle }}</span>{% endif %}
+                        {% if c.prof_absent %}
+                        <div style="font-size:0.6rem;color:#b91c1c;font-weight:700;">ANNULÉ</div>
+                        {% endif %}
                     </div>
                     {% set ns.ci = ns.ci + 1 %}
                     {% endif %}
@@ -301,49 +387,41 @@
             {% endfor %}
         </tbody>
     </table>
+
     {% else %}
-    <table class="cal-grid">
+    <!-- Vue journalière -->
+    <table class="pn-cal-grid">
         <thead>
             <tr>
-                <th class="heure-th"></th>
-                <th>{{ ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'][jour_selectionne.weekday()]
-                    }} {{ jour_selectionne.strftime('%-d %B %Y') }}</th>
+                <th class="pn-heure-th"></th>
+                <th style="text-align:left;padding-left:14px;">
+                    {{ ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'][jour_selectionne.weekday()] }}
+                    {{ jour_selectionne.strftime('%d %B %Y') }}
+                </th>
             </tr>
         </thead>
         <tbody>
             {% for heure in heures %}
             <tr>
-                <td class="time-cell">{{ heure }}</td>
-                <td class="cal-cell">
-                    <div class="events-list">
-                        {% for c in cours %}
-                        {% if c.date_cours == jour_selectionne and c.heure_debut[:2] == heure[:2] %}
-                        <div class="event-row {% if c.prof_absent %}event-cancelled{% endif %}">
-                            <div class="ev-time">
-                                <div style="color:#0f172a;font-weight:800;line-height:1;">{{ c.heure_debut }}</div>
-                                <div style="color:#94a3b8;font-size:0.75rem;margin-top:0.2rem;font-weight:600;">{{
-                                    c.heure_fin }}</div>
-                            </div>
-                            <div class="ev-info">
-                                <div class="ev-title">
-                                    {{ c.matiere }}
-                                </div>
-                                <div class="ev-meta">
-                                    <span><i class="bi bi-geo-alt-fill" style="color:#f59e0b;"></i> {% if c.salle %}{{
-                                        c.salle }}{% else %}À définir{% endif %}</span>
-                                    <span><i class="bi bi-person-fill" style="color:#3b82f6;"></i> {{ c.prof_nom
-                                        }}</span>
-                                    {% if c.prof_absent %}
-                                    <span
-                                        style="background:#fee2e2;color:#ef4444;padding:0.15rem 0.5rem;border-radius:1rem;font-size:0.65rem;font-weight:700;border:1px solid #fca5a5;"><i
-                                            class="bi bi-exclamation-triangle-fill"></i> ANNULÉ (Prof. Absent)</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
+                <td class="pn-time-cell">{{ heure }}</td>
+                <td class="pn-cal-cell">
+                    {% set ns = namespace(ci=0) %}
+                    {% for c in cours %}
+                    {% if c.heure_debut[:2] == heure[:2] %}
+                    {% set couleur = 'c' ~ (ns.ci % 8) %}
+                    <div class="pn-cours {{ couleur }} {% if c.prof_absent %}pn-cancelled{% endif %}">
+                        <strong>{{ c.matiere }}</strong>
+                        {% if c.prof_nom %}<span class="pn-cb-meta">{{ c.prof_nom }}</span>{% endif %}
+                        <span class="pn-cb-class">{{ c.classe_nom }}</span>
+                        <span class="pn-cb-time">{{ c.heure_debut }} – {{ c.heure_fin }}</span>
+                        {% if c.salle %}<span class="pn-cb-meta">{{ c.salle }}</span>{% endif %}
+                        {% if c.prof_absent %}
+                        <div style="font-size:0.6rem;color:#b91c1c;font-weight:700;">ANNULÉ</div>
                         {% endif %}
-                        {% endfor %}
                     </div>
+                    {% set ns.ci = ns.ci + 1 %}
+                    {% endif %}
+                    {% endfor %}
                 </td>
             </tr>
             {% endfor %}

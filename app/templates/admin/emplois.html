@@ -573,13 +573,15 @@
     <div class="pn-nav-controls">
         <span class="pn-week-pill">{{ titre_semaine }}</span>
 
-        <form method="GET" id="date-form" style="display:inline;">
+        <form method="GET" id="date-form" style="display:inline-flex;align-items:center;gap:4px;">
             {% if selected_classe %}
             <input type="hidden" name="classe_id" value="{{ selected_classe }}">
             {% endif %}
             <input type="hidden" name="vue" value="{{ vue }}">
-            <input type="date" name="semaine" class="pn-date-input" value="{{ semaine_str }}"
-                onchange="document.getElementById('date-form').submit()">
+            <input type="date" name="semaine" class="pn-date-input" value="{{ semaine_str }}">
+            <button type="submit" class="pn-btn-nav" style="width:auto;padding:0 8px;font-size:0.7rem;height:28px;">
+                OK
+            </button>
         </form>
 
         <a href="?semaine={{ semaine_str }}&vue=hebdo{% if selected_classe %}&classe_id={{ selected_classe }}{% endif %}"
@@ -598,7 +600,7 @@
     <form method="GET" id="filter-form" style="display:inline-flex;gap:6px;align-items:center;">
         <input type="hidden" name="semaine" value="{{ semaine_str }}">
         <input type="hidden" name="vue" value="{{ vue }}">
-        <select name="classe_id" class="pn-filter-select" onchange="document.getElementById('filter-form').submit()">
+        <select name="classe_id" class="pn-filter-select">
             <option value="">Toutes les classes</option>
             {% for c in classes %}
             <option value="{{ c.id }}" {% if c.id==selected_classe %}selected{% endif %}>
@@ -606,6 +608,9 @@
             </option>
             {% endfor %}
         </select>
+        <button type="submit" class="pn-btn-nav" style="width:auto;padding:0 8px;font-size:0.7rem;height:28px;">
+            Filtrer
+        </button>
         {% if selected_classe %}
         <a href="?semaine={{ semaine_str }}&vue={{ vue }}" class="pn-btn-reset">
             Tous

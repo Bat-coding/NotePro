@@ -1,184 +1,132 @@
 {% extends "base.html" %}
 {% block content %}
-
 <style>
-.notes-select-page {
-    max-width: 720px;
-    margin: 0 auto;
-}
+    body {
+        background: #e8eaed !important;
+        font-family: Arial, sans-serif;
+    }
 
-.notes-header {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
+    /* ── En-tête ─────────────────────────────────── */
+    .pn-page-header {
+        margin-bottom: 10px;
+        padding: 12px 0 10px;
+        border-bottom: 2px solid #3a6ea5;
+    }
 
-.notes-header-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #2563eb, #7c3aed);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
-}
+    .pn-page-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e293b;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin: 0;
+    }
 
-.notes-header-icon i {
-    font-size: 1.5rem;
-    color: white;
-}
+    /* ── Panneaux ───────────────────────────────────── */
+    .pn-panel {
+        background: #fff;
+        border: 1px solid #d0d3d8;
+        max-width: 700px;
+        margin: 0 auto;
+    }
 
-.notes-header h1 {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: #0f172a;
-    letter-spacing: -0.03em;
-    margin: 0;
-}
+    .pn-panel-header {
+        padding: 7px 14px;
+        background: #4a5568;
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+    }
 
-.notes-header p {
-    color: #64748b;
-    font-size: 0.875rem;
-    margin: 0.2rem 0 0;
-}
+    .pn-panel-body {
+        font-size: 0.84rem;
+    }
 
-.eval-select-card {
-    background: white;
-    border-radius: 1.25rem;
-    border: 1px solid #e2e8f0;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-}
+    .pn-row {
+        padding: 12px 14px;
+        border-bottom: 1px solid #eef0f2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-decoration: none;
+        color: inherit;
+        transition: background .12s;
+    }
 
-.eval-select-header {
-    padding: 1.25rem 1.75rem;
-    background: #f8fafc;
-    border-bottom: 1px solid #e2e8f0;
-}
+    .pn-row:hover {
+        background: #f6f7f8;
+        color: #3a6ea5;
+    }
 
-.eval-select-header span {
-    font-size: 0.72rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #64748b;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
+    .pn-row:last-child {
+        border-bottom: none;
+    }
 
-.eval-pick-row {
-    display: flex;
-    align-items: center;
-    padding: 1.1rem 1.75rem;
-    border-bottom: 1px solid #f1f5f9;
-    gap: 1rem;
-    transition: background 0.15s;
-    text-decoration: none;
-    color: inherit;
-}
+    .pn-row-title {
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
 
-.eval-pick-row:last-child { border-bottom: none; }
-.eval-pick-row:hover {
-    background: #fafaff;
-    text-decoration: none;
-}
+    .pn-row-icon {
+        color: #c0c8d0;
+        font-size: 1rem;
+    }
 
-.eval-pick-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    background: #eff6ff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
+    .pn-row-arrow {
+        color: #c0c8d0;
+        font-size: 0.8rem;
+    }
 
-.eval-pick-icon i { color: #2563eb; font-size: 1.1rem; }
+    .pn-row:hover .pn-row-icon,
+    .pn-row:hover .pn-row-arrow {
+        color: #3a6ea5;
+    }
 
-.eval-pick-name {
-    font-weight: 700;
-    color: #0f172a;
-    font-size: 0.95rem;
-    flex: 1;
-}
+    .pn-empty {
+        text-align: center;
+        padding: 4rem;
+        color: #a0a8b0;
+        font-size: 0.82rem;
+        font-style: italic;
+    }
 
-.eval-pick-arrow {
-    color: #cbd5e1;
-    font-size: 1rem;
-    transition: color 0.15s, transform 0.15s;
-}
+    .pn-link {
+        color: #3a6ea5;
+        text-decoration: none;
+        font-weight: 700;
+    }
 
-.eval-pick-row:hover .eval-pick-arrow {
-    color: #2563eb;
-    transform: translateX(4px);
-}
-
-.eval-empty {
-    padding: 4rem 2rem;
-    text-align: center;
-    color: #94a3b8;
-}
-
-.eval-empty i {
-    font-size: 3rem;
-    display: block;
-    margin-bottom: 1rem;
-    opacity: 0.35;
-}
-
-.eval-empty a {
-    color: #2563eb;
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.eval-empty a:hover { text-decoration: underline; }
+    .pn-link:hover {
+        text-decoration: underline;
+    }
 </style>
 
-<div class="notes-select-page">
+<div class="pn-page-header">
+    <h1 class="pn-page-title">Saisie des Notes</h1>
+</div>
 
-    <div class="notes-header">
-        <div class="notes-header-icon">
-            <i class="bi bi-pencil-fill"></i>
-        </div>
-        <div>
-            <h1>Saisir des Notes</h1>
-            <p>Choisissez une évaluation pour commencer la saisie</p>
-        </div>
-    </div>
-
-    <div class="eval-select-card">
-        <div class="eval-select-header">
-            <span>
-                <i class="bi bi-clipboard-check"></i>
-                Mes évaluations disponibles
-            </span>
-        </div>
-
+<div class="pn-panel">
+    <div class="pn-panel-header">Sélectionner une évaluation</div>
+    <div class="pn-panel-body">
         {% for e in evaluations %}
-        <a href="/professeur/notes/{{ e.id }}" class="eval-pick-row">
-            <div class="eval-pick-icon">
-                <i class="bi bi-file-earmark-text"></i>
-            </div>
-            <span class="eval-pick-name">{{ e.titre }}</span>
-            <i class="bi bi-chevron-right eval-pick-arrow"></i>
+        <a href="/professeur/notes/{{ e.id }}" class="pn-row">
+            <span class="pn-row-title">
+                <span class="pn-row-icon">📋</span>
+                {{ e.titre }}
+            </span>
+            <span class="pn-row-arrow">&#9654;</span>
         </a>
         {% else %}
-        <div class="eval-empty">
-            <i class="bi bi-clipboard-x"></i>
-            <p style="font-weight: 600; color: #475569;">Aucune évaluation disponible</p>
-            <small>
-                <a href="/professeur/evaluations">Créez une évaluation d'abord</a>
-            </small>
+        <div class="pn-empty">
+            <p>Aucune évaluation créée pour le moment.</p>
+            <a href="/professeur/evaluations" class="pn-link">Cliquez ici pour créer une évaluation</a>
         </div>
         {% endfor %}
-
     </div>
-
 </div>
 
 {% endblock %}

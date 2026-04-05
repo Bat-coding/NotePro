@@ -4,252 +4,191 @@
 {% set jours_fr = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'] %}
 
 <style>
-    .page-header-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 2rem;
-        padding-bottom: 1.25rem;
-        border-bottom: 1px solid #e5e7eb;
-        flex-wrap: wrap;
-        gap: .75rem;
+    body {
+        background: #e8eaed !important;
+        font-family: Arial, sans-serif;
     }
 
-    .page-header-bar h1 {
-        font-size: 1.3rem;
+    /* ── En-tête ─────────────────────────────────── */
+    .pn-page-header {
+        margin-bottom: 10px;
+        padding: 12px 0 10px;
+        border-bottom: 2px solid #3a6ea5;
+    }
+
+    .pn-page-title {
+        font-size: 1.1rem;
         font-weight: 700;
-        color: #111827;
-        letter-spacing: -.02em;
-        margin: 0 0 .15rem;
-    }
-
-    .page-header-bar p {
-        font-size: .825rem;
-        color: #6b7280;
+        color: #1e293b;
+        text-transform: uppercase;
+        letter-spacing: .05em;
         margin: 0;
     }
 
-    /* ── Navigation semaine ── */
-    .week-nav {
+    /* ── Navigation semaine ─────────────────────────── */
+    .pn-nav-bar {
+        background: #fff;
+        border: 1px solid #d0d3d8;
+        padding: 7px 10px;
         display: flex;
         align-items: center;
-        gap: .5rem;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 10px;
     }
 
-    .week-nav .week-label {
-        font-size: .85rem;
-        font-weight: 600;
-        color: #374151;
-        white-space: nowrap;
-    }
-
-    .nav-btn {
-        width: 30px;
-        height: 30px;
-        display: inline-flex;
+    .pn-btn-nav {
+        width: 28px;
+        height: 28px;
+        border: 1px solid #b8bdc3;
+        background: #f0f2f4;
+        color: #3a6ea5;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
         align-items: center;
         justify-content: center;
-        border: 1px solid #e5e7eb;
-        border-radius: 6px;
-        background: #fff;
-        color: #374151;
-        font-size: .8rem;
         text-decoration: none;
-        transition: background .15s, border-color .15s;
+        border-radius: 0;
+        line-height: 1;
     }
 
-    .nav-btn:hover {
-        background: #f9fafb;
-        border-color: #d1d5db;
-        color: #111827;
-        text-decoration: none;
+    .pn-btn-nav:hover {
+        background: #dde0e4;
     }
 
-    /* ── Grille jours ── */
-    .menu-grid {
+    .pn-week-pill {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #1e293b;
+        padding: 3px 15px;
+        background: #f0f2f4;
+        border: 1px solid #d0d3d8;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+    /* ── Grille Menu ───────────────────────────────── */
+    .pn-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: .875rem;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 8px;
     }
 
-    .day-card {
+    .pn-panel {
         background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-        overflow: hidden;
+        border: 1px solid #d0d3d8;
+        display: flex;
+        flex-direction: column;
     }
 
-    .day-head {
-        padding: .6rem .9rem;
-        background: #f9fafb;
-        border-bottom: 1px solid #e5e7eb;
-    }
-
-    .day-head.today {
-        background: #059669;
-        border-bottom-color: #047857;
-    }
-
-    .day-name {
-        font-size: .72rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .06em;
-        color: #374151;
-    }
-
-    .day-date {
-        font-size: .7rem;
-        color: #6b7280;
-        margin-top: .05rem;
-    }
-
-    .day-head.today .day-name,
-    .day-head.today .day-date {
+    .pn-panel-header {
+        padding: 6px 14px;
+        background: #4a5568;
         color: #fff;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
     }
 
-    .day-head.today .day-date {
-        opacity: .75;
+    .pn-today .pn-panel-header {
+        background: #3a6ea5;
     }
 
-    /* ── Contenu menu ── */
-    .day-body {
-        padding: .85rem .9rem;
-        display: flex;
-        flex-direction: column;
-        gap: .6rem;
+    .pn-panel-body {
+        padding: 12px 14px;
+        font-size: 0.84rem;
+        line-height: 1.4;
+        flex: 1;
     }
 
-    .menu-row {
-        display: flex;
-        flex-direction: column;
-        gap: .1rem;
-    }
-
-    .menu-cat {
-        font-size: .62rem;
+    /* Content components */
+    .pn-cat-lbl {
+        font-size: 0.62rem;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: .07em;
-        color: #9ca3af;
+        color: #8a939e;
+        letter-spacing: .06em;
+        margin-bottom: 2px;
     }
 
-    .menu-val {
-        font-size: .83rem;
-        font-weight: 500;
-        color: #111827;
-        line-height: 1.35;
+    .pn-cat-val {
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 10px;
     }
 
-    .menu-sep {
-        height: 1px;
-        background: #f3f4f6;
-    }
-
-    .regime-row {
-        display: inline-flex;
-        align-items: center;
-        gap: .3rem;
-        font-size: .72rem;
-        font-weight: 600;
-        color: #059669;
+    .pn-regime {
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: #2e7d32;
         background: #f0fdf4;
+        padding: 2px 6px;
         border: 1px solid #bbf7d0;
-        border-radius: 100px;
-        padding: .2rem .55rem;
-        margin-top: .1rem;
+        display: inline-block;
+        margin-top: 5px;
     }
 
-    /* ── Vide ── */
-    .empty-state {
-        padding: 2rem .9rem;
+    .pn-empty {
         text-align: center;
-        color: #9ca3af;
-        font-size: .8rem;
-    }
-
-    .empty-state i {
-        font-size: 1.4rem;
-        display: block;
-        margin-bottom: .4rem;
-        opacity: .3;
-    }
-
-    @media (max-width: 480px) {
-        .menu-grid {
-            grid-template-columns: 1fr;
-        }
+        padding: 3rem 1rem;
+        color: #a0a8b0;
+        font-size: 0.78rem;
+        font-style: italic;
     }
 </style>
 
 <!-- En-tête -->
-<div class="page-header-bar">
-    <div>
-        <h1>Menu de la cantine</h1>
-        <p>Semaine du {{ titre_semaine }}</p>
-    </div>
-    <div class="week-nav">
-        <a href="/etudiant/cantine?semaine={{ prev_semaine }}" class="nav-btn"><i class="bi bi-chevron-left"></i></a>
-        <span class="week-label">{{ titre_semaine }}</span>
-        <a href="/etudiant/cantine?semaine={{ next_semaine }}" class="nav-btn"><i class="bi bi-chevron-right"></i></a>
-    </div>
+<div class="pn-page-header">
+    <h1 class="pn-page-title">Menu de la Restauration Scolaire</h1>
 </div>
 
-<!-- Grille -->
-<div class="menu-grid">
+<!-- Navigation semaine -->
+<div class="pn-nav-bar">
+    <a href="/etudiant/cantine?semaine={{ prev_semaine }}" class="pn-btn-nav">&#8249;</a>
+    <span class="pn-week-pill">{{ titre_semaine }}</span>
+    <a href="/etudiant/cantine?semaine={{ next_semaine }}" class="pn-btn-nav">&#8250;</a>
+</div>
+
+<!-- Grille des menus -->
+<div class="pn-grid">
     {% for jour in jours_semaine %}
     {% set menu = menus.get(jour) %}
     {% set is_today = (jour == today) %}
-    <div class="day-card">
-
-        <div class="day-head {{ 'today' if is_today }}">
-            <div class="day-name">{{ jours_fr[jour.weekday()] }}</div>
-            <div class="day-date">{{ jour.strftime('%-d %B %Y') }}</div>
+    <div class="pn-panel {{ 'pn-today' if is_today }}">
+        <div class="pn-panel-header">
+            {{ jours_fr[jour.weekday()] }} {{ jour.strftime('%d/%m') }}
+            {% if is_today %} &mdash; Aujourd'hui{% endif %}
         </div>
+        <div class="pn-panel-body">
+            {% if menu %}
+                {% if menu.entree %}
+                <div class="pn-cat-lbl">Entrée</div>
+                <div class="pn-cat-val">{{ menu.entree }}</div>
+                {% endif %}
 
-        {% if menu %}
-        <div class="day-body">
-            {% if menu.entree %}
-            <div class="menu-row">
-                <div class="menu-cat">Entrée</div>
-                <div class="menu-val">{{ menu.entree }}</div>
-            </div>
-            <div class="menu-sep"></div>
-            {% endif %}
+                <div class="pn-cat-lbl">Plat de résistance</div>
+                <div class="pn-cat-val">{{ menu.plat_principal }}</div>
 
-            <div class="menu-row">
-                <div class="menu-cat">Plat principal</div>
-                <div class="menu-val">{{ menu.plat_principal }}</div>
-            </div>
+                {% if menu.accompagnement %}
+                <div class="pn-cat-lbl">Accompagnement</div>
+                <div class="pn-cat-val">{{ menu.accompagnement }}</div>
+                {% endif %}
 
-            {% if menu.accompagnement %}
-            <div class="menu-row">
-                <div class="menu-cat">Accompagnement</div>
-                <div class="menu-val">{{ menu.accompagnement }}</div>
-            </div>
-            {% endif %}
+                {% if menu.dessert %}
+                <div class="pn-cat-lbl">Dessert / Fromage</div>
+                <div class="pn-cat-val">{{ menu.dessert }}</div>
+                {% endif %}
 
-            {% if menu.dessert %}
-            <div class="menu-sep"></div>
-            <div class="menu-row">
-                <div class="menu-cat">Dessert</div>
-                <div class="menu-val">{{ menu.dessert }}</div>
-            </div>
-            {% endif %}
-
-            {% if menu.regime_special %}
-            <span class="regime-row"><i class="bi bi-heart-fill"></i> {{ menu.regime_special }}</span>
+                {% if menu.regime_special %}
+                <div class="pn-regime">{{ menu.regime_special }}</div>
+                {% endif %}
+            {% else %}
+                <div class="pn-empty">Menu non disponible.</div>
             {% endif %}
         </div>
-
-        {% else %}
-        <div class="empty-state">
-            <i class="bi bi-journal-x"></i>
-            Menu non publié
-        </div>
-        {% endif %}
-
     </div>
     {% endfor %}
 </div>

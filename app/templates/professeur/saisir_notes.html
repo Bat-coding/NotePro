@@ -1,445 +1,309 @@
 {% extends "base.html" %}
 {% block content %}
-
 <style>
-/* ── SAISIE DES NOTES ── */
-.saisie-layout {
-    max-width: 860px;
-    margin: 0 auto;
-}
+    body {
+        background: #e8eaed !important;
+        font-family: Arial, sans-serif;
+    }
 
-.saisie-hero {
-    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 60%, #1d4ed8 100%);
-    border-radius: 1.25rem;
-    padding: 2rem 2.5rem;
-    margin-bottom: 2rem;
-    position: relative;
-    overflow: hidden;
-    color: white;
-}
+    /* ── En-tête ─────────────────────────────────── */
+    .pn-page-header {
+        margin-bottom: 5px;
+        padding: 12px 0 10px;
+        border-bottom: 2px solid #3a6ea5;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-.saisie-hero::before {
-    content: '';
-    position: absolute;
-    top: -60px;
-    right: -60px;
-    width: 220px;
-    height: 220px;
-    background: rgba(255,255,255,0.04);
-    border-radius: 50%;
-}
+    .pn-page-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e293b;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin: 0;
+    }
 
-.saisie-hero::after {
-    content: '';
-    position: absolute;
-    bottom: -80px;
-    right: 80px;
-    width: 160px;
-    height: 160px;
-    background: rgba(255,255,255,0.03);
-    border-radius: 50%;
-}
+    .pn-btn-back {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: #3a6ea5;
+        text-decoration: none;
+    }
 
-.saisie-hero-back {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: rgba(255,255,255,0.6);
-    text-decoration: none;
-    margin-bottom: 1.25rem;
-    transition: color 0.15s;
-}
+    .pn-btn-back:hover {
+        text-decoration: underline;
+    }
 
-.saisie-hero-back:hover {
-    color: white;
-    text-decoration: none;
-}
+    /* ── Info Bar ─────────────────────────────────── */
+    .pn-info-bar {
+        background: #fff;
+        border: 1px solid #d0d3d8;
+        padding: 7px 14px;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8rem;
+    }
 
-.saisie-hero-title {
-    font-size: 1.6rem;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    margin: 0 0 0.4rem;
-}
+    .pn-eval-name {
+        font-weight: 700;
+        color: #1e293b;
+    }
 
-.saisie-hero-sub {
-    color: rgba(255,255,255,0.6);
-    font-size: 0.875rem;
-}
+    .pn-progress {
+        font-size: 0.72rem;
+        color: #8a939e;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
 
-.saisie-hero-meta {
-    display: flex;
-    gap: 1.5rem;
-    margin-top: 1.25rem;
-    flex-wrap: wrap;
-}
+    /* ── Tableau ─────────────────────────────────── */
+    .pn-table-block {
+        background: #fff;
+        border: 1px solid #d0d3d8;
+    }
 
-.hero-meta-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.8rem;
-    color: rgba(255,255,255,0.7);
-    background: rgba(255,255,255,0.08);
-    padding: 0.4rem 0.9rem;
-    border-radius: 2rem;
-    border: 1px solid rgba(255,255,255,0.1);
-}
+    .pn-table-header {
+        padding: 7px 14px;
+        background: #4a5568;
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+    }
 
-/* ── FORM CARD ── */
-.saisie-card {
-    background: white;
-    border-radius: 1.25rem;
-    border: 1px solid #e2e8f0;
-    overflow: hidden;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-}
+    .pn-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.84rem;
+    }
 
-.saisie-table-header {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    padding: 1.25rem 1.75rem;
-    background: #f8fafc;
-    border-bottom: 1px solid #e2e8f0;
-    gap: 1rem;
-}
+    .pn-table thead th {
+        background: #f0f2f4;
+        padding: 8px 14px;
+        text-align: left;
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: #8a939e;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        border-bottom: 1px solid #d0d3d8;
+        border-right: 1px solid #e4e6e9;
+    }
 
-.saisie-table-title {
-    font-size: 0.72rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #64748b;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
+    .pn-table thead th:last-child {
+        border-right: none;
+        text-align: right;
+    }
 
-.notes-progress-info {
-    font-size: 0.75rem;
-    color: #94a3b8;
-    font-weight: 500;
-}
+    .pn-table tbody td {
+        padding: 8px 14px;
+        border-bottom: 1px solid #eef0f2;
+        color: #1e293b;
+        vertical-align: middle;
+        border-right: 1px solid #f0f2f4;
+    }
 
-/* Rows */
-.student-note-row {
-    display: grid;
-    grid-template-columns: 48px 1fr 200px;
-    align-items: center;
-    padding: 0.9rem 1.75rem;
-    border-bottom: 1px solid #f1f5f9;
-    transition: background 0.15s;
-    gap: 1rem;
-}
+    .pn-table tbody td:last-child {
+        border-right: none;
+        text-align: right;
+    }
 
-.student-note-row:last-child {
-    border-bottom: none;
-}
+    .pn-table tbody tr:hover {
+        background: #f6f7f8;
+    }
 
-.student-note-row:hover {
-    background: #fafaff;
-}
+    .pn-table tbody tr:last-child td {
+        border-bottom: none;
+    }
 
-.student-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #eff6ff, #dbeafe);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 0.85rem;
-    color: #2563eb;
-    border: 2px solid #bfdbfe;
-    flex-shrink: 0;
-}
+    /* ── Input Saisie ────────────────────────────── */
+    .pn-note-input {
+        width: 80px;
+        border: 1px solid #b8bdc3;
+        border-radius: 0;
+        padding: 6px 10px;
+        font-size: 1rem;
+        font-family: Arial, sans-serif;
+        font-weight: 700;
+        color: #1e293b;
+        text-align: center;
+        background: #fff;
+        outline: none;
+        transition: border-color .15s;
+    }
 
-.student-name {
-    font-weight: 600;
-    color: #0f172a;
-    font-size: 0.95rem;
-}
+    .pn-note-input:focus {
+        border-color: #3a6ea5;
+        background: #eff6ff;
+    }
 
-.student-label {
-    font-size: 0.75rem;
-    color: #94a3b8;
-    margin-top: 0.1rem;
-}
+    .pn-note-input::placeholder {
+        color: #c0c8d0;
+        font-weight: 400;
+    }
 
-/* Note input */
-.note-input-wrap {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    justify-content: flex-end;
-}
+    /* ── Footer / Actions ────────────────────────── */
+    .pn-footer {
+        padding: 10px 14px;
+        background: #f0f2f4;
+        border-top: 1px solid #d0d3d8;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 5px;
+    }
 
-.note-input-field {
-    width: 100px;
-    border: 2px solid #e2e8f0;
-    border-radius: 0.625rem;
-    padding: 0.55rem 0.75rem;
-    font-size: 1rem;
-    font-weight: 700;
-    color: #0f172a;
-    text-align: center;
-    font-family: 'Inter', sans-serif;
-    background: #f8fafc;
-    transition: all 0.2s;
-    outline: none;
-}
+    .pn-hint {
+        font-size: 0.7rem;
+        color: #8a939e;
+        font-style: italic;
+    }
 
-.note-input-field:focus {
-    border-color: #2563eb;
-    background: white;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-    color: #2563eb;
-}
+    .pn-btn-save {
+        background: #2e7d32;
+        color: #fff;
+        border: 1px solid #1e5c22;
+        padding: 6px 20px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        cursor: pointer;
+        border-radius: 0;
+        transition: background .15s;
+    }
 
-.note-input-field:valid:not(:placeholder-shown) {
-    border-color: #16a34a;
-    background: #f0fdf4;
-    color: #15803d;
-}
+    .pn-btn-save:hover {
+        background: #1e5c22;
+    }
 
-.note-separator {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: #94a3b8;
-    flex-shrink: 0;
-}
-
-/* Progress bar per row */
-.note-bar-wrap {
-    width: 60px;
-    height: 4px;
-    background: #f1f5f9;
-    border-radius: 2px;
-    overflow: hidden;
-}
-
-/* ── FOOTER ── */
-.saisie-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.5rem 1.75rem;
-    background: #f8fafc;
-    border-top: 1px solid #e2e8f0;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.footer-hint {
-    font-size: 0.78rem;
-    color: #94a3b8;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-}
-
-.btn-submit-notes {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    background: linear-gradient(135deg, #16a34a, #15803d);
-    color: white;
-    border: none;
-    border-radius: 0.75rem;
-    padding: 0.8rem 2rem;
-    font-size: 0.9rem;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    transition: all 0.2s;
-    box-shadow: 0 4px 14px rgba(22, 163, 74, 0.3);
-}
-
-.btn-submit-notes:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(22, 163, 74, 0.4);
-    background: linear-gradient(135deg, #15803d, #166534);
-}
-
-.btn-submit-notes:active {
-    transform: translateY(0);
-}
-
-/* Keyboard shortcut badge */
-.shortcut-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    background: rgba(255,255,255,0.2);
-    border-radius: 0.3rem;
-    padding: 0.1rem 0.4rem;
-    font-size: 0.7rem;
-    border: 1px solid rgba(255,255,255,0.3);
-}
-
-/* Empty state */
-.saisie-empty {
-    padding: 4rem 2rem;
-    text-align: center;
-    color: #94a3b8;
-}
-
-.saisie-empty i {
-    font-size: 3.5rem;
-    display: block;
-    margin-bottom: 1rem;
-    opacity: 0.35;
-}
+    .pn-empty {
+        text-align: center;
+        padding: 4rem;
+        color: #a0a8b0;
+        font-size: 0.8rem;
+        font-style: italic;
+    }
 </style>
 
-<div class="saisie-layout">
-
-    <!-- HERO HEADER -->
-    <div class="saisie-hero">
-        <a href="/professeur/evaluations" class="saisie-hero-back">
-            <i class="bi bi-arrow-left"></i> Retour aux évaluations
-        </a>
-        <h1 class="saisie-hero-title">
-            <i class="bi bi-pencil-square me-2" style="opacity: 0.7;"></i>
-            {{ eval_info.titre }}
-        </h1>
-        <p class="saisie-hero-sub">Saisie des notes — notez chaque élève sur 20</p>
-        <div class="saisie-hero-meta">
-            <div class="hero-meta-item">
-                <i class="bi bi-people-fill"></i>
-                {{ etudiants | length }} élève{{ 's' if etudiants | length != 1 }}
-            </div>
-            <div class="hero-meta-item">
-                <i class="bi bi-star-fill"></i>
-                Barème : /20
-            </div>
-            <div class="hero-meta-item">
-                <i class="bi bi-0-circle"></i>
-                Pas à 0.5 point
-            </div>
-        </div>
-    </div>
-
-    <!-- FORM -->
-    <form method="POST" id="saisie-form">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-        <div class="saisie-card">
-            <div class="saisie-table-header">
-                <span class="saisie-table-title">
-                    <i class="bi bi-list-ol"></i>
-                    Liste des élèves
-                </span>
-                <span class="notes-progress-info" id="progress-info">0 / {{ etudiants | length }} noté{{ 's' if etudiants | length != 1 }}</span>
-            </div>
-
-            {% for e in etudiants %}
-            <div class="student-note-row">
-                <!-- Avatar initiale -->
-                <div class="student-avatar">
-                    {{ e.username[0].upper() }}
-                </div>
-                <!-- Nom -->
-                <div>
-                    <div class="student-name">{{ e.username }}</div>
-                    <div class="student-label">Élève · ID #{{ e.id }}</div>
-                </div>
-                <!-- Saisie note -->
-                <div class="note-input-wrap">
-                    <input
-                        type="number"
-                        id="note_{{ e.id }}"
-                        name="note_{{ e.id }}"
-                        class="note-input-field note-entry"
-                        min="0"
-                        max="20"
-                        step="0.5"
-                        placeholder="—"
-                        data-student="{{ loop.index }}"
-                        autocomplete="off"
-                    >
-                    <span class="note-separator">/ 20</span>
-                </div>
-            </div>
-            {% else %}
-            <div class="saisie-empty">
-                <i class="bi bi-people"></i>
-                <p style="font-weight: 600; color: #475569;">Aucun élève inscrit dans cette classe</p>
-                <small>Vérifiez les inscriptions dans l'administration.</small>
-            </div>
-            {% endfor %}
-
-            <div class="saisie-footer">
-                <span class="footer-hint">
-                    <i class="bi bi-info-circle"></i>
-                    Laissez un champ vide pour ne pas attribuer de note
-                </span>
-                {% if etudiants %}
-                <button type="submit" class="btn-submit-notes">
-                    <i class="bi bi-check2-all"></i>
-                    Enregistrer les notes
-                </button>
-                {% endif %}
-            </div>
-        </div>
-    </form>
-
+<div class="pn-page-header">
+    <h1 class="pn-page-title">Saisie des Notes</h1>
+    <a href="/professeur/evaluations" class="pn-btn-back">&#8249; Retour aux évaluations</a>
 </div>
 
+<div class="pn-info-bar">
+    <div>
+        Évaluation : <span class="pn-eval-name">{{ eval_info.titre }}</span>
+    </div>
+    <div class="pn-progress" id="progress-info">
+        0 / {{ etudiants | length }} élèves notés
+    </div>
+</div>
+
+<form method="POST" id="saisie-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="pn-table-block">
+        <div class="pn-table-header">Liste des élèves de la classe</div>
+        <table class="pn-table">
+            <thead>
+                <tr>
+                    <th style="width:60px;">#</th>
+                    <th>Nom de l'élève</th>
+                    <th style="width:150px;text-align:right;">Note (/20)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in etudiants %}
+                <tr>
+                    <td style="color:#c0c8d0;font-weight:700;">#{{ e.id }}</td>
+                    <td style="font-weight:700;">{{ e.username }}</td>
+                    <td style="text-align:right;">
+                        <input
+                            type="number"
+                            name="note_{{ e.id }}"
+                            class="pn-note-input note-entry"
+                            min="0"
+                            max="20"
+                            step="0.5"
+                            placeholder="—"
+                            autocomplete="off"
+                        >
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="pn-empty">Aucun élève trouvé dans cette classe.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pn-footer">
+        <div class="pn-hint">
+            Astuce : utilisez la touche "Tab" ou "Entrée" pour naviguer entre les champs.
+        </div>
+        {% if etudiants %}
+        <button type="submit" class="pn-btn-save">Enregistrer les notes</button>
+        {% endif %}
+    </div>
+</form>
+
 <script>
-// Compteur de notes saisies
-const inputs = document.querySelectorAll('.note-entry');
-const progressInfo = document.getElementById('progress-info');
-const total = inputs.length;
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputs = document.querySelectorAll('.note-entry');
+        const progressInfo = document.getElementById('progress-info');
+        const total = inputs.length;
 
-function updateProgress() {
-    let filled = 0;
-    inputs.forEach(inp => {
-        if (inp.value.trim() !== '') filled++;
-    });
-    const suffix = total <= 1 ? '' : 's';
-    progressInfo.textContent = `${filled} / ${total} noté${suffix}`;
-}
-
-inputs.forEach(inp => {
-    inp.addEventListener('input', updateProgress);
-
-    // Tab entre champs
-    inp.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            const allInputs = [...document.querySelectorAll('.note-entry')];
-            const idx = allInputs.indexOf(this);
-            if (idx < allInputs.length - 1) allInputs[idx + 1].focus();
+        function updateProgress() {
+            let filled = 0;
+            inputs.forEach(inp => {
+                if (inp.value.trim() !== '') filled++;
+            });
+            progressInfo.textContent = `${filled} / ${total} élève${total > 1 ? 's' : ''} noté${filled > 1 ? 's' : ''}`;
         }
-    });
 
-    // Coloration dynamique
-    inp.addEventListener('input', function() {
-        const v = parseFloat(this.value);
-        if (this.value === '') {
-            this.style.borderColor = '';
-            this.style.background = '';
-            this.style.color = '';
-        } else if (v < 8) {
-            this.style.borderColor = '#ef4444';
-            this.style.background = '#fef2f2';
-            this.style.color = '#b91c1c';
-        } else if (v < 12) {
-            this.style.borderColor = '#f59e0b';
-            this.style.background = '#fffbeb';
-            this.style.color = '#b45309';
-        } else {
-            this.style.borderColor = '#16a34a';
-            this.style.background = '#f0fdf4';
-            this.style.color = '#15803d';
-        }
+        inputs.forEach(inp => {
+            inp.addEventListener('input', updateProgress);
+
+            // Touche Entrée pour passer au champ suivant
+            inp.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const idx = Array.from(inputs).indexOf(this);
+                    if (idx < inputs.length - 1) inputs[idx + 1].focus();
+                }
+            });
+
+            // Coloration dynamique des notes
+            inp.addEventListener('input', function() {
+                const v = parseFloat(this.value);
+                if (this.value === '') {
+                    this.parentElement.parentElement.style.background = '';
+                } else if (v < 8) {
+                    this.style.color = '#b91c1c';
+                    this.style.borderColor = '#fca5a5';
+                } else if (v < 12) {
+                    this.style.color = '#92400e';
+                    this.style.borderColor = '#fcd34d';
+                } else {
+                    this.style.color = '#15803d';
+                    this.style.borderColor = '#86efac';
+                }
+            });
+        });
+
+        updateProgress();
     });
-});
 </script>
 
 {% endblock %}

@@ -1,163 +1,141 @@
 {% extends "base.html" %}
 {% block content %}
 <style>
-    .page-header-bar {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 2rem;
-        padding-bottom: 1.25rem;
-        border-bottom: 1px solid #e5e7eb;
+    body {
+        background: #e8eaed !important;
+        font-family: Arial, sans-serif;
     }
 
-    .page-header-bar h1 {
-        font-size: 1.3rem;
+    /* ── En-tête ─────────────────────────────────── */
+    .pn-page-header {
+        margin-bottom: 10px;
+        padding: 12px 0 10px;
+        border-bottom: 2px solid #3a6ea5;
+    }
+
+    .pn-page-title {
+        font-size: 1.1rem;
         font-weight: 700;
-        color: #111827;
-        letter-spacing: -.02em;
-        margin: 0 0 .15rem;
-    }
-
-    .page-header-bar p {
-        font-size: .825rem;
-        color: #6b7280;
+        color: #1e293b;
+        text-transform: uppercase;
+        letter-spacing: .05em;
         margin: 0;
     }
 
-    .notes-table-wrap {
+    /* ── Tableau ─────────────────────────────────── */
+    .pn-table-block {
         background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-        overflow: hidden;
+        border: 1px solid #d0d3d8;
+        max-width: 800px;
     }
 
-    .notes-table {
+    .pn-table-header {
+        padding: 7px 14px;
+        background: #4a5568;
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+    }
+
+    .pn-table {
         width: 100%;
         border-collapse: collapse;
-        font-size: .875rem;
+        font-size: 0.84rem;
     }
 
-    .notes-table thead tr {
-        background: #f9fafb;
-        border-bottom: 1px solid #e5e7eb;
-    }
-
-    .notes-table thead th {
-        padding: .65rem 1rem;
-        font-size: .72rem;
+    .pn-table thead th {
+        background: #f0f2f4;
+        padding: 8px 14px;
+        text-align: left;
+        font-size: 0.68rem;
         font-weight: 700;
-        color: #6b7280;
+        color: #8a939e;
         text-transform: uppercase;
-        letter-spacing: .06em;
-        white-space: nowrap;
+        letter-spacing: .05em;
+        border-bottom: 1px solid #d0d3d8;
+        border-right: 1px solid #e4e6e9;
     }
 
-    .notes-table tbody tr {
-        border-bottom: 1px solid #f3f4f6;
-        transition: background .1s;
+    .pn-table thead th:last-child {
+        border-right: none;
+        text-align: right;
     }
 
-    .notes-table tbody tr:last-child {
+    .pn-table tbody td {
+        padding: 10px 14px;
+        border-bottom: 1px solid #eef0f2;
+        color: #1e293b;
+        vertical-align: middle;
+        border-right: 1px solid #f0f2f4;
+    }
+
+    .pn-table tbody td:last-child {
+        border-right: none;
+        text-align: right;
+    }
+
+    .pn-table tbody tr:hover {
+        background: #f6f7f8;
+    }
+
+    .pn-table tbody tr:last-child td {
         border-bottom: none;
     }
 
-    .notes-table tbody tr:hover {
-        background: #fafafa;
-    }
-
-    .notes-table td {
-        padding: .75rem 1rem;
-        color: #111827;
-        vertical-align: middle;
-    }
-
-    .td-matiere {
-        font-size: .72rem;
-        color: #6b7280;
-        margin-top: .1rem;
-    }
-
-    .note-pill {
-        display: inline-block;
-        font-size: .82rem;
+    /* ── Note Styling ────────────────────────────── */
+    .pn-note {
+        font-size: 1.1rem;
         font-weight: 700;
-        padding: .25rem .75rem;
-        border-radius: 100px;
-        line-height: 1;
     }
 
-    .note-pill.good {
-        background: #f0fdf4;
-        color: #15803d;
-        border: 1px solid #bbf7d0;
+    .pn-note-max {
+        font-size: 0.7rem;
+        font-weight: 400;
+        color: #8a939e;
+        margin-left: 2px;
     }
 
-    .note-pill.mid {
-        background: #fffbeb;
-        color: #b45309;
-        border: 1px solid #fde68a;
-    }
-
-    .note-pill.bad {
-        background: #fef2f2;
-        color: #dc2626;
-        border: 1px solid #fecaca;
-    }
-
-    .empty-state {
-        padding: 3rem 1rem;
+    .pn-empty {
         text-align: center;
-        color: #9ca3af;
-        font-size: .85rem;
-    }
-
-    .empty-state i {
-        font-size: 1.75rem;
-        display: block;
-        margin-bottom: .5rem;
-        opacity: .35;
+        padding: 4rem;
+        color: #a0a8b0;
+        font-size: 0.8rem;
+        font-style: italic;
     }
 </style>
 
-<div class="page-header-bar">
-    <div>
-        <h1>Mes notes</h1>
-        <p>Résultats de toutes vos évaluations</p>
-    </div>
+<!-- En-tête -->
+<div class="pn-page-header">
+    <h1 class="pn-page-title">Mes Notes et Résultats</h1>
 </div>
 
-<div class="notes-table-wrap">
-    <table class="notes-table">
+<!-- Tableau des notes -->
+<div class="pn-table-block">
+    <div class="pn-table-header">Relevé de notes</div>
+    <table class="pn-table">
         <thead>
             <tr>
                 <th>Évaluation</th>
-                <th style="text-align:right;">Note / 20</th>
+                <th>Matière</th>
+                <th style="width:100px;text-align:right;">Note</th>
             </tr>
         </thead>
         <tbody>
             {% for note in notes %}
             <tr>
-                <td>
-                    <div style="font-weight:600; color:#111827;">{{ note.titre }}</div>
-                    {% if note.matiere %}
-                    <div class="td-matiere">{{ note.matiere }}</div>
-                    {% endif %}
-                </td>
+                <td><span style="font-weight:700;">{{ note.titre }}</span></td>
+                <td><span style="color:#64748b;font-weight:700;">{{ note.matiere or '-' }}</span></td>
                 <td style="text-align:right;">
-                    <span
-                        class="note-pill {% if note.valeur >= 14 %}good{% elif note.valeur >= 10 %}mid{% else %}bad{% endif %}">
-                        {{ note.valeur }}<span style="font-weight:400;color:inherit;opacity:.6;">/20</span>
+                    <span class="pn-note {{ 'pn-note-bad' if note.valeur < 10 else ('pn-note-warn' if note.valeur < 14 else 'pn-note-good') }}">
+                        {{ note.valeur }}<span class="pn-note-max">/20</span>
                     </span>
                 </td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="2">
-                    <div class="empty-state">
-                        <i class="bi bi-star"></i>
-                        Aucune note disponible.
-                    </div>
-                </td>
+                <td colspan="3" class="pn-empty">Aucune note enregistrée pour le moment.</td>
             </tr>
             {% endfor %}
         </tbody>

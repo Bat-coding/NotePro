@@ -1,304 +1,215 @@
 {% extends "base.html" %}
 {% block content %}
 
-{% set mois_fr_list =
-['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'] %}
+{% set mois_fr_list = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'] %}
 {% set jours_fr_list = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'] %}
 
 <style>
-    .page-header-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 2rem;
-        padding-bottom: 1.25rem;
-        border-bottom: 1px solid #e5e7eb;
-        flex-wrap: wrap;
-        gap: .75rem;
+    body {
+        background: #e8eaed !important;
+        font-family: Arial, sans-serif;
     }
 
-    .page-header-bar h1 {
-        font-size: 1.3rem;
+    /* ── En-tête ─────────────────────────────────── */
+    .pn-page-header {
+        margin-bottom: 10px;
+        padding: 12px 0 10px;
+        border-bottom: 2px solid #3a6ea5;
+    }
+
+    .pn-page-title {
+        font-size: 1.1rem;
         font-weight: 700;
-        color: #111827;
-        letter-spacing: -.02em;
-        margin: 0 0 .15rem;
-    }
-
-    .page-header-bar p {
-        font-size: .825rem;
-        color: #6b7280;
+        color: #1e293b;
+        text-transform: uppercase;
+        letter-spacing: .05em;
         margin: 0;
     }
 
-    /* ── Navigation mois ── */
-    .month-nav {
-        display: flex;
-        align-items: center;
-        gap: .5rem;
-    }
-
-    .month-nav .month-label {
-        font-size: .9rem;
-        font-weight: 700;
-        color: #111827;
-        min-width: 140px;
-        text-align: center;
-        letter-spacing: -.01em;
-    }
-
-    .nav-btn {
-        width: 30px;
-        height: 30px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid #e5e7eb;
-        border-radius: 6px;
+    /* ── Navigation mois ─────────────────────────── */
+    .pn-nav-bar {
         background: #fff;
-        color: #374151;
-        font-size: .8rem;
-        text-decoration: none;
-        transition: background .15s, border-color .15s;
-    }
-
-    .nav-btn:hover {
-        background: #f9fafb;
-        border-color: #d1d5db;
-        color: #111827;
-        text-decoration: none;
-    }
-
-    /* ── Type badges ── */
-    .type-badge {
-        display: inline-block;
-        font-size: .7rem;
-        font-weight: 600;
-        padding: .2rem .55rem;
-        border-radius: 100px;
-        line-height: 1.4;
-    }
-
-    .type-devoir {
-        background: #fffbeb;
-        color: #b45309;
-        border: 1px solid #fde68a;
-    }
-
-    .type-examen {
-        background: #fef2f2;
-        color: #dc2626;
-        border: 1px solid #fecaca;
-    }
-
-    .type-sortie {
-        background: #f0fdf4;
-        color: #15803d;
-        border: 1px solid #bbf7d0;
-    }
-
-    .type-reunion {
-        background: #f5f3ff;
-        color: #7c3aed;
-        border: 1px solid #ddd6fe;
-    }
-
-    .type-autre {
-        background: #f1f5f9;
-        color: #475569;
-        border: 1px solid #e2e8f0;
-    }
-
-    /* ── Liste ── */
-    .agenda-wrap {
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-        overflow: hidden;
-        max-width: 720px;
-    }
-
-    .agenda-head {
+        border: 1px solid #d0d3d8;
+        padding: 7px 10px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: .65rem 1rem;
-        background: #f9fafb;
-        border-bottom: 1px solid #e5e7eb;
+        gap: 8px;
+        margin-bottom: 5px;
     }
 
-    .agenda-head span {
-        font-size: .72rem;
+    .pn-btn-nav {
+        width: 28px;
+        height: 28px;
+        border: 1px solid #b8bdc3;
+        background: #f0f2f4;
+        color: #3a6ea5;
+        font-size: 1rem;
         font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .06em;
-        color: #6b7280;
-    }
-
-    .count-pill {
-        font-size: .7rem;
-        font-weight: 700;
-        padding: .15rem .55rem;
-        border-radius: 100px;
-        background: #eff6ff;
-        color: #2563eb;
-        border: 1px solid #bfdbfe;
-    }
-
-    .event-row {
+        cursor: pointer;
         display: flex;
-        align-items: flex-start;
-        gap: 1rem;
-        padding: .85rem 1rem;
-        border-bottom: 1px solid #f3f4f6;
-        transition: background .1s;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        border-radius: 0;
+        line-height: 1;
     }
 
-    .event-row:last-child {
+    .pn-btn-nav:hover {
+        background: #dde0e4;
+    }
+
+    .pn-month-pill {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #1e293b;
+        padding: 3px 15px;
+        background: #f0f2f4;
+        border: 1px solid #d0d3d8;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+    /* ── Liste Agenda ───────────────────────────── */
+    .pn-panel {
+        background: #fff;
+        border: 1px solid #d0d3d8;
+        max-width: 800px;
+    }
+
+    .pn-panel-header {
+        padding: 7px 14px;
+        background: #3a6ea5;
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .pn-row {
+        padding: 10px 14px;
+        border-bottom: 1px solid #eef0f2;
+        display: flex;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .pn-row:hover {
+        background: #f6f7f8;
+    }
+
+    .pn-row:last-child {
         border-bottom: none;
     }
 
-    .event-row:hover {
-        background: #fafafa;
-    }
-
-    /* Boîte date */
-    .date-box {
-        width: 48px;
+    /* Date box Pronote style */
+    .pn-date-box {
+        width: 45px;
         flex-shrink: 0;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        overflow: hidden;
+        border: 1px solid #d0d3d8;
         text-align: center;
+        overflow: hidden;
     }
 
-    .date-box .d-day {
-        font-size: 1.25rem;
+    .pn-date-day {
+        font-size: 1.2rem;
         font-weight: 700;
-        color: #111827;
-        line-height: 1.2;
-        padding: .3rem .2rem .1rem;
+        color: #1e293b;
+        padding: 4px 0 2px;
     }
 
-    .date-box .d-name {
-        font-size: .6rem;
+    .pn-date-month {
+        font-size: 0.6rem;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: .05em;
+        background: #4a5568;
         color: #fff;
-        background: #374151;
-        padding: .15rem 0;
-        display: block;
+        padding: 2px 0;
     }
 
-    .date-box.today .d-day {
-        color: #2563eb;
+    .pn-today .pn-date-day { color: #3a6ea5; }
+    .pn-today .pn-date-month { background: #3a6ea5; }
+
+    /* Content */
+    .pn-event-title {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 2px;
     }
 
-    .date-box.today .d-name {
-        background: #2563eb;
+    .pn-badge {
+        font-size: 0.62rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 2px 6px;
+        display: inline-block;
+        border: 1px solid;
     }
 
-    /* Contenu */
-    .event-body {
-        flex: 1;
-        min-width: 0;
-    }
+    .pn-badge-devoir { background: #fffbeb; color: #92400e; border-color: #fcd34d; }
+    .pn-badge-examen { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+    .pn-badge-sortie { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+    .pn-badge-autre  { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
 
-    .event-title {
-        font-size: .875rem;
-        font-weight: 600;
-        color: #111827;
-        margin-bottom: .3rem;
-    }
-
-    .event-meta {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: .4rem;
-    }
-
-    .meta-prof {
-        font-size: .75rem;
-        color: #6b7280;
-    }
-
-    .event-desc {
-        font-size: .75rem;
-        color: #9ca3af;
-        margin-top: .25rem;
-        font-style: italic;
-    }
-
-    /* Vide */
-    .empty-state {
-        padding: 3rem 1rem;
+    .pn-empty {
         text-align: center;
-        color: #9ca3af;
-        font-size: .85rem;
-    }
-
-    .empty-state i {
-        font-size: 1.75rem;
-        display: block;
-        margin-bottom: .5rem;
-        opacity: .35;
+        padding: 4rem;
+        color: #a0a8b0;
+        font-size: 0.82rem;
+        font-style: italic;
     }
 </style>
 
 <!-- En-tête -->
-<div class="page-header-bar">
-    <div>
-        <h1>Mon agenda</h1>
-        <p>Devoirs, examens et événements de ta classe</p>
-    </div>
-    <div class="month-nav">
-        <a href="/etudiant/agenda?mois={{ prev_mois }}" class="nav-btn"><i class="bi bi-chevron-left"></i></a>
-        <span class="month-label">{{ mois_fr_list[first_of_month.month - 1] }} {{ first_of_month.year }}</span>
-        <a href="/etudiant/agenda?mois={{ next_mois }}" class="nav-btn"><i class="bi bi-chevron-right"></i></a>
-    </div>
+<div class="pn-page-header">
+    <h1 class="pn-page-title">Mon Agenda / Travail à faire</h1>
 </div>
 
-<!-- Liste -->
-<div class="agenda-wrap">
-    <div class="agenda-head">
-        <span>Événements du mois</span>
-        <span class="count-pill">{{ evenements | length }}</span>
-    </div>
+<!-- Navigation mois -->
+<div class="pn-nav-bar">
+    <a href="/etudiant/agenda?mois={{ prev_mois }}" class="pn-btn-nav">&#8249;</a>
+    <span class="pn-month-pill">{{ mois_fr_list[first_of_month.month - 1] }} {{ first_of_month.year }}</span>
+    <a href="/etudiant/agenda?mois={{ next_mois }}" class="pn-btn-nav">&#8250;</a>
+</div>
 
-    {% for e in evenements %}
-    {% set is_today = (e.date_event == today) %}
-    <div class="event-row">
-        <div class="date-box {{ 'today' if is_today }}">
-            <div class="d-day">{{ e.date_event.day }}</div>
-            <span class="d-name">{{ jours_fr_list[e.date_event.weekday()] }}</span>
-        </div>
-        <div class="event-body">
-            <div class="event-title">{{ e.titre }}</div>
-            <div class="event-meta">
-                <span class="type-badge type-{{ e.type_event }}">
-                    {% if e.type_event == 'devoir' %}Devoir
-                    {% elif e.type_event == 'examen' %}Examen
-                    {% elif e.type_event == 'sortie' %}Sortie
-                    {% elif e.type_event == 'reunion' %}Réunion
-                    {% else %}Autre{% endif %}
-                </span>
-                {% if e.prof_nom %}
-                <span class="meta-prof">{{ e.prof_nom }}</span>
+<!-- Liste évènements -->
+<div class="pn-panel">
+    <div class="pn-panel-header">Évènements et devoirs du mois</div>
+    <div class="pn-panel-body">
+        {% for e in evenements %}
+        {% set is_today = (e.date_event == today) %}
+        <div class="pn-row">
+            <div class="pn-date-box {{ 'pn-today' if is_today }}">
+                <div class="pn-date-day">{{ e.date_event.day }}</div>
+                <div class="pn-date-month">{{ jours_fr_list[e.date_event.weekday()] }}</div>
+            </div>
+            <div style="flex:1;">
+                <div class="pn-event-title">{{ e.titre }}</div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                    <span class="pn-badge pn-badge-{{ e.type_event }}">
+                        {% if e.type_event == 'devoir' %}Devoir
+                        {% elif e.type_event == 'examen' %}Examen
+                        {% elif e.type_event == 'sortie' %}Sortie
+                        {% else %}Autre{% endif %}
+                    </span>
+                    {% if e.prof_nom %}
+                    <span style="font-size:0.72rem;color:#64748b;">{{ e.prof_nom }}</span>
+                    {% endif %}
+                </div>
+                {% if e.description %}
+                <div style="font-size:0.75rem;color:#4a5568;font-style:italic;line-height:1.4;">{{ e.description }}</div>
                 {% endif %}
             </div>
-            {% if e.description %}
-            <div class="event-desc">{{ e.description }}</div>
-            {% endif %}
         </div>
+        {% else %}
+        <div class="pn-empty">Aucun évènement programmé pour ce mois.</div>
+        {% endfor %}
     </div>
-    {% else %}
-    <div class="empty-state">
-        <i class="bi bi-calendar-check"></i>
-        Aucun événement ce mois-ci.
-    </div>
-    {% endfor %}
 </div>
 
 {% endblock %}

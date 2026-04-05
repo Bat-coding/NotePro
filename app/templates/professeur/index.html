@@ -1,235 +1,287 @@
 {% extends "base.html" %}
 {% block content %}
-
 <style>
-/* Style Identique à l'Admin (DA Pronote) */
-.top-card {
-    display: flex;
-    background: #fff;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    overflow: hidden;
-    height: 100px;
-}
-.top-card-left {
-    flex: 1;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-.top-card-left .val {
-    font-size: 2rem;
-    font-weight: 300;
-    color: #475569;
-    line-height: 1;
-}
-.top-card-left .lbl {
-    font-size: 0.8rem;
-    color: #64748b;
-    text-transform: uppercase;
-    margin-top: 0.4rem;
-    font-weight: 600;
-}
-.top-card-right {
-    width: 90px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-}
-.top-card-right i {
-    font-size: 3rem;
-}
+    body {
+        background: #e8eaed !important;
+        font-family: Arial, sans-serif;
+    }
 
-.block-header {
-    padding: 0.75rem 1rem;
-    color: white;
-    font-weight: 600;
-    font-size: 0.95rem;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-}
-.block-content {
-    background: #fff;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    border: 1px solid #e2e8f0;
-    border-top: none;
-}
-.list-row {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid #f1f5f9;
-    font-size: 0.85rem;
-}
-.list-row:last-child {
-    border-bottom: none;
-}
+    /* ── En-tête ─────────────────────────────────── */
+    .pn-page-header {
+        margin-bottom: 10px;
+        padding: 12px 0 10px;
+        border-bottom: 2px solid #3a6ea5;
+    }
 
-.welcome-header {
-    margin-bottom: 2rem;
-}
-.welcome-header h1 {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: #1e293b;
-}
+    .pn-page-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e293b;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin: 0;
+    }
 
-.action-btn {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 1rem;
-    text-decoration: none;
-    color: #475569;
-    transition: all 0.2s;
-    border-bottom: 1px solid #f1f5f9;
-}
-.action-btn:hover {
-    background-color: #f8fafc;
-    color: #2563eb;
-}
-.action-btn i {
-    font-size: 1.25rem;
-    color: #3b82f6;
-}
+    /* ── Stats ─────────────────────────────────────── */
+    .pn-stats {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 6px;
+    }
+
+    .pn-stat {
+        flex: 1;
+        background: #fff;
+        border: 1px solid #d0d3d8;
+        display: flex;
+        overflow: hidden;
+    }
+
+    .pn-stat-stripe {
+        width: 6px;
+        flex-shrink: 0;
+    }
+
+    .pn-stat-body {
+        padding: 8px 12px;
+    }
+
+    .pn-stat-val {
+        font-size: 1.7rem;
+        font-weight: 300;
+        color: #2c3e50;
+        line-height: 1;
+    }
+
+    .pn-stat-lbl {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #8a939e;
+        margin-top: 3px;
+    }
+
+    /* ── Panneaux ───────────────────────────────────── */
+    .pn-panel {
+        background: #fff;
+        border: 1px solid #d0d3d8;
+        margin-bottom: 5px;
+    }
+
+    .pn-panel-header {
+        padding: 5px 10px;
+        color: #fff;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .pn-expand-btn {
+        font-size: 0.62rem;
+        opacity: .65;
+        cursor: pointer;
+        font-weight: 400;
+        letter-spacing: normal;
+        text-transform: none;
+    }
+
+    .pn-panel-body {
+        font-size: 0.78rem;
+    }
+
+    .pn-row {
+        padding: 5px 10px;
+        border-bottom: 1px solid #eef0f2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        transition: background .12s;
+    }
+
+    .pn-row:hover {
+        background: #f6f7f8;
+    }
+
+    .pn-row:last-child {
+        border-bottom: none;
+    }
+
+    .pn-empty {
+        padding: 10px;
+        text-align: center;
+        color: #a0a8b0;
+        font-size: 0.73rem;
+        font-style: italic;
+    }
+
+    .pn-btn-action {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        padding: 2px 7px;
+        border: 1px solid #3a6ea5;
+        color: #3a6ea5;
+        text-decoration: none;
+        background: #fff;
+    }
+
+    .pn-btn-action:hover {
+        background: #3a6ea5;
+        color: #fff;
+    }
+
+    /* ── Layout ──────────────────────────────────────── */
+    .pn-layout {
+        display: grid;
+        grid-template-columns: 1fr 280px;
+        gap: 5px;
+        align-items: start;
+    }
+
+    @media (max-width: 991px) {
+        .pn-layout {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 
-<div class="welcome-header">
-    <h1>Bonjour, {{ current_user.username }}</h1>
-    <p class="text-muted">Ravi de vous revoir. Voici votre programme pour aujourd'hui, {{ date.today().strftime('%d %B %Y') }}.</p>
+<!-- En-tête -->
+<div class="pn-page-header">
+    <h1 class="pn-page-title">Bonjour, {{ current_user.username }} &nbsp;·&nbsp; {{ date.today().strftime('%d/%m/%Y') }}</h1>
 </div>
 
-<div class="row g-3 mb-4">
-    <!-- Mes Classes -->
-    <div class="col-md-3">
-        <div class="top-card">
-            <div class="top-card-left">
-                <span class="val">{{ total_classes }}</span>
-                <span class="lbl">Mes Classes</span>
-            </div>
-            <div class="top-card-right" style="background-color: #0ea5e9;">
-                <i class="bi bi-people"></i>
-            </div>
+<!-- Stats -->
+<div class="pn-stats">
+    <div class="pn-stat">
+        <div class="pn-stat-stripe" style="background:#0ea5e9;"></div>
+        <div class="pn-stat-body">
+            <div class="pn-stat-val">{{ total_classes }}</div>
+            <div class="pn-stat-lbl">Classes</div>
         </div>
     </div>
-    <!-- Mes Élèves -->
-    <div class="col-md-3">
-        <div class="top-card">
-            <div class="top-card-left">
-                <span class="val">{{ total_eleves }}</span>
-                <span class="lbl">Mes Élèves</span>
-            </div>
-            <div class="top-card-right" style="background-color: #f59e0b;">
-                <i class="bi bi-person-video3"></i>
-            </div>
+    <div class="pn-stat">
+        <div class="pn-stat-stripe" style="background:#f59e0b;"></div>
+        <div class="pn-stat-body">
+            <div class="pn-stat-val">{{ total_eleves }}</div>
+            <div class="pn-stat-lbl">Élèves</div>
         </div>
     </div>
-    <!-- Heures Hebdo -->
-    <div class="col-md-3">
-        <div class="top-card">
-            <div class="top-card-left">
-                <span class="val">{{ '%.1f'|format(total_heures) }}h</span>
-                <span class="lbl">Heures Hebdo</span>
-            </div>
-            <div class="top-card-right" style="background-color: #10b981;">
-                <i class="bi bi-clock"></i>
-            </div>
+    <div class="pn-stat">
+        <div class="pn-stat-stripe" style="background:#10b981;"></div>
+        <div class="pn-stat-body">
+            <div class="pn-stat-val">{{ '%.1f'|format(total_heures) }}h</div>
+            <div class="pn-stat-lbl">Heures Hebdo</div>
         </div>
     </div>
-    <!-- Signalements -->
-    <div class="col-md-3">
-        <div class="top-card">
-            <div class="top-card-left">
-                <span class="val">{{ total_absences }}</span>
-                <span class="lbl">Signalements</span>
-            </div>
-            <div class="top-card-right" style="background-color: #ef4444;">
-                <i class="bi bi-exclamation-triangle"></i>
-            </div>
+    <div class="pn-stat">
+        <div class="pn-stat-stripe" style="background:#ef4444;"></div>
+        <div class="pn-stat-body">
+            <div class="pn-stat-val">{{ total_absences }}</div>
+            <div class="pn-stat-lbl">Signalements</div>
         </div>
     </div>
 </div>
 
-<div class="row g-3">
-    <!-- Planning Quotidien -->
-    <div class="col-md-8">
-        <div class="block-header" style="background-color: #10b981;">
-            <i class="bi bi-calendar-day me-2"></i>Cours du jour
+<!-- Layout -->
+<div class="pn-layout">
+    
+    <!-- Colonne gauche : Cours du jour -->
+    <div class="pn-panel">
+        <div class="pn-panel-header" style="background:#10b981;">
+            Cours du jour
+            <span class="pn-expand-btn">Planning &#8599;</span>
         </div>
-        <div class="block-content">
+        <div class="pn-panel-body">
             {% for c in cours_du_jour %}
-            <div class="list-row d-flex align-items-center">
-                <div class="fw-bold text-primary me-4" style="min-width: 60px;">{{ c.heure_debut }}</div>
-                <div class="flex-grow-1">
-                    <div class="fw-semibold text-dark">{{ c.matiere }}</div>
-                    <div class="text-muted small">Classe : {{ c.classe_nom }} • Salle : {{ c.salle or 'N/C' }}</div>
+            <div class="pn-row" onclick="location.href='/professeur/absences?classe_id={{ c.classe_id }}'" style="cursor:pointer;">
+                <div style="display:flex;align-items:flex-start;gap:10px;">
+                    <div style="font-weight:700;color:#3a6ea5;width:45px;">{{ c.heure_debut }}</div>
+                    <div>
+                        <div style="font-weight:700;color:#1e293b;">{{ c.matiere }}</div>
+                        <div style="color:#64748b;font-size:0.68rem;">
+                            {{ c.classe_nom }} &mdash; <span style="color:#2e7d32;">Salle {{ c.salle or 'N/C' }}</span>
+                        </div>
+                    </div>
                 </div>
                 <div>
-                    <a href="/professeur/notes/{{ c.id }}" class="btn btn-sm btn-outline-success">Saisir appel</a>
+                    <a href="/professeur/absences?classe_id={{ c.classe_id }}" class="pn-btn-action">Appel</a>
                 </div>
             </div>
             {% else %}
-            <div class="p-5 text-center text-muted">
-                <i class="bi bi-calendar-check h1 opacity-25"></i>
-                <p class="mt-2">Aucun cours aujourd'hui. Profitez de votre temps libre !</p>
-            </div>
+            <div class="pn-empty">Aucun cours aujourd'hui.</div>
             {% endfor %}
         </div>
     </div>
 
-    <!-- Blocs Latéraux -->
-    <div class="col-md-4">
+    <!-- Colonne droite : Widgets -->
+    <div>
         <!-- Actions Rapides -->
-        <div class="mb-3">
-            <div class="block-header" style="background-color: #475569;">Actions rapides</div>
-            <div class="block-content">
-                <a href="/professeur/evaluations" class="action-btn">
-                    <i class="bi bi-plus-circle"></i> <span>Créer une évaluation</span>
-                </a>
-                <a href="/professeur/emploi" class="action-btn">
-                    <i class="bi bi-calendar3"></i> <span>Mon planning complet</span>
-                </a>
-                <a href="/professeur/notes" class="action-btn">
-                    <i class="bi bi-pencil-square"></i> <span>Saisir des notes</span>
-                </a>
+        <div class="pn-panel">
+            <div class="pn-panel-header" style="background:#475569;">
+                Actions rapides
+            </div>
+            <div class="pn-panel-body">
+                <div class="pn-row" onclick="location.href='/professeur/evaluations'" style="cursor:pointer;">
+                    <span>Créer une évaluation</span>
+                    <span style="color:#3a6ea5;">+</span>
+                </div>
+                <div class="pn-row" onclick="location.href='/professeur/emploi'" style="cursor:pointer;">
+                    <span>Mon planning complet</span>
+                    <span style="color:#3a6ea5;">&gt;</span>
+                </div>
+                <div class="pn-row" onclick="location.href='/professeur/notes'" style="cursor:pointer;">
+                    <span>Saisir des notes</span>
+                    <span style="color:#3a6ea5;">&gt;</span>
+                </div>
             </div>
         </div>
 
-        <!-- Prochaines Échéances -->
-        <div class="mb-3">
-            <div class="block-header" style="background-color: #3b82f6;">Prochaines échéances</div>
-            <div class="block-content">
+        <!-- Échéances -->
+        <div class="pn-panel">
+            <div class="pn-panel-header" style="background:#3b82f6;">
+                Prochaines échéances
+            </div>
+            <div class="pn-panel-body">
                 {% for ev in recent_evals %}
-                <div class="list-row d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="fw-semibold text-dark">{{ ev.titre }}</div>
-                        <div class="text-muted small">{{ ev.classe_nom }}</div>
+                <div class="pn-row" onclick="location.href='/professeur/notes/{{ ev.id }}'" style="cursor:pointer;">
+                    <div style="flex:1;">
+                        <div style="font-weight:700;color:#1e293b;">{{ ev.titre }}</div>
+                        <div style="color:#64748b;font-size:0.68rem;">{{ ev.classe_nom }}</div>
                     </div>
-                    <a href="/professeur/notes/{{ ev.id }}" class="text-primary small">Notes →</a>
+                    <span style="color:#3a6ea5;">&gt;</span>
                 </div>
                 {% else %}
-                <div class="p-3 text-center text-muted small">Aucune évaluation programmée.</div>
+                <div class="pn-empty">Aucune évaluation programmée.</div>
                 {% endfor %}
             </div>
         </div>
 
-        <!-- Alertes établissement -->
-        <div class="mb-3">
-            <div class="block-header" style="background-color: #ef4444;">Alertes établissements</div>
-            <div class="block-content">
+        <!-- Alertes -->
+        <div class="pn-panel">
+            <div class="pn-panel-header" style="background:#ef4444;">
+                Alertes établissements
+            </div>
+            <div class="pn-panel-body">
                 {% for m in recent_messages %}
-                <div class="list-row">
-                    <div class="fw-bold text-dark">{{ m.contenu }}</div>
-                    <div class="text-muted small">{{ m.created_at.strftime('%d/%m') }}</div>
+                <div class="pn-row">
+                    <div style="font-weight:700;color:#1e293b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80%;">
+                        {{ m.contenu }}
+                    </div>
+                    <div style="color:#8a939e;font-size:0.65rem;">{{ m.created_at.strftime('%d/%m') }}</div>
                 </div>
                 {% else %}
-                <div class="p-3 text-center text-muted small">Aucune alerte.</div>
+                <div class="pn-empty">Aucune alerte.</div>
                 {% endfor %}
             </div>
         </div>
     </div>
+
 </div>
 
 {% endblock %}
