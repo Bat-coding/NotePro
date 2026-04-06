@@ -1,20 +1,18 @@
 # NotePro — Guide de Démarrage Rapide
 
-Ce dépôt contient la plateforme de gestion académique NotePro.
+Ce dépôt contient la plateforme de gestion académique "NotePro".
 
 ## 🚀 Installation & Lancement
 
-Si vous avez déjà une ancienne version qui tourne ou si vous voulez repartir sur une base 100% propre (suppression de la base de données actuelle) :
-
 ### 1. Nettoyage complet (Optionnel mais recommandé)
-Dans le dossier du projet, lancez :
+Dans le dossier du projet, lance :
 ```bash
 docker-compose down -v
 ```
 *Cette commande arrête les conteneurs et **supprime les volumes** (données de la base).*
 
 ### 2. Configuration Environnement
-Créez un fichier nommé `.env` à la racine du projet (copiez le contenu depuis celui de votre binôme).
+Créez un fichier nommé `.env` à la racine.
 
 ### 3. Lancement
 Pour construire les images et démarrer l'application avec une nouvelle base de données toute neuve :

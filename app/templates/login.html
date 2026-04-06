@@ -254,10 +254,10 @@
         {{ form.hidden_tag() }}
 
         <label class="field-label" for="username">Identifiant</label>
-        {{ form.username(class="field-input", placeholder="ex : admin", id="username", autocomplete="username") }}
+        {{ form.username(class="field-input", id="username", autocomplete="username") }}
 
         <label class="field-label" for="password">Mot de passe</label>
-        {{ form.password(class="field-input", placeholder="••••••••", id="password", autocomplete="current-password") }}
+        {{ form.password(class="field-input", id="password", autocomplete="current-password") }}
 
         <button type="submit" class="btn-submit">Se connecter</button>
       </form>
